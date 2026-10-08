@@ -262,7 +262,11 @@ figure.ifimg-s{float:right;width:200px;margin:0 0 6px 12px}
 .ifcols ul{margin:2px 0 6px;padding-left:18px}.ifcols li{margin:2px 0}
 @media (max-width:720px){.ifcols{grid-template-columns:1fr}}
 .ifh{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 2px}
-.ifsrc{color:var(--muted);font-size:12.5px}.ifinf{color:var(--muted);font-style:italic}
+.ifsrc{color:var(--muted);font-size:12.5px}
+.szev{display:block;margin-top:2px;font-size:11.5px;color:var(--muted)}
+.ifev{display:inline-block;font-size:10.5px;line-height:1.3;padding:0 5px;border:1px solid #C3CAC6;border-radius:2px;color:var(--muted);margin-left:2px}
+.ifev-verify{border-color:#B07A1E;color:#8A5A00}.ifev-generic{border-style:dashed}.ifev-inferred{border-style:dotted}
+#home .ifev{font-size:calc(10.5px*var(--hs))}.ifinf{color:var(--muted);font-style:italic}
 .ifsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:7px;vertical-align:-1px;border:1px solid rgba(0,0,0,.25)}
 .ifmx-wrap{overflow-x:auto;background:#fff;border:1px solid #DDE2DF}
 table.ifmx{border-collapse:collapse;font-size:13px;min-width:100%}
@@ -291,6 +295,8 @@ h3.grp{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.
 h3.grp:first-child{border-top:0;padding-top:12px}
 p.jname{margin:0;padding:12px 14px 2px;font-size:15px}p.jname + h3.grp{border-top:0;padding-top:8px}
 h3.grp + details{border-top:0}
+.iftags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+a.iftag{font-size:11px;line-height:1.4;padding:0 6px;border:1px solid var(--fc);border-left-width:4px;border-radius:2px;color:var(--ink);text-decoration:none;background:#fff}
 a.flink{color:inherit;text-decoration:underline;text-decoration-color:var(--fc,#8A908D);text-decoration-thickness:2px;text-underline-offset:2px}
 .iflegend{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 10px 6px}
 .iflegend .note{flex-basis:100%;margin:2px 0 0}
@@ -334,7 +340,7 @@ figure.ifimg.ifv-on img{display:none}
 header h1{font-size:calc(clamp(28px,6vw,46px)*.625)}
 header p.subtitle{font-size:calc(16px*.625)}
 header p.authors{font-size:calc(13px*.625)}
-body.on-home .jointsel button{font-size:calc(13px*.625)}
+.jointsel button{font-size:calc(13px*.625)}
 </style>
 </head>
 <body>
@@ -412,6 +418,7 @@ body.on-home .jointsel button{font-size:calc(13px*.625)}
       </div>
       <div id="params"></div>
       <div class="zonekey"><span><b style="background:rgba(43,76,126,.55)"></b>documented in a source</span><span><b style="background:#D3E2D6"></b>feasible, passes the checks</span><span><b style="background:#E7CFCB"></b>infeasible with the other settings</span><span><b style="background:#B98D57;border-radius:50%;width:8px;border:1px solid #1C2321"></b>documented instance</span></div>
+      <p class="note">Fixed sizes from Saitō (1904) assume Meiji-era members of about 4寸 (120 mm); larger timbers may differ.</p>
       <p class="note">Ticks mark values documented in a source. Values marked placeholder are not yet read from the project record and borrow the denmoku proportions. Feasible zones are recomputed from the checks each time a setting changes.</p>
     </div>
   </details>
@@ -612,7 +619,9 @@ const P = {
      {id:"dm", label:"30 mm, about 1寸 (denmoku)", kind:"abs", c:30, doc:"documented constant across three sizes", ref:"DM1"},
      {id:"meiji", label:"1寸2分 (Meiji rule)", kind:"abs", c:36.4, doc:"single source", ref:"NK1904"},
      {id:"fig", label:"5分 (Fig. 3.2)", kind:"abs", c:15.2, doc:"single drawing", ref:"WA Fig. 3.2"},
-     {id:"proj", label:"1 in (project specimen)", kind:"abs", c:25.4, doc:"one specimen", ref:"WA"}]},
+     {id:"proj", label:"1 in (project specimen)", kind:"abs", c:25.4, doc:"one specimen", ref:"WA"},
+     {id:"saito10", label:"1寸 (Saitō 1904, lower)", kind:"abs", c:30.3, doc:"1寸–1寸4分 square × 2.5–3分 thick, hardwood", ref:"Saitō 1904"},
+     {id:"saito14", label:"1寸4分 (Saitō 1904, upper)", kind:"abs", c:42.4, doc:"1寸–1寸4分 square × 2.5–3分 thick, hardwood", ref:"Saitō 1904"}]},
   pl:{label:"Dowel length", unit:"dim", lim:()=>[15,240], src:"Dowel length across the cut. Contested: the denmoku text and table disagree.", rules:[
      {id:"dmtab", label:"1/2 H + 30 mm (fits the denmoku table)", kind:"affine", base:"H", a:0.5, c:30, doc:"fits three sizes exactly; inferred, not stated", ref:"DM1"},
      {id:"dmtxt", label:"2/3 H (denmoku text)", kind:"prop", base:"H", a:2/3, doc:"stated, but contradicts the table", ref:"DM1"},
@@ -632,10 +641,14 @@ const P = {
      {id:"sun1", label:"1寸 (okkake daisen 腮幅, upper value)", kind:"abs", c:30.3, doc:"neighbouring joint, single source", ref:"DM2"}]},
   tw:{label:"Post tenon thickness (along the beam)", unit:"dim", lim:()=>[10,60], src:"Thickness of the post tenon (hiragara, 平ほぞ). Held at 30 mm across post sizes in every source found.", rules:[
      {id:"t30", label:"30 mm, about 1寸", kind:"abs", c:30, doc:"documented across sizes: precut practice, HOWTEC test standard, denmoku roof frame", ref:"HOWTEC; MLIT 2023; DM roof"},
-     {id:"t45", label:"45 mm (stiffer variant)", kind:"abs", c:45, doc:"tested variant, single source", ref:"AIJ T&D 15(29)"}]},
+     {id:"t45", label:"45 mm (stiffer variant)", kind:"abs", c:45, doc:"tested variant, single source", ref:"AIJ T&D 15(29)"},
+     {id:"s14", label:"1/4 of the post width (Saitō 1904)", kind:"prop", base:"H", a:0.25, doc:"tenon thickness 1/4 to 2/7 of the post width; read only from a snippet, verify", ref:"Saitō 1904"},
+     {id:"s27", label:"2/7 of the post width (Saitō 1904)", kind:"prop", base:"H", a:2/7, doc:"tenon thickness 1/4 to 2/7 of the post width; read only from a snippet, verify", ref:"Saitō 1904"}]},
   td:{label:"Post tenon width (across the beam)", unit:"dim", lim:(H,W)=>[20,Math.max(40,W)], src:"Width of the post tenon across the beam.", rules:[
      {id:"wm20", label:"W − 20 mm", kind:"affine", base:"W", a:1, c:-20, doc:"documented across sizes: 85 to 88 mm on 105 mm posts, 105 mm on 120 mm posts", ref:"HOWTEC; MLIT 2023; 富田 1999"},
-     {id:"k90", label:"90 mm (koyatsuka, denmoku roof frame)", kind:"abs", c:90, doc:"single source", ref:"DM roof"}]},
+     {id:"k90", label:"90 mm (koyatsuka, denmoku roof frame)", kind:"abs", c:90, doc:"single source", ref:"DM roof"},
+     {id:"s80", label:"8/10 of the post width (Saitō 1904)", kind:"prop", base:"W", a:0.8, doc:"tenon width 8/10 to 8.5/10 of the post width; read only from a snippet, verify", ref:"Saitō 1904"},
+     {id:"s85", label:"8.5/10 of the post width (Saitō 1904)", kind:"prop", base:"W", a:0.85, doc:"tenon width 8/10 to 8.5/10 of the post width; read only from a snippet, verify", ref:"Saitō 1904"}]},
   tl:{label:"Stub tenon length", unit:"dim", lim:()=>[10,150], src:"Length of a stub (short) tenon into one piece. Long and through tenons are set by the beam depth.", rules:[
      {id:"s50", label:"50 mm (短ほぞ, standard)", kind:"abs", c:50, doc:"documented: HOWTEC test standard and precut practice", ref:"HOWTEC; MLIT 2023"},
      {id:"s45", label:"45 mm", kind:"abs", c:45, doc:"single source", ref:"富田 1999"},
@@ -706,7 +719,7 @@ const inputs = {};
 /* proportions written as a carpenter would: 1/2 H, 2 H, 3 1/3 H */
 function frac(v){
   if(Math.abs(v)<1e-9) return "0";
-  let best=null; [1,2,3,4,5,6,7,8,10,12,16].forEach(d=>{ const n=Math.round(v*d); const err=Math.abs(v-n/d); const sc=err+0.0015*d; if(n>0&&(!best||sc<best.sc)) best={n,d,err,sc}; });
+  let best=null; [1,2,3,4,5,6,7,8,10,12,15,16].forEach(d=>{ const n=Math.round(v*d); const err=Math.abs(v-n/d); const sc=err+0.0015*d; if(n>0&&(!best||sc<best.sc)) best={n,d,err,sc}; });
   if(!best) return v.toFixed(2);
   const w=Math.floor(best.n/best.d), r=best.n%best.d;
   const txt = r===0 ? `${w}` : (w>0 ? `${w} ${r}/${best.d}` : `${r}/${best.d}`);
@@ -921,8 +934,8 @@ function renderZones(){
       const sel=document.getElementById("sel-"+k), sp=RULE[k];
       sel.innerHTML=d.rules.map(r=>`<option value="${r.id}"${r.id===sp.id?" selected":""}>${r.label}</option>`).join("")+(sp.custom?`<option value="custom" selected>${sp.label}: ${formula(sp)}</option>`:"")+(sp.custom&&sp.kind==="abs"?"":`<option value="customabs">set by hand (absolute)</option>`);
       const tr=document.getElementById("in-"+k).closest(".track"); tr.style.display = sp.kind==="abs" ? "" : "none";
-      document.getElementById("s-"+k).innerHTML=`<b>Rule evidence:</b> ${sp.doc}${sp.ref&&sp.ref!=="user"&&sp.ref!=="none"?` [${sp.ref}]`:""}. ${d.src}`;
-    } else document.getElementById("s-"+k).textContent=d.src;
+      document.getElementById("s-"+k).innerHTML=`<b>Rule evidence:</b> ${sp.doc}${sp.ref&&sp.ref!=="user"&&sp.ref!=="none"?` [${sp.ref}]`:""}. ${d.src} ${ruleLabels(sp)}`;
+    } else document.getElementById("s-"+k).innerHTML=`${d.src} ${ruleLabels(d.unit==="len"?null:{kind:"ratio",ref:"inferred"})}`;
   });
 }
 function renderInst(){
@@ -1771,13 +1784,34 @@ function uploadHTML(){
 function wireUpload(){
   const inp=document.getElementById("upl-o"), btn=document.getElementById("t-read5-o"), st=document.getElementById("buildstat-o");
   if(!inp) return;
-  if(noServer()){ btn.disabled=true; btn.title="Reading images needs the build server (viewer/server.py)"; st.textContent=st.textContent||"Reading an image needs the build server, which runs only in the local viewer (viewer/server.py)."; }
+  if(noServer()){ btn.disabled=true; btn.title="Reading images needs the build server (viewer/server.py)";  }
   inp.onchange=e=>{ const f=e.target.files[0]; if(!f) return; UPLOAD.file=f; if(UPLOAD.url) URL.revokeObjectURL(UPLOAD.url);
     UPLOAD.url=URL.createObjectURL(f); UPLOAD.html="";
     document.getElementById("uplprev-o").src=UPLOAD.url; document.getElementById("uplbody-o").hidden=false;
     document.getElementById("uplname-o").textContent=f.name; st.textContent=""; };
   btn.onclick=()=>readFive(UPLOAD.file, st, btn);
 }
+/* Every value in a proportions panel carries a sizing label (from the form of
+   its rule) and an evidence label (from its first source), as on the landing page. */
+function ruleSizing(r){ if(!r) return "not restricted (follows the member)";
+  return {abs:"fixed size",prop:"scales",propOf:"scales",ratio:"scales",affine:"partly scales",clamp:"partly scales",clampW:"partly scales"}[r.kind]||"fixed size"; }
+function ruleEvidence(r){
+  if(!r) return "base dimension, set on the slider";
+  const ref=(r.ref||"").trim(), first=ref.split(";")[0].trim(), doc=r.doc||"";
+  let e;
+  if(r.custom&&/hand|slider/.test(r.label||"")||/^(not sourced|set on the slider|user)$/.test(ref)) e="set by hand (no source)";
+  else if(/^(none|placeholder)$/.test(ref)||/^placeholder/.test(r.label||"")) e="placeholder (no source)";
+  else if(ref==="drawing") e="read from the drawing";
+  else if(ref==="example") e="documented example";
+  else if(ref==="rule") e="documented rule (not read)";
+  else if(/^inferred/.test(first)||/\binferred\b/.test(doc)&&!/documented/.test(doc)) e="inferred";
+  else if(/craft|diy-ie|kenchikuyogo|林建築|Instructables|Shimoyama|rule of thumb|carpenter|腰掛鎌継 \(diy-ie\)/.test(first)) e="secondary";
+  else if(/AIJ|DM|denmoku|HOWTEC|MLIT|Kijima|Toda|TODA|NK1904|Saitō|WA|第廿圖|dimensioned drawing|富田|S&M|Koshikake-aritsugi|Urakubo/.test(first)) e="documented";
+  else e="secondary";
+  if(/paraphrase|snippet|verify/.test(doc+" "+ref)) e+=", verify";
+  return e; }
+function ruleLabels(r){ return `<span class="szev">Sizing: ${ruleSizing(r)} · Evidence: ${ruleEvidence(r)}</span>`; }
+const SAITO_NOTE="Fixed sizes from Saitō (1904) assume Meiji-era members of about 4寸 (120 mm); larger timbers may differ.";
 function readRule(p, unit){
   // read off the drawing; from the closest documented example (the drawing had
   // no numbers); the drawing's proportion scaled by that example; or the rule
@@ -2545,7 +2579,8 @@ function specParams(key){
      mw:{label:"目違い and 栓, square", dflt:"w7", lim:(V)=>[8,Math.max(10,V.W/4)],
        src:"第廿圖: the 目違い at each end and the central 栓 are each a square of about 1/8–1/7 of the width. The step at the centre is twice this, so the 栓 can straddle the lap face beside it.",
        rules:[RP("w7","W/7 (第廿圖)","W",1/7,"one seventh of the top face","第廿圖"),
-              RP("w8","W/8 (第廿圖)","W",1/8,"one eighth of the top face","第廿圖")]},
+              RP("w8","W/8 (第廿圖)","W",1/8,"one eighth of the top face","第廿圖"),
+              {id:"w8c",label:"W/8, at least 15 mm (the 栓)",kind:"clamp",base:"W",a:1/8,lo:15,hi:999,doc:"central pin = stub tenon = W/8 to W/7 square; the pin at least 15 mm thick",ref:"Saitō 1904; AIJ 2009 via denmoku-db"}]},
     })};
   return {order:["h","W","L","slope","c","m","peg"],
     params:Object.assign({},common,{
@@ -2554,7 +2589,8 @@ function specParams(key){
        rules:[RA("k10","1/10",10,"as dimensioned","the dimensioned drawing; 仕口継手技能; kenchikuyogo")]},
      c:{label:"Step up at the centre", dflt:"c15", lim:()=>[8,30],
        src:"The sawtooth's step: it faces against the slope, so the halves cannot pull apart along the beam.",
-       rules:[RA("c15","15 mm (5分)",15,"the standard 腮","AIJ",true)]},
+       rules:[RA("c15","15 mm (5分)",15,"the standard 腮","AIJ",true),
+              {id:"agoc",label:"L/15, within 15–30 mm (5分 to 1寸)",kind:"clamp",base:"L",a:1/15,lo:15,hi:30,doc:"腮 width 5分 to 1寸; wider risks splitting at the stub tenon",ref:"denmoku-db"}]},
      peg:{label:"込栓 draw pin, square", dflt:"p8", lim:()=>[10,25],
        src:"W/8 in oak (樫); the dimensioned drawing gives 15. Two, H × 1.5 apart.",
        rules:[RP("p8","W/8","W",1/8,"15 mm at W = 120, as dimensioned","the dimensioned drawing; AIJ"),
@@ -2572,6 +2608,7 @@ function specValues(key){
   SPEC_P[key].order.forEach(p=>{ const r=SPEC_RULE[key][p];
     let v=r.c; const b=r.base==="h"?V.h:(r.base==="W"?V.W:V.L);
     if(r.kind==="prop") v=r.a*b;
+    if(r.kind==="clamp") v=Math.min(r.hi,Math.max(r.lo,r.a*b));
     V[p]=v; });
   return V;
 }
@@ -3403,6 +3440,7 @@ function puFormula(r){
   if(r.kind==="prop") return `${frac(r.a)} ${r.base==="h"?"H":r.base}`;
   if(r.kind==="propOf") return `${frac(r.a)} ${r.base}`;
   if(r.kind==="clampW") return `${puAbs(r.c)}, at most ${frac(r.a)} W`;
+  if(r.kind==="clamp") return `${frac(r.a)} ${r.base==="h"?"H":r.base}, within ${puAbs(r.lo)}–${puAbs(r.hi)}`;
   return ""; }
 function puVal(ad,k,V){ const d=ad.def(k), r=ad.rule(k), v=V[k];
   if(d.kind==="ratio") return `1/${specR1(v)}`;
@@ -3438,6 +3476,7 @@ function puRender(ad){
      ${pre.map(block).join("")}
      <div class="param"><div class="prow"><label>Derived</label><span class="val"></span></div><div class="kv" id="pu-derived"></div></div>
      ${ad.extra||""}
+     <p class="note">${SAITO_NOTE}</p>
      <p class="note">Ticks mark values documented in a source. Feasible zones are recomputed from the checks each time a setting changes; the checks are listed under Checks. A value moved by hand is marked review: nobody sourced it.</p>`;
   wrap.querySelectorAll("button[data-pi]").forEach(b=>b.onclick=()=>{ const p=ad.presets[+b.dataset.pi];
     ad.active=PUA[ad.key]=+b.dataset.pi; p.apply(); if(!p.reshows) puUpdate(); });
@@ -3470,8 +3509,8 @@ function puUpdate(moving){
     if(sel) sel.innerHTML=d.rules.map(x=>`<option value="${x.id}"${x.id===r.id?" selected":""}>${x.label}</option>`).join("")
       +(r.custom?`<option value="custom" selected>${r.label}: ${puFormula(r)}</option>`:"")
       +(!d.preset&&!(r.custom&&(r.kind==="abs"||r.kind==="ratio"))&&r.kind!=="abs"&&r.kind!=="ratio"?`<option value="hold">${d.slide?"set by hand (absolute)":"hold this value, set by hand"}</option>`:"");
-    document.getElementById("pu-s-"+k).innerHTML=d.kind==="len" ? d.src
-      : `<b>Rule evidence:</b> ${r.doc}${r.ref&&r.ref!=="not sourced"?` [${r.ref}]`:""}. ${d.src}`;
+    document.getElementById("pu-s-"+k).innerHTML=d.kind==="len" ? `${d.src} ${ruleLabels(null)}`
+      : `<b>Rule evidence:</b> ${r.doc}${r.ref&&r.ref!=="not sourced"?` [${r.ref}]`:""}. ${d.src} ${ruleLabels(r)}`;
     const tr=document.getElementById("pu-tr-"+k); if(!tr) return;
     const show=puSlides(ad,k); tr.style.display=show?"":"none"; if(!show) return;
     const [lo,hi]=d.lim(V), inp=document.getElementById("pu-in-"+k);
@@ -3518,7 +3557,8 @@ function puSpec(key){
     key, order:P.order, def, active:PUA[key]??0,
     rule:k=>SPEC_RULE[key][k],
     setRule:(k,r)=>{ SPEC_RULE[key][k]=r; },
-    ruleValue:(k,r,V)=>r.kind==="prop"?r.a*(r.base==="h"?V.h:(r.base==="W"?V.W:V.L)):r.c,
+    ruleValue:(k,r,V)=>{ const b=r.base==="h"?V.h:(r.base==="W"?V.W:V.L);
+      return r.kind==="prop"?r.a*b:(r.kind==="clamp"?Math.min(r.hi,Math.max(r.lo,r.a*b)):r.c); },
     values:ov=>{ const save=SPEC_RULE[key];
       if(ov){ SPEC_RULE[key]=Object.assign({},save); for(const k in ov) SPEC_RULE[key][k]={kind:"abs",c:ov[k]}; }
       try{ const V=specValues(key); V.H=V.h; return V; } finally{ SPEC_RULE[key]=save; } },
@@ -4448,26 +4488,44 @@ const IF_CATS=[["A","Assembly",[["a1","Set first"],["a2","Lowered from above"],[
 ["M","Manual fabrication",[["m1","Rip saw (縦挽き)"],["m2","Crosscut saw (横挽き)"],["m3","Chisel (叩き・突き鑿)"],["m4","角のみ or mortise chisel"],["m5","Plane (鉋, 際鉋)"],["m6","Fitted by hand, last"],["m7","Made as a separate piece"]]],
 ["G","Digital fabrication",[["g1","Standard プレカット"],["g2","Some factories only"],["g3","Several setups"],["g4","Corners squared by hand"],["g5","Drilled after assembly"]]]];
 const IF_PROP={
-tsuki:["none found",[]],
-sogi:["proportional",[["Daimochi: joint length about 2.5 × depth H","日本家屋構造 1904"],["Daimochi: joint length 2 × H","AIJ 2009 via denmoku-db"]]],
-aikaki:["proportional",[["Lap split at half the depth, H/2","denmoku-db kanawa bending specimens"]]],
-koshi:["fixed",[["Seat depth 15 mm (5分)","diy-ie, after 大工作業の実技"]]],
-tome:["none found",[]],kaki:["none found",[]],oire:["none found",[]],wanagi:["none found",[]],hako:["none found",[]],eri:["none found",[]],sanmai:["none found",[]],
-ago:["fixed",[["Cog where a plate sits on a beam: 1寸 to 1寸5分 (30 to 45 mm)","日本家屋構造 1904"]]],
-nuki:["hybrid",[["Abbreviated gooseneck in a through tie: hook longer than 30 mm, tip 30 mm high, 45°","denmoku-db No. 106"],["Hook height 1/3 to 2/3 of hook length; wedge allowance 15 mm","denmoku-db No. 106"]]],
-ryaku:["hybrid",[["Kanawa and okkake: joint length 3 to 3.5 × H","日本家屋構造 1904"],["Kanawa: 2 to 3 × width W; okkake: 2 to 3 × H","AIJ 2009 via denmoku-db"],["Okkake: at least 8寸 (240 mm)","Shimoyama"],["Daimochi: step H/10, tip H/4","denmoku-db"],["Daimochi: step 8分 to 1寸 (24 to 30 mm)","日本家屋構造 1904"],["Jaw (腮): 15 mm, or L/15 to L/20, never above 15 to 30 mm","denmoku-db"],["Tapered mating faces (suberi kōbai) about 1/10","日本家屋構造 1904; glossaries"]]],
-mechi:["hybrid",[["Kanawa and okkake: a square of W/8 to W/7","日本家屋構造 1904"],["Depth 15 mm","AIJ 2009 via denmoku-db"],["Daimochi: about W/4 square","日本家屋構造 1904"],["Okkake tongue width W/4 to W/3","denmoku-db"]]],
-hozo:["fixed",[["Long tenon in a 120 mm post: 90 × 30 × 117 mm","denmoku-db specimen"],["A 45 mm tenon is about 50% stiffer and stronger than a 30 mm one","Irie and Oto, AIJ 2009"]]],
-sao:["fixed",[["Long tenon with keys at W = 120: tenon 30, jaw 7.5, 18 mm, length 240","Urakubo et al., AIJ 2024 (one size tested)"]]],
-kama:["hybrid",[["Gooseneck length 4寸, 5寸 or 6寸 (120, 150, 180 mm), whatever the depth","Araki; denmoku-db"],["Head = neck = half the gooseneck length","Kijima and Kumazawa 2019"],["Gooseneck depth H/2","Kijima and Kumazawa 2019"],["Neck width 30 mm (1寸) in every specimen","denmoku-db"],["Jaw 7.5 mm each side (5 to 15 tested); head width = neck + 2 × jaw","denmoku-db; Toda 2012"],["Tapered mating faces (suberi kōbai) about 1/10 of the depth (1/8 also used)","日本家屋構造 1904; Kijima"]]],
-ari:["hybrid",[["Neck W/4 to W/3; length W/4 to W/2, design shear length at most 25 mm","denmoku-db"],["Flare L/8 to L/16","denmoku-db"],["All parts as ratios of the top width","日本家屋構造 1904"]]],
-yatoi:["fixed",[["Daimochi dowels: 1寸2分 square × 1寸5分 (about 36 × 45 mm)","日本家屋構造 1904"],["Daimochi dowel 30 × 30 mm","denmoku-db"]]],
-sen:["hybrid",[["Kanawa: central pin = stub tenon = W/8 to W/7 square","日本家屋構造 1904"],["Pins W/8 to W/6","AIJ 2009 via denmoku-db"],["Trade sizes 5分, 6分, 8分, 1寸 (15, 18, 25, 31 mm)","pin catalogues"],["Okkake: 2 pins at the quarter points; 4 if H > 300 mm","denmoku-db; 日本家屋構造 1904"],["Daimochi pin length: 2/3 H in the text, H/2 + 30 in the specimen table","denmoku-db (inconsistent)"],["Drawbore: pin holes deliberately offset about 2 mm","Kyoto training college"],
-  ["Kanawa 栓 at least 15 mm thick","AIJ 2009 via denmoku-db"],["Kanawa: tested 栓 15 mm wide","Toda 2012"],["Kanawa 栓 tapered, for example 21 to 30 mm","builder (Matsumoto Kensetsu)"]]],
-shachi:["none found",[]],
-kusabi:["fixed",[["Wedge allowance 15 mm","denmoku-db No. 106"]]]};
+tsuki:["free", [["Shoulder (胴付き dōzuki) set 5分 (c. 15 mm) into the receiving member (rafter beam into post)", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]], ["Hanging post: shoulder about 1寸 (c. 30 mm) below the beam soffit, with 1寸 clearance", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented", "verify"]]]],
+sogi:["scales", [["Daimochi: joint length about 2.5 × depth H", "Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi: joint length 2 × H", "AIJ 2009 via denmoku-db", ["documented"]]]],
+aikaki:["scales", [["Lap split at half the depth, H/2", "denmoku-db kanawa bending specimens", ["documented"]]]],
+koshi:["fixed", [["Seat depth 15 mm (5分)", "diy-ie, after 大工作業の実技", ["secondary"]]]],
+tome:["free", [["Angle 45°", "geometry", ["geometry"]], ["Mitre face follows the members, e.g. nageshi 8–9/10 of the post width", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]]]],
+kaki:["partly", [["Notch depth about 5分 (c. 15 mm); length = post width − 1寸 (gate arm through post)", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]], ["Eaves beam seated 1–1.5寸 (30–45 mm) on the tie beam", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]], ["Cross-halving: depth H/2 (a different case: roof example)", "denmoku-db", ["documented"]]]],
+oire:["partly", [["Depth about 1/8 of the post width (beam into through-post, kōnosu)", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented", "verify"]], ["Depth 3–4分 (9–12 mm) for secondary members", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]], ["Modern standard 15 mm; range 6–15 mm", "municipal standard drawings", ["secondary"]]]],
+wanagi:["partly", [["Slot width = width of the received member (e.g. ridge beam); housing depth about 2分 (c. 6 mm); tenon split-wedged", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]], ["Tenon thickness follows the mortise and tenon rule", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]]]],
+hako:["none", []],
+eri:["partly", [["Collar cut-out width = width of the post it meets", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]]]],
+sanmai:["partly", [["Each part one third of the member width", "general woodworking", ["generic"]]]],
+ago:["fixed", [["Cog where a plate sits on a beam: 1寸 to 1寸5分 (30 to 45 mm)", "Saitō 1904, 日本家屋構造", ["documented"]], ["Cog width 15–30 mm (5分 to 1寸)", "denmoku-db", ["documented"]]]],
+nuki:["partly", [["Abbreviated gooseneck in a through tie: hook longer than 30 mm, tip 30 mm high, 45°", "denmoku-db No. 106", ["documented"]], ["Hook height 1/3 to 2/3 of hook length; wedge allowance 15 mm", "denmoku-db No. 106", ["documented"]], ["Nuki about 1/4 of the post width thick", "Shimoyama", ["secondary"]], ["Tested 15–60 mm thick in 105–180 mm posts", "denmoku-db", ["documented"]]]],
+ryaku:["partly", [["Kanawa and okkake: joint length 3 to 3.5 × H", "Saitō 1904, 日本家屋構造", ["documented"]], ["Kanawa: 2 to 3 × width W; okkake: 2 to 3 × H", "AIJ 2009 via denmoku-db", ["documented"]], ["Okkake: at least 8寸 (240 mm)", "Shimoyama", ["secondary"]], ["Daimochi: step H/10, tip H/4", "denmoku-db", ["documented"]], ["Daimochi: step 8分 to 1寸 (24 to 30 mm)", "Saitō 1904, 日本家屋構造", ["documented"]], ["Jaw (腮): 15 mm, or L/15 to L/20, never above 15 to 30 mm", "denmoku-db", ["documented"]], ["Tapered mating faces (suberi kōbai) about 1/10", "Saitō 1904, 日本家屋構造; glossaries", ["documented"]]]],
+mechi:["partly", [["Kanawa and okkake: a square of W/8 to W/7", "Saitō 1904, 日本家屋構造", ["documented"]], ["Depth 15 mm", "AIJ 2009 via denmoku-db", ["documented"]], ["Daimochi: about W/4 square", "Saitō 1904, 日本家屋構造", ["documented"]], ["Okkake tongue width W/4 to W/3", "denmoku-db", ["documented"]]]],
+hozo:["fixed", [["Long tenon in a 120 mm post: 90 × 30 × 117 mm", "denmoku-db specimen", ["documented"]], ["A 45 mm tenon is about 50% stiffer and stronger than a 30 mm one", "Irie and Oto, AIJ 2009", ["documented"]], ["Tenon thickness 1/4 to 2/7 of the post width; width 8/10 to 8.5/10", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented", "verify"]]]],
+sao:["fixed", [["Long tenon with keys at W = 120: tenon 30, jaw 7.5, 18 mm, length 240", "Urakubo et al., AIJ 2024 (one size tested)", ["documented"]], ["Tested D = 30, key 15 at W = 120, i.e. about W/4 and W/16", "AIJ 2024; MLIT 2021", ["inferred"]]]],
+kama:["partly", [["Gooseneck length 4寸, 5寸 or 6寸 (120, 150, 180 mm), whatever the depth", "Araki; denmoku-db", ["documented"]], ["Head = neck = half the gooseneck length", "Kijima and Kumazawa 2019", ["documented"]], ["Gooseneck depth H/2", "Kijima and Kumazawa 2019", ["documented"]], ["Neck width 30 mm (1寸) in every specimen", "denmoku-db", ["documented"]], ["Jaw 7.5 mm each side (5 to 15 tested); head width = neck + 2 × jaw", "denmoku-db; Toda 2012", ["documented"]], ["Tapered mating faces (suberi kōbai) about 1/10 of the depth (1/8 also used)", "Saitō 1904, 日本家屋構造; Kijima", ["documented"]]]],
+ari:["partly", [["Neck W/4 to W/3; length W/4 to W/2, design shear length at most 25 mm", "denmoku-db", ["documented"]], ["Flare L/8 to L/16", "denmoku-db", ["documented"]], ["All parts as ratios of the top width", "Saitō 1904, 日本家屋構造", ["documented"]]]],
+yatoi:["fixed", [["Daimochi dowels: 1寸2分 square × 1寸5分 (about 36 × 45 mm)", "Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi dowel 30 × 30 mm", "denmoku-db", ["documented"]], ["Dowel 太枘: 1寸–1寸4分 square × 2.5–3分 thick, hardwood", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]]]],
+sen:["partly", [["Kanawa: central pin = stub tenon = W/8 to W/7 square", "Saitō 1904, 日本家屋構造", ["documented"]], ["Pins W/8 to W/6", "AIJ 2009 via denmoku-db", ["documented"]], ["Trade sizes 5分, 6分, 8分, 1寸 (15, 18, 25, 31 mm)", "pin catalogues", ["secondary"]], ["Okkake: 2 pins at the quarter points; 4 if H > 300 mm", "denmoku-db; Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi pin length: 2/3 H in the text, H/2 + 30 in the specimen table", "denmoku-db (inconsistent)", ["documented"]], ["Drawbore: pin holes deliberately offset about 2 mm", "Kyoto training college", ["secondary"]], ["Kanawa 栓 at least 15 mm thick", "AIJ 2009 via denmoku-db", ["documented"]], ["Kanawa: tested 栓 15 mm wide", "Toda 2012", ["documented"]], ["Kanawa 栓 tapered, for example 21 to 30 mm", "builder (Matsumoto Kensetsu)", ["secondary"]]]],
+shachi:["none", []],
+kusabi:["fixed", [["Wedge allowance 15 mm", "denmoku-db No. 106", ["documented"]]]]};
 const IF_FN={put:"bears",hook:"interlocks",fix:"locks"};
-const IF_SZ={"proportional":"scales","fixed":"fixed size","hybrid":"partly scales","none found":"no size rule found"};
+// sizing: how the interface form's dimensions are set; one label per form
+const IF_SZ={scales:"scales",fixed:"fixed size",partly:"partly scales",free:"not restricted (follows the member)",none:"no rule found"};
+const IF_SZ_DEF={scales:"the form's dimensions follow the member by rule",fixed:"a set size, usually a tool or 寸 standard",
+  partly:"some dimensions scale, others are fixed or capped",free:"the form has no sizing rule of its own; its size is set by the members it joins",
+  none:"no sizing rule found in the sources checked; one may exist"};
+// evidence, after each rule's source
+const IF_EVL={documented:"from a primary source (e.g. Saitō 1904, denmoku-db, AIJ)",secondary:"from commentary or later sources",
+  generic:"Western or general woodworking convention, not a Japanese timber-frame rule",inferred:"a proxy or ratio derived by us",
+  verify:"read only from a snippet; to be checked against the original",geometry:"follows from the geometry"};
+function ifEv(ev){ return (ev||[]).map(e=>`<span class="ifev ifev-${e}" title="${IF_EVL[e]||e}">${e}</span>`).join(" "); }
+function ifRule(r){ return `<li>${r[0]} <span class="ifsrc">(${r[1]})</span> ${ifEv(r[2])}</li>`; }
+// a note shown with a form's rules: no rule of its own, a proxy, or a missing dimension
+const IF_RNOTE={tsuki:"A plain contact face; its size is the section of the members joined.",tome:"Its size is set by the members joined.",
+  hako:"No rule found. Proxy: as stub tenon, W/8 to W/7 (inferred).",eri:"Depth: no rule found."};
 const IF_LINKS={tsuki:"m2 m5~ g1",sogi:"a2 m1 m2 m5 g3~",aikaki:"a2 m1 m2 m3 g1",koshi:"a1 a2 a6 r3~ m2 m3 g1",tome:"m2 m6~ g4~",
 kaki:"a2 m2 m3 g1",oire:"a2 m2 m3 g1 g4",wanagi:"a2 m1 m3 g3~ g4~",ago:"a2 r3~ m2 m3 g1",nuki:"a7 r5~ m3 m4 g4~",hako:"m3 m6 g3~ g4~",
 ryaku:"a2 a3 a4 d2 r1 r2 m1 m2 m3 m5 m6 g2 g3",mechi:"a3 d3 m3 m4 m5 m6 g3 g4",eri:"m3 m6~ g4~",
@@ -4522,7 +4580,7 @@ function ifName(id,short){ const f=IF[id]; return short?`${f.en} ${f.kj}`:`${f.e
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261008232821";
+const ASSET_V="20261008234152";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4537,8 +4595,8 @@ function ifCatalogueHTML(){
   return IF_GROUPS.map(([g,list])=>`<h4 class="ifgroup">${g}</h4>`+list.map(([id])=>{ const f=IF[id], [tag,rules]=IF_PROP[id];
     const used=Object.entries(IF_COMP).filter(([,c])=>c[id]).map(([j,c])=>`<li><a href="#joint-${j}"><i>${IF_JOINTS[j].ro}</i> ${IF_JOINTS[j].kj}</a> ${c[id][0]} ${c[id][1]}</li>`).join("");
     return `<article class="ifc" id="form-${id}">${ifImg(id)}<div class="ifc-body"><h5>${IF_COL[id]?`<span class="ifsw" style="background:${IF_COL[id]}"></span>`:""}${ifName(id)}</h5>
-      ${IF_DEF[id]?`<p class="ifdef">${IF_DEF[id]}</p>`:""}<p class="iftags">Main function: <b>${IF_FN[f.fn]}</b> · Sizing: <b>${IF_SZ[tag]}</b></p>
-      <div class="ifcols"><div><p class="ifh">Rules, per joint</p>${rules.length?`<ul>${rules.map(r=>`<li>${r[0]} <span class="ifsrc">(${r[1]})</span></li>`).join("")}</ul>`:`<p class="ifsrc">${IF_NORULE[id]||"No proportion rule found in the sources checked so far."}</p>`}
+      ${IF_DEF[id]?`<p class="ifdef">${IF_DEF[id]}</p>`:""}<p class="iftags">Main function: <b>${IF_FN[f.fn]}</b> · Sizing: <b title="${IF_SZ_DEF[tag]}">${IF_SZ[tag]}</b></p>
+      <div class="ifcols"><div><p class="ifh">Rules, per joint</p>${rules.length?`<ul>${rules.map(ifRule).join("")}</ul>`:""}${IF_RNOTE[id]||IF_NORULE[id]||!rules.length?`<p class="ifsrc">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:""}
         <p class="ifh">Joints that use it</p>${used?`<ul>${used}</ul>`:`<p class="ifsrc">None of the five joints modelled here.</p>`}</div>
         <div><p class="ifh">Processes it implies</p><ul>${outs(id)}</ul><p class="ifsrc"><b>Evidence:</b> ${IF_EVID(id)}</p></div></div></div></article>`; }).join("")).join("");
 }
@@ -4589,7 +4647,7 @@ function ifDiagram(host){
     el("rect",{x:RX,y:ry[id]-12,width:RW,height:24,rx:5,fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8","stroke-width":1},g);
     const t=el("text",{x:RX+RW/2,y:ry[id],"text-anchor":"middle","dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g); t.textContent=label[id]; bind(g,"r",id); }));
   let fc="all", sel=null;
-  const HINT=`<p class="ifp-hint">Select an interface form to see its proportions. Each interface form is tagged with what it does (bears load, interlocks, or locks the joint) and how it is sized: scales (with the member), fixed size (usually a tool or 寸 standard), partly scales (some of both), or no size rule found in the sources checked. Proportions depend on the joint, so the rules name their joint.</p>`;
+  const HINT=`<p class="ifp-hint">Select an interface form to see its proportions. Each interface form is tagged with what it does (bears load, interlocks, or locks the joint) and how it is sized: scales, fixed size, partly scales, not restricted (follows the member), or no rule found. Each rule carries its source and evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint.</p>`;
   const render=()=>{ const act=new Set(), showInf=host.querySelector(".ifp-inf").checked;
     lines.forEach(o=>{ let on=(fc==="all"||o.c===fc)&&(showInf||!o.inf); if(sel) on=on&&(sel[0]==="m"?o.m===sel[1]:o.r===sel[1]);
       o.ln.classList.toggle("ifp-dim",!on); o.ln.style.display=(!showInf&&o.inf)?"none":""; if(on){ act.add(o.m); act.add(o.r); } });
@@ -4602,7 +4660,7 @@ function ifDiagram(host){
   const showDetail=()=>{ if(!sel||sel[0]!=="m"){ detail.innerHTML=HINT; return; }
     const id=sel[1], f=IF[id], [tag,rules]=IF_PROP[id];
     detail.innerHTML=ifImg(id,"ifimg ifimg-s")+`<h3>${ifName(id)}</h3>${IF_DEF[id]?`<p>${IF_DEF[id]}</p>`:""}<p class="ifsrc">Main function: ${IF_FN[f.fn]}. Sizing: ${IF_SZ[tag]}. Proportions depend on the joint the interface form is part of, so each rule names its joint where the source does. <a href="#form-${id}">In the catalogue</a>.</p>`+
-      (rules.length?`<ul>${rules.map(r=>`<li>${r[0]} <span class="ifsrc">(${r[1]})</span></li>`).join("")}</ul>`:`<p class="ifp-hint">No proportion rule found in the sources checked so far.</p>`); };
+      (rules.length?`<ul>${rules.map(ifRule).join("")}</ul>`:"")+((IF_RNOTE[id]||IF_NORULE[id]||!rules.length)?`<p class="ifp-hint">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:""); };
   const focus=(k,id)=>{ sel=(sel&&sel[1]===id)?null:[k,id]; render(); showDetail(); };
   host.querySelector(".ifp-inf").addEventListener("change",render);
   host.querySelectorAll("button[data-c]").forEach(b=>b.addEventListener("click",()=>{ fc=b.dataset.c; sel=null;
@@ -4615,21 +4673,52 @@ function renderHome(){
   <section class="home-sec"><p class="home-intro">Japanese timber joints are described here by a making grammar (after Knight and Stiny 2015): a vocabulary of interface forms (基本形), with rules that combine them into interfaces between components, size them from sourced scaling rules, and link each interface form to the actions that make, assemble and repair it.</p>
     <p class="note">A <b>component</b> is a physically bounded piece: each beam end, a post, a pin, a key, a dowel. An <b>interface</b> is everything connecting two components, such as the beam–beam interface of a daimochi or each pin–beam interface. An <b>interface form</b> (基本形) is a shaped part of an interface, a mating 凸凹 pair. A <b>feature</b> is an interface form as a machine cuts it: a pocket, a slot, a drilling.</p></section>
   <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#home-comp">Composition</a><a href="#home-proc">From interface forms to processes</a><a href="#home-joints">The joints</a><a href="#home-terms">Terms and sources</a></nav>
-  <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (with the member), fixed size (usually a tool or 寸 standard), partly scales, or no size rule found. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the 3D view of a joint.</p>${ifCatalogueHTML()}</section>
+  <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (its dimensions follow the member by rule), fixed size (a set size, usually a tool or 寸 standard), partly scales (some dimensions scale, others are fixed or capped), not restricted (no rule of its own; its size is set by the members it joins), or no rule found (none in the sources checked; one may exist). Each rule shows its source and its evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the 3D view of a joint.</p>${ifCatalogueHTML()}</section>
   <section class="home-sec" id="home-comp"><h2>Composition</h2><p class="note">Which interface forms make up each joint. Ticks open the catalogue entry; joint names open the joint.</p>${ifMatrixHTML()}</section>
   <section class="home-sec" id="home-proc"><h2>From interface forms to processes</h2><p class="note">Each interface form decides how the joint is assembled, taken apart and repaired, and how it is made by hand and by CNC. Select an interface form or an outcome to see its links.</p><div id="ifp"></div>
-    <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than oblique scarf, halving, seat, abbreviated gooseneck, stub tenon, gooseneck, dovetail and pin are reasoned from their geometry and shown dashed until checked against sources. Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p></section>
+    <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than oblique scarf, halving, seat, abbreviated gooseneck, stub tenon, gooseneck, dovetail and pin are reasoned from their geometry and shown dashed until checked against sources. Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p>
+    <p class="note"><b>Sizing:</b> no rule found = not found in the sources checked; not restricted = size set by the members joined. <b>Evidence:</b> documented = a primary source (Saitō 1904, denmoku-db, AIJ); secondary = commentary or later sources; generic = a general woodworking convention, not a Japanese timber-frame rule; inferred = a proxy or ratio derived by us; verify = read only from a snippet, to be checked against the original.</p>
+    <p class="note">Fixed sizes from Saitō (1904) assume Meiji-era members of about 4寸 (120 mm); larger timbers may differ.</p></section>
   <section class="home-sec" id="home-joints"><h2>The joints</h2>${ifCardsHTML()}</section>
   <section class="home-sec" id="home-terms"><h2>Terms and sources</h2><p>Terms follow AIJ 『建築学用語辞典』 (2nd ed., 1999) where listed, otherwise JAANUS; romanisation modified Hepburn. Interface forms follow the basic forms (基本形) of Kanasaki (2011), after Minamoto (1985) and Uchida (1981).</p>
-    <p class="note">Functions after Chaya, Yagi, Miyakawa and Yamahata (1985). Making grammar after Knight and Stiny (2015). Rules and links from Bauer and Pauli, <i>The Joinery Compendium</i>; Wang (2024), Princeton senior thesis; Toda (2012), Hokkaido Forest Products Research Institute Report 541; Shimoyama's commentary on 日本家屋構造 (1904); MiGumi (Ganeshan et al. 2025); denmoku-db; carpenters' accounts (林建築, 谷口工務店, アラキ工務店); プレカット factory sources.</p></section>`;
+    <p class="note">Functions after Chaya, Yagi, Miyakawa and Yamahata (1985). Making grammar after Knight and Stiny (2015). Rules and links from Saitō (1904), 『日本家屋構造』, read through Shimoyama's commentary; Bauer and Pauli, <i>The Joinery Compendium</i>; Wang (2024), Princeton senior thesis; Toda (2012), Hokkaido Forest Products Research Institute Report 541; MiGumi (Ganeshan et al. 2025); denmoku-db; carpenters' accounts (林建築, 谷口工務店, アラキ工務店); プレカット factory sources.</p></section>`;
   ifDiagram(document.getElementById("ifp"));
   h.dataset.done="1";
 }
 
 /* ---------- joint pages: three groups of panels ---------- */
-const IF_PANEL_ORDER=[["Form and documentation",["Match a drawing","How it differs","Names","Proportions","Details","Where it is built","Where it occurs","Record","Sources"]],
+const IF_PANEL_ORDER=[["Form and documentation",["Match a drawing","How it differs","Names","Interface forms","Proportions","Details","Where it is built","Where it occurs","Record","Sources"]],
   ["Process",["Assembly","Repair","Manual fabrication","Digital fabrication"]],
-  ["Evidence",["Checks","Tests","Files"]]];
+  ["Evidence",["Checks","Validation","Tests","Files"]]];
+/* each joint's interface forms, grouped by interface (○ in IF_COMP: an option) */
+const IF_INTERFACES={
+  daimochi:[["Beam–beam interface (lower and upper element)",["sogi","ryaku","mechi"]],["Dowel–beam interfaces (dowels option)",["yatoi"]],
+    ["Draw pin–beam interfaces (through draw pins option)",["sen"]],["Post–beam interface (post option)",["hozo","oire"]],
+    ["Beam–beam interface with a beam below (beam option)",["ago"]],["Wedge–tenon interfaces (wedges option)",["kusabi"]]],
+  aritsugi:[["Beam–beam interface (lower and upper element)",["koshi","ari","mechi"]]],
+  kamatsugi:[["Beam–beam interface (lower and upper element)",["koshi","kama","mechi"]],["Draw pin–beam interfaces (込栓 option)",["sen"]]],
+  kanawa:[["Beam–beam interface (two identical elements)",["aikaki","ryaku","mechi","ari"]],["Pin–beam interface (locked option)",["sen"]]],
+  okkake:[["Beam–beam interface (two identical elements)",["sogi","ryaku","mechi"]],["Draw pin–beam interfaces (locked option)",["sen"]]]};
+function ifInterfacesHTML(j){
+  return (IF_INTERFACES[j]||[]).map(([name,ids])=>`<h4 class="occh">${name}</h4><ul class="prov">${ids.map(id=>{ const c=(IF_COMP[j]||{})[id];
+    return `<li><a href="#form-${id}"><span class="ifsw" style="background:${IF_COL[id]||"#ccc"}"></span>${IF[id].en} ${IF[id].kj}</a>${c&&c[0]==="○"?" (option)":""}: ${c?c[1]:""}. <span class="ifsrc">Sizing: ${IF_SZ[IF_PROP[id][0]]}.</span></li>`; }).join("")}</ul>`).join("")+
+    `<p class="note">The <i>Interface forms</i> checkbox under the model colours each one, in the same colour as on the landing page.</p>`; }
+/* the daimochi against Wang's model and tests: what was run, what agreed and what differed */
+const DAIMOCHI_VALIDATION=`
+  <p class="note">From the comparison with Wang (2024) recorded in <code>imagecad/README.md</code> and <code>daimochi_validation.md</code>. Values are as run; nothing was adjusted to improve agreement.</p>
+  <h4 class="occh">Geometry, against her specimen model</h4>
+  <p><b>Agreed.</b> The spec read from her thesis STEP (<code>daimochi_wang2024.json</code>) reproduces <code>Daimochi_Tsugi_Joint_26.stp</code> exactly: no material differs, Hausdorff distance 0.0 mm.</p>
+  <h4 class="occh">Finite elements, against her Abaqus model (thesis 5.1, Table 5.4)</h4>
+  <p>Her 4-spring case, set up as her jobs set it (<code>imagecad/fe_wang.py</code>, CalculiX, C3D4 tetrahedra at 10 mm against her C3D8 hexahedra at 0.15 in; friction 0.5, hard contact, her orthotropic material).</p>
+  <table class="readres"><tr><th></th><th>This model</th><th>Wang, Table 5.4</th></tr>
+    <tr><td>Maximum vertical displacement</td><td>24.6 mm</td><td>25.8 mm</td></tr>
+    <tr><td>Maximum principal stress</td><td>1400 MPa</td><td>1138 MPa</td></tr>
+    <tr><td>Maximum contact pressure</td><td>not extracted</td><td>507 MPa</td></tr></table>
+  <p><b>Agreed:</b> the displacement, within 5%. <b>Differed:</b> the peak stress, by 23%; it is a spike on the coarse tetrahedra and is not comparable with her hexahedra. The 6-spring case was not run.</p>
+  <h4 class="occh">Finite elements, against her tension tests</h4>
+  <p><b>Differed, by an order of magnitude.</b> At her full pull the model's reaction is 372 kN; the tests peaked at 21.7 and 29.0 kN (hand-cut, 4 and 6 springs) and 18.4 and 20.8 kN (CNC-made). The model is linear-elastic with no crushing, slip or failure, so it cannot reach a peak load: it is not validated against the tests, and no stiffness comparison has been made.</p>
+  <h4 class="occh">Toolpaths</h4>
+  <p>Regenerated from the documented strategy (thesis 4.3), simulated: the setups, programs and remaining material are listed under Digital fabrication. Not milled, and not compared with her original toolpaths, which are not available.</p>`;
 function ifPanelTitle(n){
   if(n.classList&&n.classList.contains("readsec")){ const s=n.querySelector(".readhead span"); return s?s.textContent.trim():""; }
   if(n.tagName==="DETAILS"){ const s=n.querySelector(":scope > summary"); return s?(s.firstChild&&s.firstChild.nodeType===3?s.firstChild.textContent:s.textContent).trim():""; }
@@ -4637,6 +4726,15 @@ function ifPanelTitle(n){
 function groupPanel(panel){
   if(!panel) return;
   const kids=[...panel.children].filter(n=>!n.classList.contains("grp")&&!n.classList.contains("grp-name"));
+  const jkey=panel.id==="otherpanel"?ifCurrentJoint():"daimochi";
+  if(!kids.some(n=>ifPanelTitle(n)==="Interface forms")){
+    const d=document.createElement("details");
+    d.innerHTML=`<summary>Interface forms <small>by interface, with their sizing</small></summary><div class="body">${ifInterfacesHTML(jkey)}</div>`;
+    kids.push(d); }
+  if(jkey==="daimochi"&&panel.id!=="otherpanel"&&!kids.some(n=>ifPanelTitle(n)==="Validation")){
+    const d=document.createElement("details");
+    d.innerHTML=`<summary>Validation <small>against Wang's model and tests</small></summary><div class="body">${DAIMOCHI_VALIDATION}</div>`;
+    kids.push(d); }
   if(!kids.some(n=>ifPanelTitle(n)==="Assembly")){
     const d=document.createElement("details");
     d.innerHTML=`<summary>Assembly <small>how the components go together</small></summary><div class="body"><div class="asm"></div></div>`;
@@ -4845,8 +4943,17 @@ new MutationObserver(recs=>{ recs.forEach(r=>{ const t=r.target.nodeType===3?r.t
   if(RO_PENDING.size===1) requestAnimationFrame(()=>{ const ts=[...RO_PENDING]; RO_PENDING=new Set(); ts.forEach(t=>{ if(t.isConnected) roItalic(t); }); }); })
   .observe(document.body,{childList:true,subtree:true,characterData:true});
 let IF_LINK_PENDING=false;
+function ifTagSteps(){
+  document.querySelectorAll(".mk2 > div:last-child, .asm li, #rreplist li, #replist li").forEach(el=>{
+    const ids=[...new Set([...el.querySelectorAll("a.flink")].map(a=>a.getAttribute("href").slice(6)))];
+    const key=ids.join(","), have=el.querySelector(":scope > .iftags-row");
+    if(have&&have.dataset.k===key) return; if(have) have.remove(); if(!ids.length) return;
+    const row=document.createElement("span"); row.className="iftags-row"; row.dataset.k=key;
+    row.innerHTML=ids.map(id=>`<a class="iftag" href="#form-${id}" style="--fc:${IF_COL[id]||"#999"}">${IF[id].en}</a>`).join("");
+    el.appendChild(row); });
+}
 new MutationObserver(()=>{ if(IF_LINK_PENDING) return; IF_LINK_PENDING=true;
-  requestAnimationFrame(()=>{ IF_LINK_PENDING=false; document.querySelectorAll(IF_LINK_IN).forEach(ifLinkText); }); })
+  requestAnimationFrame(()=>{ IF_LINK_PENDING=false; document.querySelectorAll(IF_LINK_IN).forEach(ifLinkText); ifTagSteps(); }); })
   .observe(document.body,{childList:true,subtree:true,characterData:true});
 new MutationObserver(()=>fillAssembly()).observe(document.getElementById("derived"),{childList:true,subtree:true});
 /* ---------- the 3D view: each interface form in its colour ---------- */
