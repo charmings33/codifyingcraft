@@ -4504,7 +4504,7 @@ const IF_SCHEMATIC=new Set(["hako","eri"]);
 const IF_CAPTION={shachi:"A's long tenon fully home in B; two tapered keys above their slots, each slot half in the tenon and half in the mortise wall; red marks the slots and keys.",
   sao:"The long tenon and its mortise, apart; each key slot is half in the tenon's side and half in the mortise wall, the wall's half 3 mm further in, so a driven key draws the tenon home.",
   kusabi:"A through tenon kerfed at its end, with two wedges to drive in from the far side; red marks the kerfs and wedges."};
-function ifImg(id,cls){ return `<figure class="${cls||"ifimg"}" data-if="${id}"><img src="forms/form_${id}.png" alt="${IF[id].en}: a sample joint, its components apart, the interface form outlined in red. Click to explore it in 3D." title="Click to explore in 3D" loading="lazy">`+
+function ifImg(id,cls){ return `<figure class="${cls||"ifimg"}" data-if="${id}"><img src="forms/form_${id}.png?v=${ASSET_V}" alt="${IF[id].en}: a sample joint, its components apart, the interface form outlined in red. Click to explore it in 3D." title="Click to explore in 3D" loading="lazy">`+
   `<figcaption>${IF_SCHEMATIC.has(id)?"Schematic, our reading; not checked against a source drawing.":(IF_CAPTION[id]||"A minimal sample, components apart; red marks the interface form.")} Click to turn it in 3D and move its parts.</figcaption></figure>`; }
 const IF_NORULE={shachi:"No size rule found. Urakubo et al. (AIJ 2024) tested one long tenon with keys at W = 120 (see Keyed long tenon); the key and key-slot sizes they report have not been read here. The kanawa's lock is modelled as a 栓, so its key rules are under Peg, pin."};
 const IF_DEF={tsuki:"A face of one component bearing flat against another: the end of a member, or the shoulder (胴付き) at the root of a tenon."};
@@ -4512,7 +4512,9 @@ function ifName(id,short){ const f=IF[id]; return short?`${f.en} ${f.kj}`:`${f.e
 
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
-const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png`]));
+// a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
+const ASSET_V="20261008225701";
+const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto pegs.",
   aritsugi:"A dovetail on a seat: the upper element drops into a top-open socket.",
@@ -4657,7 +4659,7 @@ function fillAssembly(){
    The geometry is the sample the picture was drawn from (forms/samples.json):
    each component's triangles and edges, with the interface form's marked. */
 let IF_SAMPLES=null; const IFV={fig:null};
-async function ifSamples(){ if(!IF_SAMPLES) IF_SAMPLES=await (await fetch("forms/samples.json")).json(); return IF_SAMPLES; }
+async function ifSamples(){ if(!IF_SAMPLES) IF_SAMPLES=await (await fetch(`forms/samples.json?v=${ASSET_V}`)).json(); return IF_SAMPLES; }
 function ifvClose(){
   if(!IFV.fig) return;
   cancelAnimationFrame(IFV.raf); IFV.ro&&IFV.ro.disconnect();
