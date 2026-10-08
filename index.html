@@ -367,7 +367,7 @@ header p.authors{font-size:calc(13px*.625)}
   <p class="authors">Ming Shan (Charmaine) Ng, Esmaeil Ghorbani, Akaneh Wang, Jürgen Hackl</p>
 </header>
 <div class="jointsel" id="jointsel" role="group" aria-label="Choose a joint">
-  <button data-home aria-pressed="false" onclick="location.hash='home'"><span class="jp">基本形</span>Overview</button>
+  <button data-home aria-pressed="false" onclick="location.hash='home'"><span class="jp">基本形</span>Interface Forms</button>
   <button data-joint="daimochi" aria-pressed="true"><span class="jp">台持継</span>Daimochi Tsugi</button>
   <button data-joint="aritsugi" aria-pressed="false"><span class="jp">腰掛蟻継</span>Koshikake Ari Tsugi</button>
   <button data-joint="kamatsugi" aria-pressed="false"><span class="jp">腰掛鎌継</span>Koshikake Kama Tsugi</button>
@@ -4673,7 +4673,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009024223";
+const ASSET_V="20261009024400";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
