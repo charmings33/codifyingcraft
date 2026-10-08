@@ -1,0 +1,150 @@
+{
+  "references": [
+    {
+      "joint": "daimochi",
+      "variant": "usual form",
+      "kind": "drawing (line render, components apart)",
+      "image": "cards/card_daimochi.png",
+      "name": "台持継 daimochi tsugi",
+      "made": "viewer/cards, drawn from the specs"
+    },
+    {
+      "joint": "aritsugi",
+      "variant": "usual form",
+      "kind": "drawing (line render, components apart)",
+      "image": "cards/card_aritsugi.png",
+      "name": "腰掛蟻継 koshikake ari tsugi",
+      "made": "viewer/cards, drawn from the specs"
+    },
+    {
+      "joint": "kamatsugi",
+      "variant": "usual form",
+      "kind": "drawing (line render, components apart)",
+      "image": "cards/card_kamatsugi.png",
+      "name": "腰掛鎌継 koshikake kama tsugi",
+      "made": "viewer/cards, drawn from the specs"
+    },
+    {
+      "joint": "kanawa",
+      "variant": "usual form",
+      "kind": "drawing (line render, components apart)",
+      "image": "cards/card_kanawa.png",
+      "name": "金輪継 kanawa tsugi",
+      "made": "viewer/cards, drawn from the specs"
+    },
+    {
+      "joint": "okkake",
+      "variant": "usual form",
+      "kind": "drawing (line render, components apart)",
+      "image": "cards/card_okkake.png",
+      "name": "追掛大栓継 okkake daisen tsugi",
+      "made": "viewer/cards, drawn from the specs"
+    },
+    {
+      "joint": "daimochi",
+      "variant": "dowels, no support",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/daimochi__dowels.png",
+      "name": "台持継 daimochi tsugi",
+      "made": "the joint page's Interface forms view, variant set with None, Dowels"
+    },
+    {
+      "joint": "daimochi",
+      "variant": "through draw pegs, no support",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/daimochi__draw_pegs.png",
+      "name": "台持継 daimochi tsugi",
+      "made": "the joint page's Interface forms view, variant set with None, Through draw pins"
+    },
+    {
+      "joint": "daimochi",
+      "variant": "dowels, post below",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/daimochi__post_below.png",
+      "name": "台持継 daimochi tsugi",
+      "made": "the joint page's Interface forms view, variant set with Post below, tenon through, Dowels"
+    },
+    {
+      "joint": "daimochi",
+      "variant": "dowels, beam below",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/daimochi__beam_below.png",
+      "name": "台持継 daimochi tsugi",
+      "made": "the joint page's Interface forms view, variant set with Beam below, Dowels"
+    },
+    {
+      "joint": "daimochi",
+      "variant": "dowels, post above",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/daimochi__post_above.png",
+      "name": "台持継 daimochi tsugi",
+      "made": "the joint page's Interface forms view, variant set with Post above, stub tenon, Dowels"
+    },
+    {
+      "joint": "aritsugi",
+      "variant": "plain",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/aritsugi__plain.png",
+      "name": "腰掛蟻継 koshikake ari tsugi",
+      "made": "the joint page's Interface forms view, variant set with None"
+    },
+    {
+      "joint": "aritsugi",
+      "variant": "with 目違い",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/aritsugi__mechigai.png",
+      "name": "腰掛蟻継 koshikake ari tsugi",
+      "made": "the joint page's Interface forms view, variant set with 目違い付"
+    },
+    {
+      "joint": "kamatsugi",
+      "variant": "plain",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/kamatsugi__plain.png",
+      "name": "腰掛鎌継 koshikake kama tsugi",
+      "made": "the joint page's Interface forms view, variant set with Plain"
+    },
+    {
+      "joint": "kanawa",
+      "variant": "locked, 栓 peg",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/kanawa__locked.png",
+      "name": "金輪継 kanawa tsugi",
+      "made": "the joint page's Interface forms view, variant set with 栓 pin"
+    },
+    {
+      "joint": "kanawa",
+      "variant": "plain",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/kanawa__plain.png",
+      "name": "金輪継 kanawa tsugi",
+      "made": "the joint page's Interface forms view, variant set with None"
+    },
+    {
+      "joint": "okkake",
+      "variant": "locked, two 込栓 pegs",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/okkake__locked.png",
+      "name": "追掛大栓継 okkake daisen tsugi",
+      "made": "the joint page's Interface forms view, variant set with 込栓 draw pins × 2"
+    },
+    {
+      "joint": "okkake",
+      "variant": "plain",
+      "kind": "render (components apart, interface forms tinted)",
+      "image": "library/okkake__plain.png",
+      "name": "追掛大栓継 okkake daisen tsugi",
+      "made": "the joint page's Interface forms view, variant set with None"
+    }
+  ],
+  "not_imaged": [
+    {
+      "joint": "kamatsugi",
+      "variant": "with 込栓 peg"
+    },
+    {
+      "joint": "kamatsugi",
+      "variant": "with 目違い notch"
+    }
+  ]
+}

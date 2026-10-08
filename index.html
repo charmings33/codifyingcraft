@@ -6,20 +6,22 @@
 <title>Codifying Craft</title>
 <style>
 :root{
+  --fs-title:25px; --fs-large:20px; --fs-body:14px; --fs-small:10px;
+  --lh-title:1.2; --lh-large:1.25; --lh-body:1.5; --lh-small:1.4;
   --plaster:#FFFFFF; --paper:#FFFFFF; --ink:#1C2321; --muted:#5C6763;
-  --ai:#2B4C7E; --hinoki:#E2C38F; --sugi:#B98D57; --kashi:#5E4630; --warn:#9A6A00; --fail:#A33327;
+  --ai:#2B4C7E; --hinoki:#E2C38F; --sugi:#B98D57; --kashi:#5E4630; --warn:#7A5400; --fail:#A33327;
   /* Helvetica Neue throughout (regular, bold, italic): both roles use it */
   --serif:"Helvetica Neue",Helvetica,Arial,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
   --sans:"Helvetica Neue",Helvetica,Arial,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--plaster);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+html,body{margin:0;background:var(--plaster);color:var(--ink);font-family:var(--sans);font-size:var(--fs-body);line-height:var(--lh-body)}
 a{color:var(--ai)}
 header{padding:20px 18px 6px;max-width:1200px;margin:0 auto}
-h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,6vw,46px);line-height:1.05;margin:0}
-h1 .jp{display:block;font-size:.62em;color:var(--ai);letter-spacing:.08em;margin-bottom:4px}
+h1{font-family:var(--serif);font-weight:400;font-size:var(--fs-title);line-height:var(--lh-title);margin:0}
+h1 .jp{display:block;font-size:inherit;color:var(--ai);letter-spacing:.08em;margin-bottom:4px}
 header p{max-width:62ch;color:var(--muted);margin:10px 0 0}
-header p.authors{font-size:13px;margin:6px 0 0;letter-spacing:.01em}
+header p.authors{font-size:var(--fs-small);line-height:var(--lh-small);margin:6px 0 0;letter-spacing:.01em}
 main{max-width:1200px;margin:0 auto;padding:10px 16px 14px;display:grid;gap:14px}
 [hidden]{display:none !important}   /* a display rule must never show what is hidden */
 @media(min-width:960px){main{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
@@ -28,219 +30,219 @@ main{max-width:1200px;margin:0 auto;padding:10px 16px 14px;display:grid;gap:14px
 #view{width:100%;height:min(58vh,460px);display:block;touch-action:none;cursor:grab;background:#FFFFFF}
 .marking{border-top:1px solid #CDD3D0;padding:6px 8px 2px;background:var(--paper)}
 .marking svg{width:100%;height:auto;display:block}
-.cap{font-size:12px;color:var(--muted);padding:0 10px 8px;margin:0}
+.cap{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);padding:0 10px 8px;margin:0}
 .seq{display:flex;gap:6px;flex-wrap:wrap;padding:10px;border-top:1px solid #CDD3D0}
 .seq button{flex:1 1 30%;min-width:96px}
-.seqtext{padding:0 10px 12px;margin:0;font-family:var(--serif);font-size:16px;min-height:3.2em}
-button,.btn{font:inherit;font-size:13px;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:7px 10px;border-radius:2px;cursor:pointer;text-align:left}
+.seqtext{padding:0 10px 12px;margin:0;font-family:var(--serif);font-size:var(--fs-body);line-height:var(--lh-body);min-height:3.2em}
+button,.btn{font:inherit;font-size:var(--fs-body);line-height:var(--lh-body);border:1px solid var(--ink);background:transparent;color:var(--ink);padding:7px 10px;border-radius:2px;cursor:pointer;text-align:left}
 button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--ai);outline-offset:2px}
 .panel{background:var(--paper);border:1px solid #CDD3D0;border-radius:3px}
 details{border-top:1px solid #DDE2DF}
 details:first-of-type{border-top:0}
-summary{cursor:pointer;padding:12px 14px;font-family:var(--serif);font-size:19px;list-style:none;display:flex;justify-content:space-between;align-items:baseline}
+summary{cursor:pointer;padding:12px 14px;font-family:var(--serif);font-size:var(--fs-large);line-height:var(--lh-large);list-style:none;display:flex;justify-content:space-between;align-items:baseline}
 summary::-webkit-details-marker{display:none}
-.readsec .readhead{padding:12px 14px 4px;font-family:var(--serif);font-size:19px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.readsec .readhead label.btn{font-family:var(--sans);font-size:14px;padding:6px 12px;background:#fff;white-space:nowrap}
+.readsec .readhead{padding:12px 14px 4px;font-family:var(--serif);font-size:var(--fs-large);line-height:var(--lh-large);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.readsec .readhead label.btn{font-family:var(--sans);font-size:var(--fs-body);line-height:var(--lh-body);padding:6px 12px;background:#fff;white-space:nowrap}
 .readsec .readhead input[type=file]{position:absolute;left:-9999px}
 .readsec + details{border-top:1px solid #DDE2DF}
-summary small{font-family:var(--sans);font-size:12px;color:var(--muted)}
+summary small{font-family:var(--sans);font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
 .body{padding:0 14px 14px}
 .presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .param{padding:10px 0;border-bottom:1px dotted #C9D0CC}
 .param:last-child{border-bottom:0}
 .prow{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.prow label{font-weight:600;font-size:14px}
-.val{font-variant-numeric:tabular-nums;font-size:14px}
+.prow label{font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)}
+.val{font-variant-numeric:tabular-nums;font-size:var(--fs-body);line-height:var(--lh-body)}
 .track{position:relative;margin-top:6px}
 input[type=range]{width:100%;accent-color:var(--ai);margin:6px 0 2px}
 .ticks{position:relative;height:16px}
-.tick{position:absolute;top:0;transform:translateX(-50%);font-size:10px;color:var(--ai);white-space:nowrap}
+.tick{position:absolute;top:0;transform:translateX(-50%);font-size:var(--fs-small);line-height:var(--lh-small);color:var(--ai);white-space:nowrap}
 .tick::before{content:"";display:block;width:1px;height:6px;background:var(--ai);margin:0 auto 1px}
-.src{font-size:12px;color:var(--muted);margin:2px 0 0}
-.units{display:flex;gap:6px;align-items:center;font-size:13px;margin-bottom:6px}
+.src{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin:2px 0 0}
+.units{display:flex;gap:6px;align-items:center;font-size:var(--fs-small);line-height:var(--lh-small);margin-bottom:6px}
 ul.checks{list-style:none;margin:0;padding:0}
-ul.checks li{display:grid;grid-template-columns:52px 1fr;gap:8px;padding:8px 0;border-bottom:1px dotted #C9D0CC;font-size:14px}
-.st{font-weight:700;font-size:12px}
+ul.checks li{display:grid;grid-template-columns:52px 1fr;gap:8px;padding:8px 0;border-bottom:1px dotted #C9D0CC;font-size:var(--fs-body);line-height:var(--lh-body)}
+.st{font-weight:700;font-size:var(--fs-small);line-height:var(--lh-small)}
 .pass{color:#2E6B3F}.warn{color:var(--warn)}.fail{color:var(--fail)}
-.verdict{font-family:var(--serif);font-size:17px;margin:4px 0 8px}
-table{border-collapse:collapse;width:100%;font-size:13px}
+.verdict{font-family:var(--serif);font-size:var(--fs-body);line-height:var(--lh-body);margin:4px 0 8px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-body);line-height:var(--lh-body)}
 th,td{text-align:left;padding:6px 4px;border-bottom:1px solid #DDE2DF;vertical-align:top}
 th{font-weight:600}
-.note{font-size:12px;color:var(--muted)}
-.prose p{max-width:62ch;margin:0 0 10px;font-family:var(--serif);font-size:16px;line-height:1.6}
-ol.srcs{padding-left:20px;margin:0;font-size:13px}
+.note{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
+.prose p{max-width:62ch;margin:0 0 10px;font-family:var(--serif);font-size:var(--fs-body);line-height:var(--lh-body)}
+ol.srcs{padding-left:20px;margin:0;font-size:var(--fs-small);line-height:var(--lh-small)}
 ol.srcs li{margin-bottom:6px}
 .dl{display:flex;gap:6px;flex-wrap:wrap}
 .kopwrap{max-width:1200px;margin:0 auto;padding:0 12px 40px}
 .kop{background:var(--paper);border:1px solid #CDD3D0;border-radius:3px;padding:16px 14px}
-.kop h2{font-family:var(--serif);font-weight:400;font-size:clamp(22px,4vw,30px);margin:0 0 4px}
+.kop h2{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 4px}
 .kop>p{max-width:70ch;color:var(--muted);margin:0 0 12px}
 .lanes{display:none}
-@media(min-width:900px){.lanes{display:grid;grid-template-columns:150px repeat(3,1fr);gap:0;border-bottom:1px solid var(--ink);padding-bottom:6px;margin-bottom:2px;font-weight:600;font-size:13px}}
+@media(min-width:900px){.lanes{display:grid;grid-template-columns:150px repeat(3,1fr);gap:0;border-bottom:1px solid var(--ink);padding-bottom:6px;margin-bottom:2px;font-weight:600;font-size:var(--fs-small);line-height:var(--lh-small)}}
 .lane-h{display:flex;align-items:center;gap:6px}
 .sw{width:10px;height:10px;display:inline-block;border-radius:1px}
 .stage-row{border-top:1px solid #DDE2DF}
-.stage-row>summary{font-size:17px;padding:10px 0}
-.stage-row>summary span.diff{font-family:var(--sans);font-size:12px;color:var(--muted);text-align:right;max-width:55%}
+.stage-row>summary{font-size:var(--fs-large);line-height:var(--lh-large);padding:10px 0}
+.stage-row>summary span.diff{font-family:var(--sans);font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);text-align:right;max-width:55%}
 .cells{display:grid;gap:8px;padding:0 0 12px}
 @media(min-width:900px){.cells{grid-template-columns:150px repeat(3,1fr);gap:12px}.cells .stage-note{grid-column:1}}
-.cell{border-left:3px solid;padding:2px 0 2px 10px;font-size:13.5px}
-.cell h4{margin:0 0 2px;font-size:12px;font-weight:600;color:var(--muted)}
+.cell{border-left:3px solid;padding:2px 0 2px 10px;font-size:var(--fs-body);line-height:var(--lh-body)}
+.cell h4{margin:0 0 2px;font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;color:var(--muted)}
 .cell p{margin:0 0 4px}
-.cell .meta{font-size:12px;color:var(--muted)}
+.cell .meta{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
 .cell.empty{opacity:.55}
 .c-hand{border-color:#B98D57}.c-cnc{border-color:#2B4C7E}.c-gen{border-color:#5E7D6A}
-.stage-note{font-size:12px;color:var(--muted)}
+.stage-note{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
 .rules{margin-top:14px}
 .rules table td:first-child{font-weight:600;width:22%}
 .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.chip{font-size:11px;border:1px solid #C9D0CC;border-radius:2px;padding:1px 5px 1px 4px;display:inline-flex;align-items:center;gap:4px;background:#fff;cursor:pointer}
+.chip{font-size:var(--fs-small);line-height:var(--lh-small);border:1px solid #C9D0CC;border-radius:2px;padding:1px 5px 1px 4px;display:inline-flex;align-items:center;gap:4px;background:#fff;cursor:pointer}
 .chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .pa{margin-top:16px;border-top:1px solid var(--ink);padding-top:12px}
-.pa h3{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 4px}
+.pa h3{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 4px}
 .pa-grid{display:grid;gap:14px}
 @media(min-width:900px){.pa-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 #pa-net{width:100%;height:auto;display:block;background:#fff;border:1px solid #DDE2DF}
 .pa-filter{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;margin:6px 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:var(--fs-small);line-height:var(--lh-small);margin:6px 0}
 .legend span{display:inline-flex;align-items:center;gap:4px}
 .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
-#pa-rec{font-size:13.5px;min-height:5em}
-#pa-rec h4{font-family:var(--serif);font-weight:400;font-size:18px;margin:0 0 4px}
-.deps li{font-size:13px;margin-bottom:6px}
-.flag{font-size:11px;border:1px dashed var(--warn);color:var(--warn);padding:0 4px;border-radius:2px}
-.tchip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;border:1px solid #C9D0CC;background:#fff;border-radius:2px;padding:1px 6px 1px 3px;margin:0 4px 4px 0;cursor:pointer}
+#pa-rec{font-size:var(--fs-body);line-height:var(--lh-body);min-height:5em}
+#pa-rec h4{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 4px}
+.deps li{font-size:var(--fs-body);line-height:var(--lh-body);margin-bottom:6px}
+.flag{font-size:var(--fs-small);line-height:var(--lh-small);border:1px dashed var(--warn);color:var(--warn);padding:0 4px;border-radius:2px}
+.tchip{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-small);line-height:var(--lh-small);border:1px solid #C9D0CC;background:#fff;border-radius:2px;padding:1px 6px 1px 3px;margin:0 4px 4px 0;cursor:pointer}
 .tchip svg,.ticon svg{width:18px;height:18px;stroke:#1C2321;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .tools-row{margin-top:4px}
 .tools{margin-top:16px;border-top:1px solid var(--ink);padding-top:12px}
-.tools h3{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 4px}
+.tools h3{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 4px}
 .tgrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin-top:8px}
-.tcard{border:1px solid #DDE2DF;background:#fff;padding:8px 10px;display:grid;grid-template-columns:40px 1fr;gap:8px;font-size:13px}
+.tcard{border:1px solid #DDE2DF;background:#fff;padding:8px 10px;display:grid;grid-template-columns:40px 1fr;gap:8px;font-size:var(--fs-body);line-height:var(--lh-body)}
 .tcard.dim{opacity:.25}
 .tcard.sel{outline:2px solid var(--ai)}
 .ticon{width:40px;height:40px;border:1px solid #C9D0CC;display:flex;align-items:center;justify-content:center;background:var(--paper)}
 .ticon svg{width:28px;height:28px}
-.tcard b{font-size:13.5px}
-.tcard .k{font-size:11.5px;color:var(--muted)}
+.tcard b{font-size:var(--fs-body);line-height:var(--lh-body)}
+.tcard .k{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
 .rdots{display:inline-flex;gap:3px;margin-left:4px;vertical-align:middle}
 .rdots i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .cfg{margin:0 0 6px}
-.cfg h4{font-size:12px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+.cfg h4{font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;color:var(--muted);margin:10px 0 4px}
 .cfg .opts{display:flex;flex-wrap:wrap;gap:6px}
 .cfg .src{margin-top:3px}
 .zones{position:relative;height:8px;border-radius:2px;background:#E7CFCB;margin:2px 0 0;overflow:hidden}
 .zones i{position:absolute;top:0;bottom:0}
 .zones .zf{background:#D3E2D6}
 .zones .zd{background:rgba(43,76,126,.55)}
-.zonekey{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;color:var(--muted);margin:4px 0 8px}
+.zonekey{display:flex;flex-wrap:wrap;gap:10px;font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin:4px 0 8px}
 .zonekey span{display:inline-flex;align-items:center;gap:4px}
 .zonekey b{display:inline-block;width:14px;height:8px;border-radius:2px}
 .idots{position:relative;height:12px}
 .idot{position:absolute;top:2px;width:8px;height:8px;border-radius:50%;background:#B98D57;border:1px solid #1C2321;transform:translateX(-50%)}
 ul.inst{list-style:none;margin:0;padding:0}
-ul.inst li{border-bottom:1px dotted #C9D0CC;padding:8px 0;font-size:13.5px;display:grid;grid-template-columns:1fr auto;gap:8px}
-ul.inst .k{font-size:12px;color:var(--muted)}
-.near{font-family:var(--serif);font-size:16px;margin:2px 0 8px}
-.xray{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin:0 10px 8px}
-.rulerow{font-size:12px;color:var(--muted);margin:2px 0 4px}.rulerow select{font:inherit;font-size:12.5px;padding:2px 4px;max-width:100%}
+ul.inst li{border-bottom:1px dotted #C9D0CC;padding:8px 0;font-size:var(--fs-body);line-height:var(--lh-body);display:grid;grid-template-columns:1fr auto;gap:8px}
+ul.inst .k{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
+.near{font-family:var(--serif);font-size:var(--fs-body);line-height:var(--lh-body);margin:2px 0 8px}
+.xray{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-small);line-height:var(--lh-small);margin:0 10px 8px}
+.rulerow{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin:2px 0 4px}.rulerow select{font:inherit;font-size:var(--fs-body);line-height:var(--lh-body);padding:2px 4px;max-width:100%}
 .upl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
-.upl label.btn{display:inline-block;border:1px solid var(--ink);padding:6px 12px;cursor:pointer;font-size:14px;background:#fff}
+.upl label.btn{display:inline-block;border:1px solid var(--ink);padding:6px 12px;cursor:pointer;font-size:var(--fs-body);line-height:var(--lh-body);background:#fff}
 .upl input[type=file]{position:absolute;left:-9999px}
 #drawcv{width:100%;height:auto;border:1px solid #C9D0CC;touch-action:none;background:#fff;display:block}
 .tools2{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .tools2 button[aria-pressed=true]{background:var(--ink);color:#fff}
-.inrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13.5px;margin:6px 0}
+.inrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:var(--fs-body);line-height:var(--lh-body);margin:6px 0}
 .inrow input[type=number]{width:90px;font:inherit;padding:3px}
 .inrow select{font:inherit;padding:3px}
-#readstat{font-size:13.5px;margin:6px 0;min-height:1.4em}
-table.readres{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+#readstat{font-size:var(--fs-body);line-height:var(--lh-body);margin:6px 0;min-height:1.4em}
+table.readres{width:100%;border-collapse:collapse;font-size:var(--fs-body);line-height:var(--lh-body);margin-top:6px}
 table.readres td,table.readres th{border-bottom:1px dotted #C9D0CC;padding:4px 4px;text-align:left;vertical-align:top}
-.lvl{font-size:11.5px;padding:1px 6px;border-radius:2px;white-space:nowrap}
+.lvl{font-size:var(--fs-small);line-height:var(--lh-small);padding:1px 6px;border-radius:2px;white-space:nowrap}
 .lvl.read{background:#D3E2D6}.lvl.stated{background:#CFDCEE}.lvl.rule{background:#ECE3D2}.lvl.default{background:#E7CFCB}.lvl.hand{background:#E0D6EE}
-.derived{padding:4px 10px 12px;font-size:13.5px}
+.derived{padding:4px 10px 12px;font-size:var(--fs-body);line-height:var(--lh-body)}
 .derived p{margin:2px 0 6px}
-.olab{font-weight:600;font-size:12px;color:var(--muted);margin-top:10px!important}
-.ochip{display:inline-block;border:1px solid #1C2321;background:#fff;padding:1px 8px;margin:2px 2px;font-size:12.5px}
+.olab{font-weight:600;font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin-top:10px!important}
+.ochip{display:inline-block;border:1px solid #1C2321;background:#fff;padding:1px 8px;margin:2px 2px;font-size:var(--fs-small);line-height:var(--lh-small)}
 .oarr{color:#9A3B2E;font-weight:600}
 ul.oedges{margin:2px 0 6px;padding-left:18px}
 .cfgc{padding:4px 10px 6px;border-top:1px solid #CDD3D0}
 .cfgc .cfg{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:3px 0}
-.cfgc .cfg h4{flex:0 0 78px;margin:0;font-size:11px;font-weight:600;color:var(--muted)}
+.cfgc .cfg h4{flex:0 0 78px;margin:0;font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;color:var(--muted)}
 .cfgc .opts{display:flex;flex-wrap:wrap;gap:4px;flex:1 1 0}
-.cfgc button{font-size:11.5px;padding:3px 7px;min-height:0;line-height:1.3}
+.cfgc button{font-size:var(--fs-small);line-height:var(--lh-small);padding:3px 7px;min-height:0}
 .cfgc .src{display:none}
-.cfgsrc{font-size:11px;color:var(--muted);margin:4px 0 0}
+.cfgsrc{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin:4px 0 0}
 .seq{flex-wrap:nowrap!important;gap:3px!important;padding:6px 8px!important;overflow-x:auto}
-.seq button{flex:1 1 0!important;min-width:0!important;font-size:11px;padding:4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seq button{flex:1 1 0!important;min-width:0!important;font-size:var(--fs-small);line-height:var(--lh-small);padding:4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #mark{width:100%;height:auto;display:block}
 .secwrap{border:1px solid #CDD3D0;background:#fff;overflow:hidden}
 #secsvg{width:100%;height:auto;display:block;touch-action:none;cursor:grab;aspect-ratio:59800/33000}
 #secsvg.panning{cursor:grabbing}
 .sec *{vector-effect:non-scaling-stroke}
 .secctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 6px}
-.secctl button{font-size:12px;padding:3px 8px}
+.secctl button{font-size:var(--fs-small);line-height:var(--lh-small);padding:3px 8px}
 #secsvg.djon .A-DAIMOCHI{stroke:#C0392B;stroke-width:2}
 .dj{cursor:pointer}
 .dj circle{animation:djpulse 1.6s ease-in-out infinite}
 .dj:focus circle,.dj.sel circle{fill:rgba(192,57,43,.2)}
 @keyframes djpulse{0%,100%{stroke-opacity:1}50%{stroke-opacity:.35}}
 @media (prefers-reduced-motion:reduce){.dj circle{animation:none}}
-.rc-stat{font-size:14px;font-weight:600;margin:8px 0}
-.rc-in{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:12.5px;margin:6px 0}
+.rc-stat{font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;margin:8px 0}
+.rc-in{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:var(--fs-body);line-height:var(--lh-body);margin:6px 0}
 .rc-in input{width:70px;font:inherit;padding:2px 4px}
 .rmctl button[aria-pressed=true]{background:var(--ink);color:#fff}
-ul.inst button{align-self:start;font-size:12px;padding:3px 8px;white-space:nowrap}
+ul.inst button{align-self:start;font-size:var(--fs-small);line-height:var(--lh-small);padding:3px 8px;white-space:nowrap}
 .occ{margin:6px 0 10px}
-.occrow{display:grid;grid-template-columns:150px 1fr 110px;gap:8px;align-items:center;font-size:12.5px;margin:4px 0}
+.occrow{display:grid;grid-template-columns:150px 1fr 110px;gap:8px;align-items:center;font-size:var(--fs-body);line-height:var(--lh-body);margin:4px 0}
 .occbar{height:10px;background:#E6EAE7;border-radius:2px;overflow:hidden}
 .occbar i{display:block;height:100%;background:#B98D57}
-.occval{font-size:12px;color:var(--muted)}
-.occh{font-family:var(--serif);font-weight:400;font-size:16px;margin:12px 0 2px}
+.occval{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
+.occh{font-family:var(--serif);font-weight:400;font-size:var(--fs-body);line-height:var(--lh-body);margin:12px 0 2px}
 .rep{margin:8px 0 2px}
 .rep li{margin:4px 0}
-.rep button{font-size:11.5px;padding:2px 8px;margin-left:6px}
+.rep button{font-size:var(--fs-small);line-height:var(--lh-small);padding:2px 8px;margin-left:6px}
 .evid li{list-style:none;margin-left:-18px}
-.etag{display:inline-block;font-size:11px;background:#E6EAE7;border-radius:2px;padding:0 6px;margin-right:4px;color:#3E4744}
+.etag{display:inline-block;font-size:var(--fs-small);line-height:var(--lh-small);background:#E6EAE7;border-radius:2px;padding:0 6px;margin-right:4px;color:#3E4744}
 .jointsel{display:flex;flex-wrap:wrap;gap:6px;max-width:1200px;margin:12px auto 0;padding:0 18px}
-.jointsel button{font-size:13.5px;padding:7px 12px}
+.jointsel button{font-size:var(--fs-small);line-height:var(--lh-small);padding:7px 12px}
 .jointsel button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
-.jointsel .jp{font-size:.92em;letter-spacing:.06em;margin-right:5px}
-.gap{border-left:3px solid #C9D0CC;padding:2px 0 2px 10px;margin:6px 0;font-size:13px;color:var(--muted)}
-.kv{display:grid;grid-template-columns:minmax(7em,1fr) minmax(0,auto);gap:2px 10px;font-size:13.5px}
+.jointsel .jp{font-size:inherit;letter-spacing:.06em;margin-right:5px}
+.gap{border-left:3px solid #C9D0CC;padding:2px 0 2px 10px;margin:6px 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--muted)}
+.kv{display:grid;grid-template-columns:minmax(7em,1fr) minmax(0,auto);gap:2px 10px;font-size:var(--fs-body);line-height:var(--lh-body)}
 .kv > span{min-width:0;overflow-wrap:anywhere}
 .kv span:nth-child(even){font-variant-numeric:tabular-nums}
 .kv.wide{grid-template-columns:max-content minmax(0,1fr)}
-.prov li{font-size:13px;margin-bottom:5px}
-.srcfoot{font-size:10.5px;line-height:1.45;color:var(--muted);padding:10px 14px 14px;border-top:1px solid #DDE2DF}
+.prov li{font-size:var(--fs-body);line-height:var(--lh-body);margin-bottom:5px}
+.srcfoot{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);padding:10px 14px 14px;border-top:1px solid #DDE2DF}
 .srcfoot li{margin-bottom:4px}
 .specdot{position:absolute;top:2px;width:8px;height:8px;border-radius:50%;background:#B98D57;border:1px solid #1C2321;transform:translateX(-50%)}
-.mk{display:grid;grid-template-columns:150px 1fr 1fr 1fr;gap:8px 12px;align-items:start;font-size:12.5px;border-top:1px dotted #CDD3D0;padding:8px 0}
+.mk{display:grid;grid-template-columns:150px 1fr 1fr 1fr;gap:8px 12px;align-items:start;font-size:var(--fs-body);line-height:var(--lh-body);border-top:1px dotted #CDD3D0;padding:8px 0}
 .mk svg{width:100%;height:auto;display:block;background:#fff;border:1px solid #E1E5E3}
-.mk h5{margin:0 0 2px;font-size:12.5px}
-.mk .src{font-size:11px;color:var(--muted)}
-.mklab{display:none;font-size:11px;font-weight:600;color:var(--muted)}
-.mkhead{display:grid;grid-template-columns:150px 1fr 1fr 1fr;gap:12px;font-size:11.5px;font-weight:600;color:var(--muted)}
-.same{font-size:11px;color:#2E6B3F}.diff{font-size:11px;color:#B07A1E}
+.mk h5{margin:0 0 2px;font-size:var(--fs-body);line-height:var(--lh-body)}
+.mk .src{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
+.mklab{display:none;font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;color:var(--muted)}
+.mkhead{display:grid;grid-template-columns:150px 1fr 1fr 1fr;gap:12px;font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;color:var(--muted)}
+.same{font-size:var(--fs-small);line-height:var(--lh-small);color:#2E6B3F}.diff{font-size:var(--fs-small);line-height:var(--lh-small);color:#B07A1E}
 @media (max-width:600px){.mk,.mkhead{grid-template-columns:1fr}.mkhead{display:none}.mklab{display:block}}
-.mk2{display:grid;grid-template-columns:170px 1fr;gap:12px;align-items:start;font-size:13px;border-top:1px dotted #CDD3D0;padding:8px 0}
+.mk2{display:grid;grid-template-columns:170px 1fr;gap:12px;align-items:start;font-size:var(--fs-body);line-height:var(--lh-body);border-top:1px dotted #CDD3D0;padding:8px 0}
 .mk2 svg{width:100%;height:auto;display:block;background:#fff;border:1px solid #E1E5E3}
-.mk2 h5{margin:0 0 3px;font-size:13px}
+.mk2 h5{margin:0 0 3px;font-size:var(--fs-body);line-height:var(--lh-body)}
 .tools{display:flex;flex-wrap:wrap;gap:3px;margin:0 0 3px}
 .tl{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;color:#1C2321;border:1px solid transparent;border-radius:3px}
 .tl.inf{border:1px dotted #555}
-.tlegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--muted);margin:2px 0 10px}
+.tlegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin:2px 0 10px}
 .tlegend span{display:inline-flex;align-items:center;gap:4px}
-.camchips{margin:4px 0 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:11.5px}
+.camchips{margin:4px 0 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:var(--fs-small);line-height:var(--lh-small)}
 .camchip{background:#EEF1F0}
-.camprog{font-size:11.5px;margin-right:4px}
-.badge{display:inline-block;font-size:11px;border:1px solid #9AA39F;padding:0 5px;border-radius:2px;margin:0 4px 3px 0;color:#1C2321}
+.camprog{font-size:var(--fs-small);line-height:var(--lh-small);margin-right:4px}
+.badge{display:inline-block;font-size:var(--fs-small);line-height:var(--lh-small);border:1px solid #9AA39F;padding:0 5px;border-radius:2px;margin:0 4px 3px 0;color:#1C2321}
 .badge.conf-documented{background:#E6EDE8}.badge.conf-consistent{background:#F1EFE6}.badge.conf-inferred{border-style:dashed}
-table.dcmp td,table.dcmp th{font-size:12.5px}
+table.dcmp td,table.dcmp th{font-size:var(--fs-body);line-height:var(--lh-body)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* the making grammar: landing page, groups, interface forms */
 h1 a.homelink{color:inherit;text-decoration:none}
-header p.subtitle{font-size:16px;margin:6px 0 0;color:var(--ink);max-width:none}
+header p.subtitle{font-size:var(--fs-body);line-height:var(--lh-body);margin:6px 0 0;color:var(--ink);max-width:none}
 #home{max-width:1200px;margin:0 auto;padding:4px 18px 40px}
 /* the landing page in two columns: interface forms and composition; processes and terms */
 #home{max-width:1760px}
@@ -250,68 +252,68 @@ header p.subtitle{font-size:16px;margin:6px 0 0;color:var(--ink);max-width:none}
 .home-col svg.ifp-g{width:100%}
 @media (max-width:1100px){.home-cols{grid-template-columns:minmax(0,1fr)}}
 .home-sec{margin:26px 0;scroll-margin-top:10px}
-.home-sec h2{font-family:var(--serif);font-weight:400;font-size:26px;margin:0 0 8px}
-.home-intro{font-size:14px;line-height:1.55;max-width:none;margin:8px 0}
-.home-nav{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;margin:4px 0 0}
-h4.ifgroup{font-family:var(--serif);font-weight:400;font-size:19px;margin:18px 0 6px}
+.home-sec h2{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 8px}
+.home-intro{font-size:var(--fs-body);line-height:var(--lh-body);max-width:none;margin:8px 0}
+.home-nav{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:var(--fs-small);line-height:var(--lh-small);margin:4px 0 0}
+h4.ifgroup{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:18px 0 6px}
 .ifc{background:#fff;border:1px solid #DDE2DF;border-radius:4px;padding:10px 14px;margin:8px 0;scroll-margin-top:12px;transition:box-shadow .3s}
 .ifc.iflit{box-shadow:0 0 0 3px #C0392B}
-.ifc h5{font-family:var(--serif);font-weight:400;font-size:18px;margin:0 0 2px}
+.ifc h5{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 2px}
 .ifc{display:grid;grid-template-columns:minmax(180px,250px) 1fr;gap:6px 18px;align-items:start}
 @media (max-width:720px){.ifc{grid-template-columns:1fr}}
 figure.ifimg{margin:0}figure.ifimg img{width:100%;height:auto;display:block;border:1px solid #E3E7E5}
-figure.ifimg figcaption{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+figure.ifimg figcaption{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin-top:3px}
 figure.ifimg-s{float:right;width:200px;margin:0 0 6px 12px}
 @media (max-width:560px){figure.ifimg-s{float:none;width:100%;margin:0 0 6px}}
-.iftags{font-size:13px;color:var(--muted);margin:0 0 6px}
-.ifdef{font-size:13.5px;margin:0 0 4px}
-.ifcols{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13.5px}
+.iftags{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin:0 0 6px}
+.ifdef{font-size:var(--fs-body);line-height:var(--lh-body);margin:0 0 4px}
+.ifcols{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:var(--fs-body);line-height:var(--lh-body)}
 .ifcols ul{margin:2px 0 6px;padding-left:18px}.ifcols li{margin:2px 0}
 @media (max-width:720px){.ifcols{grid-template-columns:1fr}}
-.ifh{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 2px}
-.ifsrc{color:var(--muted);font-size:12.5px}
-.szev{display:block;margin-top:2px;font-size:11.5px;color:var(--muted)}
-.ifev{display:inline-block;font-size:10.5px;line-height:1.3;padding:0 5px;border:1px solid #C3CAC6;border-radius:2px;color:var(--muted);margin-left:2px}
+.ifh{font-size:var(--fs-small);line-height:var(--lh-small);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 2px}
+.ifsrc{color:var(--muted);font-size:var(--fs-small);line-height:var(--lh-small)}
+.szev{display:block;margin-top:2px;font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
+.ifev{display:inline-block;font-size:var(--fs-small);line-height:var(--lh-small);padding:0 5px;border:1px solid #C3CAC6;border-radius:2px;color:var(--muted);margin-left:2px}
 .ifev-verify{border-color:#B07A1E;color:#8A5A00}.ifev-generic{border-style:dashed}.ifev-inferred{border-style:dotted}
-#home .ifev{font-size:calc(10.5px*var(--hs))}.ifinf{color:var(--muted);font-style:italic}
+#home .ifev{font-size:var(--fs-small);line-height:var(--lh-small)}.ifinf{color:var(--muted);font-style:italic}
 .ifsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:7px;vertical-align:-1px;border:1px solid rgba(0,0,0,.25)}
 .ifmx-wrap{overflow-x:auto;background:#fff;border:1px solid #DDE2DF}
-table.ifmx{border-collapse:collapse;font-size:13px;min-width:100%}
+table.ifmx{border-collapse:collapse;font-size:var(--fs-body);line-height:var(--lh-body);min-width:100%}
 .ifmx th,.ifmx td{border:1px solid #E3E7E5;padding:5px 7px;text-align:center;vertical-align:middle}
-.ifmx thead th{font-weight:500}.ifmx th span{display:block;font-weight:400;font-size:11px;color:var(--muted)}
-.ifmx th a,.ifmx td a{color:inherit;text-decoration:none}.ifmx td a{font-size:16px}
+.ifmx thead th{font-weight:500}.ifmx th span{display:block;font-weight:400;font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
+.ifmx th a,.ifmx td a{color:inherit;text-decoration:none}.ifmx td a{font-size:var(--fs-body);line-height:var(--lh-body)}
 .ifmx tbody th{text-align:left;white-space:nowrap}
 .ifcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
 a.ifcard{display:flex;flex-direction:column;gap:4px;background:#fff;border:1px solid #CDD3D0;border-radius:4px;padding:10px;color:inherit;text-decoration:none}
 a.ifcard:hover{border-color:var(--ink)}
 a.ifcard img{width:100%;height:auto;display:block;margin-bottom:4px}
-.ifcard-t{font-size:14.5px}.ifcard-g{font-size:13px;font-style:italic}.ifcard-d{font-size:13px;color:var(--muted)}
+.ifcard-t{font-size:var(--fs-body);line-height:var(--lh-body)}.ifcard-g{font-size:var(--fs-small);line-height:var(--lh-small);font-style:italic}.ifcard-d{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
 .ifp-bar{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.ifp-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin:0 0 8px}.ifp-legend svg{vertical-align:middle;margin-right:6px}
-.ifp-chk{display:inline-flex;gap:8px;align-items:center;font-size:13px;margin:0 0 6px;cursor:pointer}
-.ifp-status{font-size:13px;color:var(--muted);min-height:1.5em;margin:0 0 6px}
-.ifp-detail{background:#fff;border:1px solid #CDD3D0;border-radius:6px;padding:10px 14px;margin:0 0 12px;font-size:14px;min-height:60px}
-.ifp-detail h3{font-family:var(--serif);font-weight:400;font-size:18px;margin:0 0 4px}.ifp-detail ul{margin:4px 0 0;padding-left:18px}
-.ifp-hint{margin:0;color:var(--muted);font-size:13px}
+.ifp-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);margin:0 0 8px}.ifp-legend svg{vertical-align:middle;margin-right:6px}
+.ifp-chk{display:inline-flex;gap:8px;align-items:center;font-size:var(--fs-small);line-height:var(--lh-small);margin:0 0 6px;cursor:pointer}
+.ifp-status{font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted);min-height:1.5em;margin:0 0 6px}
+.ifp-detail{background:#fff;border:1px solid #CDD3D0;border-radius:6px;padding:10px 14px;margin:0 0 12px;font-size:var(--fs-body);line-height:var(--lh-body);min-height:60px}
+.ifp-detail h3{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 4px}.ifp-detail ul{margin:4px 0 0;padding-left:18px}
+.ifp-hint{margin:0;color:var(--muted);font-size:var(--fs-small);line-height:var(--lh-small)}
 svg.ifp-g{width:70%;height:auto;display:block;background:#fff;border:1px solid #DDE2DF}
 @media (max-width:720px){svg.ifp-g{width:100%}}
 .ifp-nd{cursor:pointer}.ifp-nd:focus{outline:none}.ifp-nd:focus-visible rect{stroke:var(--ink);stroke-width:2}
 .ifp-ln{transition:opacity .2s}.ifp-dim{opacity:.06}
 @media (prefers-reduced-motion:reduce){.ifp-ln,.ifc{transition:none}}
-h3.grp{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;padding:16px 14px 4px;border-top:2px solid #C3CAC6}
+h3.grp{font-family:var(--sans);font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;padding:16px 14px 4px;border-top:2px solid #C3CAC6}
 h3.grp:first-child{border-top:0;padding-top:12px}
-.namesec .body{padding-top:14px}.namesec p.nm-en{margin:0 0 2px}.namesec p.nm-ja{margin:0}
+.namesec .body{padding-top:14px}.namesec p.nm-en{margin:0 0 2px;font-size:var(--fs-large);line-height:var(--lh-large);font-weight:500}.namesec p.nm-ja{margin:0;font-size:var(--fs-large);line-height:var(--lh-large)}
 .namesec + .readsec{border-top:1px solid #DDE2DF}
 .readsec + h3.grp{border-top:2px solid #C3CAC6}
 figure.jdfig{margin:0}.jdkey{margin:6px 0 2px}
-details.rules-d{margin:4px 0 10px}code.rid{font-family:inherit;font-size:.92em;color:#3d4441;white-space:nowrap}details.rules-d>summary::before{content:"▸ "}details.rules-d[open]>summary::before{content:"▾ "}details.rules-d>summary{cursor:pointer;font-size:calc(13px*var(--hs,1));color:#3d4441}
-h3.rules-h{font-size:calc(15px*var(--hs,1));margin:16px 0 6px}
-table.rules-t{border-collapse:collapse;font-size:calc(12px*var(--hs,1));width:100%}table.rules-t th,table.rules-t td{border-bottom:1px solid #E3E7E5;padding:3px 6px;text-align:left;vertical-align:top}
+details.rules-d{margin:4px 0 10px}code.rid{font-family:inherit;font-size:inherit;color:#3d4441;white-space:nowrap}details.rules-d>summary::before{content:"▸ "}details.rules-d[open]>summary::before{content:"▾ "}details.rules-d>summary{cursor:pointer;font-size:var(--fs-body);line-height:var(--lh-body);color:#3d4441}
+h3.rules-h{font-size:var(--fs-large);line-height:var(--lh-large);margin:16px 0 6px}
+table.rules-t{border-collapse:collapse;font-size:var(--fs-body);line-height:var(--lh-body);width:100%}table.rules-t th,table.rules-t td{border-bottom:1px solid #E3E7E5;padding:3px 6px;text-align:left;vertical-align:top}
 .xfiles .xrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}.xfiles .xlab{min-width:3.2em;font-weight:600}.xfiles .xstat{margin:2px 0 0}
-.ifat{font-size:.9em;color:#16876a}.ifp-badge{pointer-events:none}
-.ifhalves{margin:4px 0 6px;padding-left:1.1em;font-size:13px}#home .ifhalves{font-size:calc(13px*var(--hs))}.ifhalves li{margin:2px 0}
-p.ifh2{margin:6px 0 2px;font-size:12.5px;font-weight:600;color:#5f6663}#home p.ifh2{font-size:calc(12.5px*var(--hs))}.ifunv{font-size:.9em;color:#8a5a00}
-.ifv-cap{margin:0;padding:4px 6px;font-size:12.5px;border-top:1px solid #E3E7E5;min-height:1.6em}
+.ifat{font-size:var(--fs-small);line-height:var(--lh-small);color:#0E6650}.ifp-badge{pointer-events:none}
+.ifhalves{margin:4px 0 6px;padding-left:1.1em;font-size:var(--fs-body);line-height:var(--lh-body)}#home .ifhalves{font-size:var(--fs-body);line-height:var(--lh-body)}.ifhalves li{margin:2px 0}
+p.ifh2{margin:6px 0 2px;font-size:var(--fs-small);line-height:var(--lh-small);font-weight:600;color:#5f6663}#home p.ifh2{font-size:var(--fs-small);line-height:var(--lh-small)}.ifunv{font-size:var(--fs-small);line-height:var(--lh-small);color:#8a5a00}
+.ifv-cap{margin:0;padding:4px 6px;font-size:var(--fs-small);line-height:var(--lh-small);border-top:1px solid #E3E7E5;min-height:1.6em}
 h3.grp + details{border-top:0}
 /* the joint pages' right column: no dividers, no subtitles, section heads at the left column's label size */
 section.panel > details, section.panel > .readsec, section.panel > h3.grp, section.panel > .readsec + details, section.panel > .namesec + .readsec, section.panel > .readsec + h3.grp{border-top:0}
@@ -320,54 +322,59 @@ section.panel > h3.grp::before{content:"_"}
 section.panel > details > summary::after{content:"⌄";margin-left:auto;padding-left:10px;color:var(--muted);line-height:1}
 section.panel > details[open] > summary::after{content:"⌃"}
 /* the right column's buttons at the left column's size (the option buttons, 11.5 px) */
-section.panel button, section.panel label.btn, section.panel .readsec .readhead label.btn{font-size:11.5px;padding:3px 7px;min-height:0;line-height:1.3}
-section.panel > details > summary, section.panel > .readsec > .readhead{font-size:13px;padding-top:8px;padding-bottom:8px}
+section.panel button, section.panel label.btn, section.panel .readsec .readhead label.btn{font-size:var(--fs-body);line-height:var(--lh-body);padding:3px 7px;min-height:0}
+section.panel > details > summary, section.panel > .readsec > .readhead{font-size:var(--fs-large);line-height:var(--lh-large);padding-top:8px;padding-bottom:8px}
 .iftags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-a.iftag{font-size:11px;line-height:1.4;padding:0 6px;border:1px solid var(--fc);border-left-width:4px;border-radius:2px;color:var(--ink);text-decoration:none;background:#fff}
+a.iftag{font-size:var(--fs-small);line-height:var(--lh-small);padding:0 6px;border:1px solid var(--fc);border-left-width:4px;border-radius:2px;color:var(--ink);text-decoration:none;background:#fff}
 a.flink{color:inherit;text-decoration:underline;text-decoration-color:var(--fc,#8A908D);text-decoration-thickness:2px;text-underline-offset:2px}
 .iflegend{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 10px 6px}
 .iflegend .note{flex-basis:100%;margin:2px 0 0}
-button.iflg{font-size:12px;padding:3px 8px}
-.ifpop{position:relative;margin:0 10px 8px;background:#fff;border:1px solid #CDD3D0;padding:8px 30px 8px 12px;font-size:13.5px}
-.ifpop h4{font-family:var(--serif);font-weight:400;font-size:17px;margin:0 0 4px}.ifpop p{margin:2px 0}
-.ifpop .ifx{position:absolute;right:4px;top:4px;border:0;font-size:18px;line-height:1;padding:2px 6px;background:transparent}
-ol.asmsteps{margin:0 0 8px;padding-left:20px;font-size:13.5px}ol.asmsteps li{margin:3px 0}
+button.iflg{font-size:var(--fs-small);line-height:var(--lh-small);padding:3px 8px}
+.ifpop{position:relative;margin:0 10px 8px;background:#fff;border:1px solid #CDD3D0;padding:8px 30px 8px 12px;font-size:var(--fs-body);line-height:var(--lh-body)}
+.ifpop h4{font-family:var(--serif);font-weight:400;font-size:var(--fs-large);line-height:var(--lh-large);margin:0 0 4px}.ifpop p{margin:2px 0}
+.ifpop .ifx{position:absolute;right:4px;top:4px;border:0;font-size:var(--fs-small);line-height:var(--lh-small);line-height:1;padding:2px 6px;background:transparent}
+ol.asmsteps{margin:0 0 8px;padding-left:20px;font-size:var(--fs-body);line-height:var(--lh-body)}ol.asmsteps li{margin:3px 0}
 
 /* the live 3D box of an illustration */
 figure.ifimg img{cursor:zoom-in}
 figure.ifimg.ifv-on img{display:none}
 .ifv{position:relative;border:1px solid #C3CAC6;background:#fff}
 .ifv canvas{display:block;width:100%;aspect-ratio:16/10;touch-action:none;cursor:grab}
-.ifv-bar{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:4px;border-top:1px solid #E3E7E5;font-size:12px;color:var(--muted)}
-.ifv-bar span{margin-right:2px}.ifv-bar button{font-size:11.5px;padding:2px 7px}.ifv-bar [data-close]{margin-left:auto}
+.ifv-bar{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:4px;border-top:1px solid #E3E7E5;font-size:var(--fs-small);line-height:var(--lh-small);color:var(--muted)}
+.ifv-bar span{margin-right:2px}.ifv-bar button{font-size:var(--fs-small);line-height:var(--lh-small);padding:2px 7px}.ifv-bar [data-close]{margin-left:auto}
 /* the landing page's text at half its size (--hs); the joint pages keep theirs */
-#home{--hs:.625;font-size:calc(15px*var(--hs))}
-#home .home-intro{font-size:calc(14px*var(--hs))}
-#home .home-sec h2{font-size:calc(26px*var(--hs))}
-#home .home-nav{font-size:calc(14px*var(--hs))}
-#home .note{font-size:calc(13px*var(--hs))}
-#home h4.ifgroup{font-size:calc(19px*var(--hs))}
-#home .ifc h5{font-size:calc(18px*var(--hs))}
-#home .iftags{font-size:calc(13px*var(--hs))}
-#home .ifdef{font-size:calc(13.5px*var(--hs))}
-#home .ifcols{font-size:calc(13.5px*var(--hs))}
-#home .ifh{font-size:calc(11.5px*var(--hs))}
-#home .ifsrc{font-size:calc(12.5px*var(--hs))}
-#home figure.ifimg figcaption{font-size:calc(11.5px*var(--hs))}
-#home table.ifmx{font-size:calc(13px*var(--hs))}
-#home .ifmx th span{font-size:calc(11px*var(--hs))}
-#home .ifmx td a{font-size:calc(16px*var(--hs))}
-#home .ifcard-t{font-size:calc(14.5px*var(--hs))}
-#home .ifcard-d,#home .ifcard-g{font-size:calc(13px*var(--hs))}
-#home .ifp-legend,#home .ifp-chk,#home .ifp-status,#home .ifp-hint{font-size:calc(13px*var(--hs))}
-#home .ifp-detail{font-size:calc(14px*var(--hs))}
-#home .ifp-detail h3{font-size:calc(18px*var(--hs))}
-#home button{font-size:calc(13px*var(--hs))}
-#home .ifv-bar,#home .ifv-bar button{font-size:calc(12px*var(--hs))}
-header h1{font-size:calc(clamp(28px,6vw,46px)*.625)}
-header p.subtitle{font-size:calc(16px*.625)}
-header p.authors{font-size:calc(13px*.625)}
-.jointsel button{font-size:calc(13px*.625)}
+#home{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .home-intro{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .home-sec h2{font-size:var(--fs-large);line-height:var(--lh-large)}
+#home .home-nav{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home .note{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home h4.ifgroup{font-size:var(--fs-large);line-height:var(--lh-large)}
+#home .ifc h5{font-size:var(--fs-large);line-height:var(--lh-large)}
+#home .iftags{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home .ifdef{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .ifcols{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .ifh{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home .ifsrc{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home figure.ifimg figcaption{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home table.ifmx{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .ifmx th span{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home .ifmx td a{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .ifcard-t{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .ifcard-d,#home .ifcard-g{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home .ifp-legend,#home .ifp-chk,#home .ifp-status,#home .ifp-hint{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home .ifp-detail{font-size:var(--fs-body);line-height:var(--lh-body)}
+#home .ifp-detail h3{font-size:var(--fs-large);line-height:var(--lh-large)}
+#home button{font-size:var(--fs-small);line-height:var(--lh-small)}
+#home .ifv-bar,#home .ifv-bar button{font-size:var(--fs-small);line-height:var(--lh-small)}
+header h1{font-size:var(--fs-title);line-height:var(--lh-title)}
+header p.subtitle{font-size:var(--fs-body);line-height:var(--lh-body)}
+header p.authors{font-size:var(--fs-small);line-height:var(--lh-small)}
+.jointsel button{font-size:var(--fs-small);line-height:var(--lh-small)}
+
+/* Task S: compact controls in the right column (Show, the 3D box's bar, instance and option buttons) stay small */
+section.panel .rep button, section.panel ul.inst button, section.panel .ifv-bar button, section.panel .secctl button,
+section.panel button.iflg, section.panel .cfg button, #home .ifp-bar button, #home .ifv-bar button{font-size:var(--fs-small);line-height:var(--lh-small)}
+svg text{font-family:var(--sans)}
 </style>
 </head>
 <body>
@@ -395,7 +402,7 @@ header p.authors{font-size:calc(13px*.625)}
   <div id="iflegend" class="iflegend" hidden></div>
   <div id="ifpop" class="ifpop" hidden></div>
   <p class="note" style="margin:0 10px 4px">Drag a part to move it along its assembly axis; drag the background to rotate. Each part stops where the geometry stops it.</p>
-  <p id="dragmsg" aria-live="polite" style="margin:0 10px 8px;font-size:13.5px;min-height:1.4em;color:#9A3B2E"></p>
+  <p id="dragmsg" aria-live="polite" style="margin:0 10px 8px;font-size:var(--fs-small);min-height:1.4em;color:#9A3B2E"></p>
   <div class="cfgc" id="cfg" aria-label="Configuration"></div>
   <div class="seq" role="group" aria-label="Assembly and repair sequence" id="seqbtns"></div>
   <p class="seqtext" id="seqtext" aria-live="polite"></p>
@@ -407,7 +414,7 @@ header p.authors{font-size:calc(13px*.625)}
     <div class="readhead"><span>Match a drawing</span><span><label class="btn" for="upl">Upload an image</label><input type="file" id="upl" accept="image/*"></span></div>
     <div class="body">
       <p id="uplname" class="note" style="margin:0 0 6px"></p>
-      <p id="buildstat" aria-live="polite" style="font-size:13.5px;margin:0 0 6px"></p>
+      <p id="buildstat" aria-live="polite" style="font-size:var(--fs-body);margin:0 0 6px"></p>
       <div id="drawwrap" hidden>
         <canvas id="drawcv" aria-label="Uploaded drawing. Tap two points to set the scale or to measure."></canvas>
         <div class="tools2">
@@ -1848,10 +1855,10 @@ async function readFive(file, st, btn, forced){
     else{
       st.textContent="Step 1 of 4: which joint is it? Comparing with the library's five reference drawings…";
       const content=[{type:"text",text:"Reference drawings:"}];
-      for(const r of P.references){ content.push({type:"text",text:`Reference: ${r.joint} (${r.name})`}, jpegPart(await asJpeg(r.image))); }
+      for(const r of P.references){ content.push({type:"text",text:`Reference: ${r.label}`}, jpegPart(await asJpeg(r.image,900))); }
       content.push({type:"text",text:"The image to identify:"}, jpegPart(upload), {type:"text",text:P.identify});
       const a=await askModel(content,600); ident=jsonFrom(a.text);
-      log.identify={prompt:P.identify, references:P.references.map(r=>({joint:r.joint, image:r.image})), raw:a.raw, parsed:ident};
+      log.identify={prompt:P.identify, references:P.references.map(r=>({joint:r.joint, variant:r.variant, image:r.image})), raw:a.raw, parsed:ident};
     }
     READLOG_FIVE.last={file, ident};
     showIdent(ident, st);
@@ -1890,7 +1897,7 @@ function wireOverride(st){ const s=st.querySelector(".ident-pick"); if(!s) retur
 function uploadHTML(){
   return `<div class="readsec"><div class="readhead"><span>Match a drawing</span><span><label class="btn" for="upl-o">Upload an image</label><input type="file" id="upl-o" accept="image/*"></span></div><div class="body">
     <p id="uplname-o" class="note" style="margin:0 0 6px">${UPLOAD.file?UPLOAD.file.name:""}</p>
-    <p id="buildstat-o" aria-live="polite" style="font-size:13.5px;margin:0 0 6px">${UPLOAD.html}</p>
+    <p id="buildstat-o" aria-live="polite" style="font-size:var(--fs-body);margin:0 0 6px">${UPLOAD.html}</p>
     <div id="uplbody-o"${UPLOAD.file?"":" hidden"}>
     <img id="uplprev-o" alt="The uploaded image" src="${UPLOAD.url}" style="max-width:100%;max-height:260px;display:block;margin:8px 0;border:1px solid #CDD3D0">
     <p><button id="t-read5-o" title="Which of the five joints it is, and its dimensions; built, checked, and its toolpaths simulated">Read as one of the five joints</button></p>
@@ -3314,7 +3321,7 @@ function showSpecJoint(key){
     <div id="ratiowrap"></div>
     <p style="margin-top:10px"><button id="s-rebuild">Rebuild this joint</button>
        <button id="s-reset">Back to the craft rule</button></p>
-    <p id="rebuildstat" aria-live="polite" style="font-size:13.5px;min-height:1.4em"></p>
+    <p id="rebuildstat" aria-live="polite" style="font-size:var(--fs-small);min-height:1.4em"></p>
     <div class="kv" style="margin-top:8px">
     ${row("Machining clearance",`${SPEC_TOL} mm (assumed)`)}
     ${row("Reading confidence",G.confidence)}</div>
@@ -3821,7 +3828,7 @@ function ariPanelHTML(J){
 + sec("Proportions","sliders bound to sources", `
     <div id="ratiowrap"></div>
     <p style="margin-top:10px"><button id="t-rebuild">Rebuild this joint</button> <button id="t-resetratio">Back to the craft standard</button></p>
-    <p id="rebuildstat" aria-live="polite" style="font-size:13.5px;min-height:1.4em"></p>
+    <p id="rebuildstat" aria-live="polite" style="font-size:var(--fs-small);min-height:1.4em"></p>
     <div class="kv wide" style="margin-top:8px">${row("Stock length per piece",`${p.timber_length_mm} mm`)}${row("Machining tolerance",`${p.tolerance_mm} mm`)}</div>
     <p class="note">Each value carries its rule and the sources behind it, as on the daimochi page. Two values slide, the dovetail's length and its flare; the neck and the seat length are picked from their rules; the seat depth is locked to H/2; the head width and the overall length follow. The 目違い and the reinforcement are chosen under the 3D view. Changing a value and pressing Rebuild builds that geometry with the shared builder and simulates its toolpaths; this needs <code>viewer/server.py</code>.</p>`)
 + sec("Details","four faces, as marked out on the timber", `
@@ -4332,7 +4339,7 @@ function showRefJoint(key){
     <div id="ratiowrap"></div>
     <p style="margin-top:10px"><button id="t-rebuild">Rebuild this joint</button>
        <button id="t-resetratio">Back to the ${K?"craft standard":"drawing"}</button></p>
-    <p id="rebuildstat" aria-live="polite" style="font-size:13.5px;min-height:1.4em"></p>
+    <p id="rebuildstat" aria-live="polite" style="font-size:var(--fs-small);min-height:1.4em"></p>
     <div class="kv" style="margin-top:8px">${K?"":row("Timber section",`${p.timber_width_mm} × ${p.timber_height_mm} mm`)}
     ${row("Stock length per piece",`${p.timber_length_mm} mm`)}
     ${row("Machining tolerance",`${p.tolerance_mm} mm`)}
@@ -4531,7 +4538,7 @@ function wireRatios(key){
       const v=REF.ratios[k], lo=Math.max(0.02,base[k]*0.4), hi=Math.min(1.5,base[k]*1.8);
       const moved=Math.abs(v-base[k])>1e-9;
       return `<div class="param"><div class="prow"><label for="r-${k}">${k}</label>
-        <span class="val">${v.toFixed(3)} = ${(v*W).toFixed(1)} mm${moved?` <span style="color:#9A6A00">(drawing ${base[k]})</span>`:""}</span></div>
+        <span class="val">${v.toFixed(3)} = ${(v*W).toFixed(1)} mm${moved?` <span style="color:var(--warn)">(drawing ${base[k]})</span>`:""}</span></div>
         <input type="range" id="r-${k}" min="${lo.toFixed(3)}" max="${hi.toFixed(3)}" step="0.001" value="${v}">
         <p class="src">${RATIO_NOTE[k]||"not described in the reading contract"}</p></div>`; }).join("");
     Object.keys(base).forEach(k=>{ document.getElementById("r-"+k).addEventListener("input",e=>{
@@ -4635,10 +4642,17 @@ const IF_CATS=[["A","Assembly",[["a1","Set first"],["a2","Lowered from above"],[
   ["c6","Post-processing: squaring corners and filing","chisel, file","No BTLx processing: by hand after the machine"]]]];
 /* attributes on a link, written after its outcome: c2+std, h8+last; ~ marks it inferred */
 const IF_LATTR={std:["availability","standard pre-cut"],spec:["availability","special machines only"],hand:["availability","hand only"],
-  one:["set-ups","one"],sev:["set-ups","several"],pre:["sequence","before assembly"],post:["sequence","after assembly"],last:["sequence","last"],
+  one:["set-ups","one set-up"],sev:["set-ups","several set-ups"],pre:["sequence","before assembly"],post:["sequence","after assembly"],last:["sequence","last"],
   int:["component","integral"],sep:["component","separate piece"]};
-function ifLinks(id){ return IF_LINKS[id].split(" ").map(t=>{ const inf=t.endsWith("~")||IF_NEW.has(id), [r,...at]=t.replace("~","").split("+"); return {r,inf,at}; }); }
+function ifLinksHand(id){ return IF_LINKS_HAND[id].split(" ").map(t=>{ const inf=t.endsWith("~")||IF_NEW.has(id), [r,...at]=t.replace("~","").split("+"); return {r,inf,at}; }); }
+/* a form's links: documented (a source states it), derived and confirmed (the
+   grammar's process rules give it from the form's geometry and a source states
+   it), or derived only (a prediction). Links inferred by hand and not derived
+   are dropped; ifLinksHand keeps them for the comparison. inf: a prediction. */
+function ifLinks(id){ return IF_LINKS_ALL[id]; }
 const ifAttrText=at=>at.map(a=>IF_LATTR[a][1]).join(", ");
+const IF_LCAT={doc:"documented",conf:"derived, confirmed by a source",pred:"derived only (prediction)"};
+const ifCatTag=x=>x.cat==="doc"?"":` <span class="ifinf">(${x.cat==="conf"?"derived, confirmed":"prediction"}${x.rules&&x.rules.length?": "+x.rules.join(", "):""})</span>`;
 const IF_PROP={
 tsuki:["free", [["Shoulder (胴付き dōzuki) set 5分 (c. 15 mm) into the receiving member (rafter beam into post)", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]], ["Hanging post: shoulder about 1寸 (c. 30 mm) below the beam soffit, with 1寸 clearance", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented", "verify"]]]],
 sogi:["scales", [["Daimochi: joint length about 2.5 × depth H", "Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi: joint length 2 × H", "AIJ 2009 via denmoku-db", ["documented"]]]],
@@ -4703,10 +4717,101 @@ function ifRule(r){ return `<li>${r[0]} <span class="ifsrc">(${r[1]})</span> ${i
 // a note shown with a form's rules: no rule of its own, a proxy, or a missing dimension
 const IF_RNOTE={tsuki:"A plain contact face; its size is the section of the members joined.",tome:"Its size is set by the members joined.",
   hako:"No rule found. Proxy: as stub tenon, W/8 to W/7 (inferred).",eri:"Depth: no rule found."};
-const IF_LINKS={tsuki:"h3 h6 c2+std c3+std",sogi:"a2 h2 h3 h6 c5+sev~",aikaki:"a2 h2 h3 h4~ c2+std c3+std",koshi:"a1 a2 a6 r3~ h3 h4~ c2+std c3+std",tome:"h3 h8+last c6",kaki:"a2 h3 h4 c2+std c3+std",oire:"a2 h3 h4 c2+std c3+std c6",wanagi:"a2 h2 h4 c5+sev c6",ago:"a2 r3 h3 h4 c2+std c3+std",nuki:"a7 r5 h4 c6",hako:"h4 h8+last c5+sev c6",ryaku:"a2 a3 a4 d2 r1 r2 h2 h3 h4 h6 h8+last c2+spec c3+spec c5+sev",mechi:"a3 d3 h4 h6 h8+last c5+sev c6",eri:"h4 h8+last c6",hozo:"a7 r5 h2 h3 h4 c2+std c3+std c6",sao:"a4 a7 r5 h2 h4 c2+spec c3+spec c6",sanmai:"a2 h2 h4 h8+last c5+sev",kama:"a2 a4~ a6 r3~ h2 h3 h4 h5 c2+std c3+std",ari:"a2 a6 r3~ h4 h5 c2+std c3+std",yatoi:"a1 r4 h2+hand+sep",sen:"a4 a5 d1 r4~ h2+sep~ h7 c4+post+spec",shachi:"a4 a5 d1 r4 h2+sep h4 c6",kusabi:"a4 a5 r4 h2+hand+sep"};
+/* the links as first set by hand (documented, or inferred by hand: ~ and IF_NEW);
+   kept to compare with the derivation, and as the source of the documented links */
+const IF_LINKS_HAND={tsuki:"h3 h6 c2+std c3+std",sogi:"a2 h2 h3 h6 c5+sev~",aikaki:"a2 h2 h3 h4~ c2+std c3+std",koshi:"a1 a2 a6 r3~ h3 h4~ c2+std c3+std",tome:"h3 h8+last c6",kaki:"a2 h3 h4 c2+std c3+std",oire:"a2 h3 h4 c2+std c3+std c6",wanagi:"a2 h2 h4 c5+sev c6",ago:"a2 r3 h3 h4 c2+std c3+std",nuki:"a7 r5 h4 c6",hako:"h4 h8+last c5+sev c6",ryaku:"a2 a3 a4 d2 r1 r2 h2 h3 h4 h6 h8+last c2+spec c3+spec c5+sev",mechi:"a3 d3 h4 h6 h8+last c5+sev c6",eri:"h4 h8+last c6",hozo:"a7 r5 h2 h3 h4 c2+std c3+std c6",sao:"a4 a7 r5 h2 h4 c2+spec c3+spec c6",sanmai:"a2 h2 h4 h8+last c5+sev",kama:"a2 a4~ a6 r3~ h2 h3 h4 h5 c2+std c3+std",ari:"a2 a6 r3~ h4 h5 c2+std c3+std",yatoi:"a1 r4 h2+hand+sep",sen:"a4 a5 d1 r4~ h2+sep~ h7 c4+post+spec",shachi:"a4 a5 d1 r4 h2+sep h4 c6",kusabi:"a4 a5 r4 h2+hand+sep"};
 // interface forms whose links are all reasoned from geometry, not yet checked against sources
 const IF_NEW=new Set(["tsuki","tome","kaki","oire","wanagi","ago","nuki","hako","eri","hozo","sao","sanmai","yatoi","shachi","kusabi"]);
 const IF={}; IF_GROUPS.forEach(([g,list])=>list.forEach(([id,en,kj,ro,fn])=>{ IF[id]={id,en,kj,ro,fn,group:g}; }));
+/* Task T: each interface form's geometry, as data, from which its process links
+   are derived. insert: how the parts meet (down: lowered from above; axial:
+   pushed in along the member; side-axial: in from the side, then along;
+   set: set into its holes first; driven: driven in last); opens: the faces the
+   receiving half opens to (top, end, face, through); blocked: the directions
+   it resists once assembled; undercut: a face no single opening reaches;
+   fit: the fit-critical faces; separate: a separate piece. Features for the
+   making rules: grain (long faces along the grain), shoulder (cuts across the
+   grain), corners (square inside corners), sloped (faces off the machine's
+   axes), hole (a hole through both members), tight (draws tight: a taper,
+   keys or a drawbore), load (carries the load from above), lock (a separate
+   piece that locks the joint). Read from the geometry the viewer draws. */
+const IF_GEOM={
+  tsuki:{insert:"axial",opens:["end"],blocked:["axial, in compression"],undercut:false,fit:["the end face"],separate:false,shoulder:true},
+  sogi:{insert:"down",opens:["top"],blocked:["down"],undercut:false,fit:["the scarf faces","the lands"],separate:false,grain:true,shoulder:true,corners:true,sloped:true},
+  aikaki:{insert:"down",opens:["top"],blocked:["down","sideways"],undercut:false,fit:["the lap faces","the shoulders"],separate:false,grain:true,shoulder:true,corners:true},
+  koshi:{insert:"down",opens:["top"],blocked:["down"],undercut:false,fit:["the seat face"],separate:false,grain:true,shoulder:true,corners:true,load:true},
+  tome:{insert:"axial",opens:["end"],blocked:["axial, in compression"],undercut:false,fit:["the mitre face"],separate:false,shoulder:true,sloped:true},
+  kaki:{insert:"down",opens:["top"],blocked:["down","sideways"],undercut:false,fit:["the notch faces"],separate:false,shoulder:true,corners:true},
+  oire:{insert:"axial",opens:["face"],blocked:["into the face","sideways"],undercut:false,fit:["the housing walls"],separate:false,shoulder:true,corners:true},
+  wanagi:{insert:"down",opens:["top","end"],blocked:["down","sideways"],undercut:false,fit:["the slot cheeks"],separate:false,grain:true,shoulder:true,corners:true},
+  ago:{insert:"down",opens:["top"],blocked:["down","along the beam"],undercut:false,fit:["the cog faces"],separate:false,shoulder:true,corners:true},
+  nuki:{insert:"axial",opens:["through"],blocked:["sideways","down"],undercut:false,fit:["the mortise cheeks"],separate:false,shoulder:true,corners:true},
+  hako:{insert:"axial",opens:["face"],blocked:["sideways"],undercut:false,fit:["the four walls"],separate:false,corners:true},
+  ryaku:{insert:"down",opens:["top"],blocked:["down","along the beam"],undercut:false,fit:["the hook faces"],separate:false,grain:true,shoulder:true,corners:true,sloped:true,tight:true},
+  mechi:{insert:"side-axial",opens:["end"],blocked:["sideways","up"],undercut:false,fit:["the stub's cheeks"],separate:false,shoulder:true,corners:true},
+  eri:{insert:"down",opens:["top"],blocked:["down","sideways"],undercut:false,fit:["the collar faces"],separate:false,shoulder:true,corners:true},
+  hozo:{insert:"axial",opens:["face"],blocked:["sideways","down"],undercut:false,fit:["the tenon cheeks","the shoulder"],separate:false,grain:true,shoulder:true,corners:true},
+  sao:{insert:"axial",opens:["through"],blocked:["sideways","down","along, by the keys"],undercut:false,fit:["the rod's cheeks","the key slots"],separate:false,grain:true,shoulder:true,corners:true,tight:true},
+  sanmai:{insert:"axial",opens:["end","through"],blocked:["sideways"],undercut:false,fit:["the cheeks"],separate:false,grain:true,shoulder:true,corners:true},
+  kama:{insert:"down",opens:["top"],blocked:["down","along the beam"],undercut:false,fit:["the neck and head flanks"],separate:false,shoulder:true,corners:true,sloped:true,load:true},
+  ari:{insert:"down",opens:["top"],blocked:["down","along the beam"],undercut:false,fit:["the dovetail flanks"],separate:false,shoulder:true,corners:true,load:true},
+  yatoi:{insert:"set",opens:["face"],blocked:["sideways"],undercut:false,fit:["the dowel's faces"],separate:true,corners:true},
+  sen:{insert:"driven",opens:["through"],blocked:["the members' separation"],undercut:false,fit:["the peg and its hole"],separate:true,lock:true,hole:true,tight:true},
+  shachi:{insert:"driven",opens:["through"],blocked:["along, drawing the joint tight"],undercut:false,fit:["the key and its slot"],separate:true,lock:true,corners:true,tight:true},
+  kusabi:{insert:"driven",opens:["end"],blocked:["the tenon's withdrawal"],undercut:false,fit:["the wedge and its kerf"],separate:true,lock:true,tight:true}};
+/* The process rules: each takes a form's geometry and gives links, with the
+   rule's id so every derived link names the rule behind it. */
+const IF_PROC_RULES=[
+  ["A1","lowered into a top-opening half: lowered from above",g=>g.insert==="down"?["a2"]:[]],
+  ["A2","in from the side then along: side, then axial",g=>g.insert==="side-axial"?["a3"]:[]],
+  ["A3","entered along the member: pushed in along the axis",g=>g.insert==="axial"?["a7"]:[]],
+  ["A4","a separate piece set into its holes: set first",g=>g.insert==="set"?["a1"]:[]],
+  ["A5","a separate locking piece: goes in last",g=>g.lock?["a5"]:[]],
+  ["A6","a taper, keys or a drawbore: drawn tight",g=>g.tight?["a4"]:[]],
+  ["A7","lowered and carrying the load from above: held by the load",g=>g.insert==="down"&&g.load?["a6"]:[]],
+  ["D1","a separate lock: it comes out first",g=>g.lock?["d1"]:[]],
+  ["D2","lowered and drawn tight: lifted against friction",g=>g.insert==="down"&&g.tight?["d2"]:[]],
+  ["D3","in from the side then along: shifted, then out sideways",g=>g.insert==="side-axial"?["d3"]:[]],
+  ["R1","in from the side: needs side clearance",g=>g.insert==="side-axial"?["r1"]:[]],
+  ["R2","lowered from above: needs headroom",g=>g.insert==="down"?["r2"]:[]],
+  ["R3","lowered and carrying the load: the load comes off first",g=>g.insert==="down"&&g.load?["r3"]:[]],
+  ["R4","entered along the member: needs axial clearance",g=>g.insert==="axial"?["r5"]:[]],
+  ["R5","a separate piece: cheap to replace",g=>g.separate?["r4"]:[]],
+  ["H1","long faces along the grain: rip-sawing",g=>g.grain&&!g.separate?["h2"]:[]],
+  ["H2","cuts across the grain: cross-cutting",g=>g.shoulder&&!g.separate?["h3"]:[]],
+  ["H3","square inside corners (a recess, socket or slot): chiselling",g=>g.corners?["h4"]:[]],
+  ["H4","fit-critical faces inside a recess: paring",g=>g.corners&&!g.separate&&g.fit.length>0?["h5"]:[]],
+  ["H5","broad bearing faces (scarf, lap, seat, end): planing",g=>(g.grain||g.insert==="axial"&&!g.corners)&&!g.separate?["h6"]:[]],
+  ["H6","a hole through both members: boring peg holes",g=>g.hole?["h7"]:[]],
+  ["H7","drawn tight: fitted by hand, last",g=>g.tight?["h8+last"]:[]],
+  ["H8","a separate piece: made on its own",g=>g.separate?["h2+sep","h6+sep"]:[]],
+  ["C1","an end face, no recess: cut to length",g=>g.opens.includes("end")&&!g.corners&&!g.separate?["c1"]:[]],
+  ["C2","open to one face, no undercut: roughed and finished in one set-up",g=>!g.separate&&!g.undercut&&g.opens.length===1&&g.opens[0]!=="through"?["c2+std+one","c3+std+one"]:[]],
+  ["C3","open to more than one face, or through: several set-ups",g=>!g.separate&&(g.opens.length>1||g.opens.includes("through"))?["c2","c3","c5+sev"]:[]],
+  ["C4","an undercut: special machines only",g=>g.undercut?["c2+spec","c3+spec"]:[]],
+  ["C5","square inside corners: the cutter leaves them round, squared by hand",g=>g.corners&&!g.separate?["c6"]:[]],
+  ["C6","a hole through both members, drawn tight: drilled after assembly",g=>g.hole?["c4"+(g.tight?"+post":"")]:[]],
+  ["C7","a separate piece: made by hand, not on the line",g=>[]]];
+function ifGeomText(id){ const g=IF_GEOM[id], ins={down:"lowered from above",axial:"pushed in along the member","side-axial":"in from the side, then along",set:"set into its holes first",driven:"driven in last"}[g.insert];
+  const f=[g.grain&&"long faces along the grain",g.shoulder&&"cuts across the grain",g.corners&&"square inside corners",g.sloped&&"sloped faces",g.hole&&"a hole through both members",g.tight&&"draws tight",g.load&&"carries the load from above"].filter(Boolean);
+  return `Assembled: ${ins}. Opens to: ${g.opens.join(", ")}. Blocks: ${g.blocked.join(", ")}. Undercut: ${g.undercut?"yes":"no"}. Fit-critical: ${g.fit.join(", ")}. Separate piece: ${g.separate?"yes":"no"}.${f.length?" Features: "+f.join(", ")+".":""}`; }
+function ifDerive(id){ const g=IF_GEOM[id], out={};
+  IF_PROC_RULES.forEach(([rid,,f])=>f(g).forEach(t=>{ const [r,...at]=t.split("+"); const e=out[r]=out[r]||{r,at:new Set(),rules:[]};
+    at.forEach(a=>e.at.add(a)); e.rules.push(rid); }));
+  if(g.separate) Object.values(out).forEach(e=>{ if(e.r[0]==="h") e.at.add("hand"); });   // C7
+  return out; }
+const IF_LINKS_ALL={}, IF_LINK_DIFF={};
+Object.keys(IF_LINKS_HAND).forEach(id=>{
+  const der=ifDerive(id), hand=ifLinksHand(id), doc=hand.filter(x=>!x.inf), byR={}, rank={a:0,d:1,r:2,h:3,c:4};
+  doc.forEach(x=>{ byR[x.r]={r:x.r,at:[...x.at],cat:"doc",rules:[]}; });
+  Object.values(der).forEach(e=>{ if(byR[e.r]){ byR[e.r].cat="conf"; byR[e.r].rules=e.rules; byR[e.r].at=[...new Set([...byR[e.r].at,...e.at])]; }
+    else byR[e.r]={r:e.r,at:[...e.at],cat:"pred",rules:e.rules}; });
+  IF_LINKS_ALL[id]=Object.values(byR).sort((a,b)=>rank[a.r[0]]-rank[b.r[0]]||a.r.localeCompare(b.r)).map(x=>({...x,inf:x.cat==="pred"}));
+  const handInf=hand.filter(x=>x.inf).map(x=>x.r), derived=Object.keys(der);
+  IF_LINK_DIFF[id]={docNotDerived:doc.map(x=>x.r).filter(r=>!der[r]), handOnly:handInf.filter(r=>!der[r]&&!doc.some(x=>x.r===r)),
+    derivedNotHand:derived.filter(r=>!hand.some(x=>x.r===r)), agree:derived.filter(r=>hand.some(x=>x.r===r))};
+});
+const IF_LINKS=IF_LINKS_ALL;
 const IF_OUT={}; IF_CATS.forEach(([c,name,items])=>items.forEach(([id,lab,tools,tip])=>{ IF_OUT[id]={c,name,lab,tools,tip}; }));
 /* Composition: the interface forms in each joint, as the viewer models it.
    "●" in every configuration; "○" only in a variant or a support option. */
@@ -4731,9 +4836,8 @@ const IF_USED=IF_GROUPS.flatMap(([,l])=>l.map(x=>x[0])).filter(id=>Object.values
 // one colour per interface form, the same on every joint
 const IF_COL={sogi:"#D9822B",aikaki:"#D4A514",koshi:"#2A9D8F",oire:"#5B6BBF",ago:"#7A8F3A",ryaku:"#C0392B",mechi:"#8E44AD",
   hozo:"#8D6E63",kama:"#1F77B4",ari:"#17BECF",yatoi:"#E377C2",sen:"#2CA02C",kusabi:"#555555"};
-const IF_EVID=id=>IF_NEW.has(id)
-  ? "Links reasoned from the interface form's geometry, not yet checked against sources (dashed in the diagram)."
-  : "Links documented or consistent across sources, except those marked inferred.";
+const IF_EVID=id=>{ const ls=ifLinks(id), n=c=>ls.filter(x=>x.cat===c).length;
+  return `${n("doc")} documented, ${n("conf")} derived by the grammar and confirmed by a source, ${n("pred")} derived only (predictions, dashed in the diagram). Derived links name the process rule that gives them.`; };
 // the illustrations: a minimal sample of each interface form, drawn by us from
 // CadQuery models, its components apart; the interface form outlined in red
 const IF_SCHEMATIC=new Set(["hako","eri"]);
@@ -4754,7 +4858,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009032856";
+const ASSET_V="20261009040839";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4763,8 +4867,8 @@ const IF_DIFF={
   kanawa:"Level laps either side of a step, toes with dovetails, one 栓 from the side.",
   okkake:"Sloped laps either side of a step, two 込栓 draw pins."};
 function ifCatalogueHTML(){
-  const outs=id=>{ const by={}; ifLinks(id).forEach(({r,inf,at})=>{ const o=IF_OUT[r];
-      (by[o.name]=by[o.name]||[]).push(o.lab+(at.length?` <span class="ifat">[${ifAttrText(at)}]</span>`:"")+(inf?" <span class='ifinf'>(inferred)</span>":"")); });
+  const outs=id=>{ const by={}; ifLinks(id).forEach(x=>{ const o=IF_OUT[x.r];
+      (by[o.name]=by[o.name]||[]).push(o.lab+(x.at.length?` <span class="ifat">[${ifAttrText(x.at)}]</span>`:"")+ifCatTag(x)); });
     return Object.entries(by).map(([k,v])=>`<li><b>${k}:</b> ${v.join("; ")}</li>`).join(""); };
   return IF_GROUPS.map(([g,list])=>`<h4 class="ifgroup">${g}</h4>`+list.map(([id])=>{ const f=IF[id], [tag,rules]=IF_PROP[id];
     const used=Object.entries(IF_COMP).filter(([,c])=>c[id]).map(([j,c])=>`<li><a href="#joint-${j}"><i>${IF_JOINTS[j].ro}</i> ${IF_JOINTS[j].kj}</a> ${c[id][0]} ${c[id][1]}</li>`).join("");
@@ -4793,9 +4897,10 @@ function ifDiagram(host){
   host.innerHTML=`<div class="ifp-bar" role="group" aria-label="Show one category"><button data-c="all" aria-pressed="true">All</button>${IF_CATS.map(([c,n])=>`<button data-c="${c}" aria-pressed="false">${n}</button>`).join("")}</div>
    <div class="ifp-legend"><span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#5a4fc4" stroke-width="2"/></svg>Assembly, disassembly, repair</span>
    <span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#16876a" stroke-width="2"/></svg>Manual and digital fabrication</span>
-   <span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#5f6663" stroke-width="2"/></svg>Documented or consistent across sources</span>
-   <span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#5f6663" stroke-width="2" stroke-dasharray="5 4"/></svg>Inferred</span></div>
-   <label class="ifp-chk"><input type="checkbox" class="ifp-inf" checked> Show inferred links (dashed)</label>
+   <span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#5f6663" stroke-width="1.2"/></svg>Documented (a source)</span>
+   <span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#5f6663" stroke-width="3"/></svg>Derived by the grammar and confirmed by a source</span>
+   <span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#5f6663" stroke-width="1.2" stroke-dasharray="5 4"/></svg>Derived only (a prediction)</span></div>
+   <label class="ifp-chk"><input type="checkbox" class="ifp-inf" checked> Show predictions (derived only, dashed)</label>
    <p class="ifp-status" aria-live="polite">Showing all links.</p>
    <div class="ifp-detail" aria-live="polite"></div>
    <svg class="ifp-g" viewBox="0 0 960 1000" role="img" aria-label="Bipartite diagram linking twenty-three interface forms of Japanese timber joints to twenty-seven outcomes"></svg>`;
@@ -4808,20 +4913,20 @@ function ifDiagram(host){
   svg.setAttribute("viewBox","0 0 990 "+(Math.max(yl,yr)+6));
   const lg=el("g",{}), lines=[];
   const bg=el("g",{});
-  for(const m in IF_LINKS){ ifLinks(m).forEach(({r,inf,at})=>{ const c=cat[r], life="ADR".includes(c);
-    const ln=el("line",{x1:LX+LW,y1:ly[m],x2:RX,y2:ry[r],stroke:life?"#5a4fc4":"#16876a","stroke-width":1.2,"stroke-dasharray":inf?"5 4":"",opacity:.5,class:"ifp-ln"},lg);
+  for(const m in IF_LINKS){ ifLinks(m).forEach(({r,inf,at,cat:lc,rules})=>{ const c=cat[r], life="ADR".includes(c);
+    const ln=el("line",{x1:LX+LW,y1:ly[m],x2:RX,y2:ry[r],stroke:life?"#5a4fc4":"#16876a","stroke-width":lc==="conf"?2.6:1.2,"stroke-dasharray":inf?"5 4":"",opacity:.5,class:"ifp-ln"},lg);
     // the link's attributes, as a small badge near the operation it leads to
     let badge=null; if(at.length){ const f=0.82, bx=LX+LW+(RX-LX-LW)*f, by=ly[m]+(ry[r]-ly[m])*f; badge=el("g",{class:"ifp-badge"},bg);
-      const tx=el("text",{x:bx,y:by,"text-anchor":"middle","dominant-baseline":"central","font-size":8.5,fill:"#16876a"},badge); tx.textContent=at.map(a=>IF_LATTR[a][1]).join(" · ");
+      const tx=el("text",{x:bx,y:by,"text-anchor":"middle","dominant-baseline":"central","font-size":8.5,fill:"#0E6650"},badge); tx.textContent=at.map(a=>IF_LATTR[a][1]).join(" · ");
       const w=tx.textContent.length*4.4;   /* estimated: the diagram may be drawn while hidden */ el("rect",{x:bx-w/2-3,y:by-6,width:w+6,height:12,rx:3,fill:"#fff",stroke:"#8fd0b8","stroke-width":.6},badge).parentNode.insertBefore(badge.lastChild,tx); }
-    lines.push({m,r,c,inf,at,ln,badge}); }); }
+    lines.push({m,r,c,inf,at,ln,badge,cat:lc,rules}); }); }
   const nodes={};
   const bind=(g,kind,id)=>{ g.addEventListener("click",()=>focus(kind,id)); g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); focus(kind,id); } }); nodes[id]=g; };
   for(const id in ly){ const f=IF[id]; const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]});
     el("rect",{x:LX,y:ly[id]-14,width:LW,height:28,rx:5,fill:"#ffffff",stroke:IF_COL[id]||"#9aa19d","stroke-width":IF_COL[id]?2:1},g);
     const t=el("text",{x:LX+10,y:ly[id],"dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g);
     const s1=el("tspan",{},t); s1.textContent=ifpName(f.en)+"  "; const s2=el("tspan",{"font-weight":500},t); s2.textContent=f.kj+" "; const s3=el("tspan",{fill:"#5f6663","font-style":"italic"},t); s3.textContent=IF_HALVES[id]?"":f.ro;
-    const tg=el("text",{x:LX+LW-8,y:ly[id],"text-anchor":"end","dominant-baseline":"central","font-size":11,fill:"#8a908d"},g); tg.textContent=IF_FN[f.fn]+" · "+IF_SZ[IF_PROP[id][0]];
+    const tg=el("text",{x:LX+LW-8,y:ly[id],"text-anchor":"end","dominant-baseline":"central","font-size":11,fill:"#5C6763"},g); tg.textContent=IF_FN[f.fn]+" · "+IF_SZ[IF_PROP[id][0]];
     bind(g,"m",id); }
   IF_CATS.forEach(([c,,items])=>items.forEach(([id,,tools,tip])=>{ const life="ADR".includes(c); const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]+(tools?", tools: "+tools:"")});
     const hh=tools?40:24; el("rect",{x:RX,y:ry[id]-hh/2,width:RW,height:hh,rx:5,fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8","stroke-width":1},g);
@@ -4844,12 +4949,13 @@ function ifDiagram(host){
     else status.textContent=fc==="all"?"Showing all links.":"Showing "+IF_CATS.find(c=>c[0]===fc)[1].toLowerCase()+" only."; };
   const showDetail=()=>{ if(sel&&sel[0]==="r"){ const o=IF_OUT[sel[1]], ls=lines.filter(x=>x.r===sel[1]);
       detail.innerHTML=`<h3>${o.lab}</h3><p class="ifsrc">${o.name}${o.tools?`. Tools: ${o.tools}`:""}.${o.tip?` ${o.tip}.`:""}</p>`+
-        (ls.length?`<ul>${ls.map(x=>`<li><a href="#form-${x.m}">${IF[x.m].en} ${IF[x.m].kj}</a>${x.at.length?` <span class="ifat">[${ifAttrText(x.at)}]</span>`:""}${x.inf?" <span class='ifinf'>(inferred)</span>":""}</li>`).join("")}</ul>`:`<p class="ifp-hint">No interface form is linked to it yet.</p>`); return; }
+        (ls.length?`<ul>${ls.map(x=>`<li><a href="#form-${x.m}">${IF[x.m].en} ${IF[x.m].kj}</a>${x.at.length?` <span class="ifat">[${ifAttrText(x.at)}]</span>`:""}${ifCatTag(x)}</li>`).join("")}</ul>`:`<p class="ifp-hint">No interface form is linked to it yet.</p>`); return; }
     if(!sel||sel[0]!=="m"){ detail.innerHTML=HINT; return; }
     const id=sel[1], f=IF[id], [tag,rules]=IF_PROP[id];
     detail.innerHTML=ifImg(id,"ifimg ifimg-s")+`<h3>${ifName(id)}</h3>${IF_DEF[id]?`<p>${IF_DEF[id]}</p>`:""}${ifHalvesHTML(id)}<p class="ifsrc">Main function: ${IF_FN[f.fn]}. Sizing: ${IF_SZ[tag]}. Proportions depend on the joint the interface form is part of, so each rule names its joint where the source does. <a href="#form-${id}">In the catalogue</a>.</p>`+
       ifRulesHTML(id)+((IF_RNOTE[id]||IF_NORULE[id]||!rules.length)?`<p class="ifp-hint">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:"")+
-      `<p class="ifh2">Links</p><ul>${ifLinks(id).map(({r,inf,at})=>`<li><b>${IF_OUT[r].name}:</b> ${IF_OUT[r].lab}${at.length?` <span class="ifat">[${ifAttrText(at)}]</span>`:""}${inf?" <span class='ifinf'>(inferred)</span>":""}</li>`).join("")}</ul>`; };
+      `<p class="ifh2">Links</p><ul>${ifLinks(id).map(x=>`<li><b>${IF_OUT[x.r].name}:</b> ${IF_OUT[x.r].lab}${x.at.length?` <span class="ifat">[${ifAttrText(x.at)}]</span>`:""}${ifCatTag(x)}</li>`).join("")}</ul>`+
+      `<p class="ifh2">Geometry</p><p class="ifsrc">${ifGeomText(id)}</p>`; };
   const focus=(k,id)=>{ sel=(sel&&sel[1]===id)?null:[k,id]; render(); showDetail(); };
   host.querySelector(".ifp-inf").addEventListener("change",render);
   host.querySelectorAll("button[data-c]").forEach(b=>b.addEventListener("click",()=>{ fc=b.dataset.c; sel=null;
@@ -4976,12 +5082,15 @@ function rulesDoc(){
     cf.map(c=>[c.id,c.label,nm(c.form[0]),c.rules.map(r=>`${r.label} (${r.ref})`).join("; ")+(c.flagged?` *(${c.note})*`:"")])]]]);
   // 4. process
   B.push(["h3","4. Process rules"]);
-  B.push(["p",`For each interface form (P.), the rules linking it to actions. *(i)*: inferred (reasoned from the form's geometry or from general practice); otherwise documented, or consistent across sources. Attributes in brackets: ${[...new Set(Object.values(IF_LATTR).map(a=>a[0]))].map(k=>`*${k}*: ${Object.values(IF_LATTR).filter(a=>a[0]===k).map(a=>a[1]).join(" / ")}`).join("; ")}.`]);
-  const short=x=>`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").replace(/^Post-processing: /,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""}${x.inf?" *(i)*":""}`;
+  B.push(["p",`For each interface form (P.), its links to actions, derived by the process rules (A., D., R., H., C.; listed below) from the form's geometry, and set against the sources: *(c)* derived and confirmed by a source; *(p)* derived only, a prediction; unmarked, documented by a source but not derived. Attributes in brackets: ${[...new Set(Object.values(IF_LATTR).map(a=>a[0]))].map(k=>`*${k}*: ${Object.values(IF_LATTR).filter(a=>a[0]===k).map(a=>a[1]).join(" / ")}`).join("; ")}.`]);
+  const short=x=>`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").replace(/^Post-processing: /,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""}${x.cat==="conf"?" *(c)*":x.cat==="pred"?" *(p)*":""}`;
   const prow=[]; IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const ls=ifLinks(id);
     const man=ls.filter(x=>x.r==="c6"||x.r==="h8"||x.at.includes("hand"));
     prow.push([`P.${id}`,nm(id),...["A","D","R","M","G"].map(c=>ls.filter(x=>IF_OUT[x.r].c===c).map(short).join("; ")||"—"),man.length?man.map(short).join("; "):"—"]); }));
   B.push(["table",["ID","Interface form","Assembly","Disassembly","Repair","Hand (手刻み)","CNC (プレカット)","Stays manual"],prow]);
+  B.push(["detail","The process rules (Task T): each gives links from a form's geometry",[["table",["Rule","When the geometry shows","Gives"],
+    IF_PROC_RULES.map(([rid,txt])=>{ const [when,gives]=txt.split(": "); return [rid,when,gives||""]; })]]]);
+  B.push(["detail","Each form's geometry, as recorded",[["table",["Interface form","Geometry"],IF_GROUPS.flatMap(([,l])=>l.map(([id])=>[nm(id),ifGeomText(id)]))]]]);
   B.push(["detail","The operations, with their tools and machine processings",[["ul",IF_CATS.filter(c=>c[0]==="M"||c[0]==="G").flatMap(([c,name,items])=>items.map(([id,lab,tools,tip])=>`${name}: **${lab}**. Tools: ${tools}.${tip?` ${tip}.`:""}`))]]]);
   // 5. derivation
   B.push(["h3","5. Derivation example: daimochi tsugi"]);
@@ -5001,7 +5110,7 @@ function rulesDerivation(){
     const f1=v=>(Math.round(v*10)/10).toString(), nm=id=>`{{f:${id}}}`;
     const forms=["sogi","ryaku","mechi","yatoi","hozo","oire"];
     const linksOf=c=>forms.flatMap(id=>ifLinks(id).filter(x=>IF_OUT[x.r].c===c).map(x=>({id,x})));
-    const cite=c=>{ const by={}; linksOf(c).forEach(({id,x})=>(by[id]=by[id]||[]).push(`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""}${x.inf?" *(i)*":""}`));
+    const cite=c=>{ const by={}; linksOf(c).forEach(({id,x})=>(by[id]=by[id]||[]).push(`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""}${x.cat==="conf"?" *(c)*":x.cat==="pred"?" *(p)*":""}`));
       return "form rules, which hold across joints: "+(Object.entries(by).map(([id,v])=>`P.${id}: ${v.join(", ")}`).join("; ")||"—"); };
     // sizes
     const dims=RULED.filter(k=>IF_LIBFORM.daimochi[k]&&!["cd","cw","tl"].includes(k));
@@ -5074,7 +5183,7 @@ function renderHome(){
   <section class="home-sec" id="home-comp"><h2>Composition</h2><p class="note">Which interface forms make up each joint. Ticks open the catalogue entry; joint names open the joint.</p>${ifMatrixHTML()}</section>
   </div><div class="home-col">
   <section class="home-sec" id="home-proc"><h2>From interface forms to processes</h2><p class="note">Each interface form decides how the joint is assembled, taken apart and repaired, and how it is made by hand and by CNC. Select an interface form or an outcome to see its links.</p><div id="ifp"></div>
-    <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than oblique scarf, halving, seat, abbreviated gooseneck, stub tenon / stub mortise, gooseneck / gooseneck socket, dovetail / dovetail socket and peg / peg hole are reasoned from their geometry and shown dashed until checked against sources. Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p>
+    <p class="note">The links are derived by the grammar: each interface form's geometry is recorded as data (how its parts meet, the faces it opens to, what it blocks, undercut, fit-critical faces, separate piece), and process rules give its links from that. A link a source also states is <b>confirmed</b> (heavy line); a source-stated link the rules do not give is <b>documented</b> (thin line); a derived link no source states is a <b>prediction</b> (dashed). Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p>
     <p class="note"><b>Sizing:</b> no rule found = not found in the sources checked; not restricted = size set by the members joined. <b>Evidence:</b> documented = a primary source (Saitō 1904, denmoku-db, AIJ); secondary = commentary or later sources; generic = a general woodworking convention, not a Japanese timber-frame rule; inferred = a proxy or ratio derived by us; verify = read only from a snippet, to be checked against the original.</p>
     <p class="note">Fixed sizes from Saitō (1904) assume Meiji-era members of about 4寸 (120 mm); larger timbers may differ.</p></section>
   <section class="home-sec" id="home-terms"><h2>Terms and sources</h2><p>Terms follow AIJ 『建築学用語辞典』 (2nd ed., 1999) where listed, otherwise JAANUS; romanisation modified Hepburn. Interface forms follow the basic forms (基本形) of Kanasaki (2011), after Minamoto (1985) and Uchida (1981). Where both halves of a form have names, the receiving half's term was checked against JAANUS: 枘穴 <i>hozo-ana</i> (hozoana), 蟻ほぞ穴 <i>arihozo-ana</i> (yose-ari) and 目違ほぞ穴 <i>mechigai hozo-ana</i> (koshikake aritsugi) are found there; 鎌穴 <i>kama-ana</i> and 栓穴 <i>sen-ana</i> were not found in the sources checked and are marked unverified (†).</p>
@@ -5584,6 +5693,24 @@ const FV_BOX=document.getElementById("formview"); if(FV_BOX) FV_BOX.onchange=e=>
 syncInputs(); syncPresets(); renderCfg(); buildSteps(); resize(); refresh(true); requestAnimationFrame(tick);
 groupPanel(document.querySelector("main > section.panel:not(#otherpanel)")); ifRoute(); roItalic(document.body);
 if(typeof CC_PUBLISHED!=="undefined") document.querySelectorAll(".dl").forEach(d=>{ d.innerHTML='<p class="note">Downloads are available in the local viewer: the published page cannot save files.</p>'; });
+})();
+/* Task S: every label in an SVG drawing or diagram renders at --fs-small on
+   screen, whatever the drawing's viewBox scale: its font size is set in the
+   drawing's own units from its scale on screen, and set again when a drawing
+   is redrawn, zoomed, resized or shown. */
+(function(){
+  const px=()=>parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs-small"))||10;
+  let pending=false;
+  function fit(){ pending=false; const want=px();
+    document.querySelectorAll("svg text").forEach(t=>{ if(!t.isConnected||t.closest("[data-nofit]")) return;
+      const m=t.getScreenCTM&&t.getScreenCTM(); if(!m) return; const k=Math.hypot(m.a,m.b); if(!(k>0)) return;
+      const fs=(want/k).toFixed(3)+"px"; if(t.style.fontSize!==fs){ t.style.fontSize=fs; t.style.lineHeight="var(--lh-small)"; } }); }
+  window.ccFitSvgText=()=>{ if(!pending){ pending=true; requestAnimationFrame(fit); } };
+  new MutationObserver(ms=>{ if(ms.some(m=>m.type==="attributes"||[...m.addedNodes].some(n=>n.nodeType===1&&(n.tagName==="svg"||n.tagName==="text"||n.querySelector&&n.querySelector("svg text"))))) window.ccFitSvgText(); })
+    .observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["viewBox","transform","hidden","open"]});
+  window.addEventListener("resize",window.ccFitSvgText); window.addEventListener("hashchange",()=>setTimeout(window.ccFitSvgText,50));
+  document.addEventListener("toggle",window.ccFitSvgText,true);
+  window.ccFitSvgText();
 })();
 </script>
 </body>
