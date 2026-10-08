@@ -300,6 +300,7 @@ svg.ifp-g{width:70%;height:auto;display:block;background:#fff;border:1px solid #
 @media (prefers-reduced-motion:reduce){.ifp-ln,.ifc{transition:none}}
 h3.grp{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;padding:16px 14px 4px;border-top:2px solid #C3CAC6}
 h3.grp:first-child{border-top:0;padding-top:12px}
+.namesec p.nm-en{margin:0 0 2px}.namesec p.nm-ja{margin:0}
 .namesec + .readsec{border-top:1px solid #DDE2DF}
 .readsec + h3.grp{border-top:2px solid #C3CAC6}
 figure.jdfig{margin:0}.jdkey{margin:6px 0 2px}
@@ -4679,7 +4680,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009023147";
+const ASSET_V="20261009023718";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -5069,8 +5070,8 @@ function groupPanel(panel){
   const jk=panel.id==="otherpanel"?ifCurrentJoint():"daimochi", J=IF_JOINTS[jk];
   // Names, always open, at the top
   if(J){ const d=document.createElement("div"); d.className="readsec namesec";
-    d.innerHTML=`<div class="readhead"><span>Name</span></div><div class="body"><div class="kv wide">
-      <span>Japanese</span><span>${J.kj} <i>${J.ro}</i></span><span>English</span><span>${J.gl}</span></div></div>`;
+    d.innerHTML=`<div class="readhead"><span>Name</span></div><div class="body">
+      <p class="nm-en">${J.gl[0].toUpperCase()+J.gl.slice(1)}</p><p class="nm-ja">${J.kj} <i>${J.ro}</i></p></div>`;
     frag.appendChild(d); }
   const match=byTitle.get("Match a drawing"); if(match){ frag.appendChild(match); byTitle.delete("Match a drawing"); }
   byTitle.delete("Names");
