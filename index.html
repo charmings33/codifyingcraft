@@ -365,9 +365,9 @@ header p.authors{font-size:calc(13px*.625)}
 <main>
 <section class="stage" aria-label="Joint model">
   <canvas id="view" aria-label="3D model of the joint. Drag to rotate, pinch or scroll to zoom."></canvas>
-  <div style="display:flex;flex-wrap:wrap;align-items:center"><label class="xray"><input type="checkbox" id="xray"> Show hidden parts (pins, tenon)</label>
+  <div style="display:flex;flex-wrap:wrap;align-items:center"><label class="xray"><input type="checkbox" id="xray"> Show hidden parts (e.g. pegs, tenons)</label>
   <label class="xray"><input type="checkbox" id="grav"> Gravity on release</label>
-  <label class="xray"><input type="checkbox" id="formview"> Interface forms</label></div>
+</div>
   <div id="iflegend" class="iflegend" hidden></div>
   <div id="ifpop" class="ifpop" hidden></div>
   <p class="note" style="margin:0 10px 4px">Drag a part to move it along its assembly axis; drag the background to rotate. Each part stops where the geometry stops it.</p>
@@ -688,7 +688,7 @@ const CFGOPT = {
   support:{label:"Support element", opts:[
     ["beam","Beam below","Beam under the joint: shikibari [WA Fig. 3.2], naka-hikibari [WA Fig. 3.4]"],
     ["post_below","Post below, tenon through","Roof post (koyatsuka) with its tenon (hiragara, dōzuki shoulder) through both pieces [WA Fig. 3.3]"],
-    ["post_above","Post above, tenon through","Post above (munazuka) with its tenon through both pieces [WA Fig. 3.4]"],
+    ["post_above","Post above, stub tenon","Post above (munazuka), seated in a housing on the upper piece, with a short tenon into the upper piece only, the length of the post below's stub tenon. WA Fig. 3.4 draws the post above with its tenon through both pieces"],
     ["none","None","Joint on its own, as in the test specimens [WA, DM1]"]]},
   lock:{label:"Locking", opts:[
     ["blind","Dowels","Hidden square dowels (太枘 <i>dabo</i>): short hardwood dowels housed across the joint plane, not steel dowel fasteners; 5分 × 1寸 [WA Fig. 3.2]"],
@@ -773,10 +773,10 @@ function renderCfg(){
   const el=document.getElementById("cfg");
   el.innerHTML=Object.entries(CFGOPT).map(([key,g])=>{
     const disabled = key==="removed" && !(CFG.support==="beam"||CFG.support==="post_below");
-    const offW = o => (key==="lock" && o[0]==="wedges" && !(CFG.support==="post_below"&&CFG.tenon==="through")) || (key==="tenon" && !(CFG.support==="post_below"||CFG.support==="post_above"));
-    const cur=g.opts.find(o=>o[0]===CFG[key]);
-    return `<div class="cfg"><h4>${g.label}</h4><div class="opts">${g.opts.map(o=>`<button data-k="${key}" data-v="${o[0]}" aria-pressed="${o[0]===CFG[key]}" title="${o[2]}"${disabled||offW(o)?" disabled":""}>${o[1]}</button>`).join("")}</div><p class="src"></p></div>`;
-  }).join("") + `<p class="cfgsrc">${Object.entries(CFGOPT).map(([k,g])=>{ const o=g.opts.find(x=>x[0]===CFG[k]); return o?o[2]:""; }).filter(Boolean).join("; ")}</p>`;
+    const offW = o => (key==="lock" && o[0]==="wedges" && !(CFG.support==="post_below"&&CFG.tenon==="through")) || (key==="tenon" && CFG.support!=="post_below");   // the post above always has a stub tenon
+    const cur=g.opts.find(o=>o[0]===CFG[key]), shown=k=>k==="tenon"&&CFG.support==="post_above"?"stub":CFG[k];
+    return `<div class="cfg"><h4>${g.label}</h4><div class="opts">${g.opts.map(o=>`<button data-k="${key}" data-v="${o[0]}" aria-pressed="${o[0]===shown(key)}" title="${o[2]}"${disabled||offW(o)?" disabled":""}>${o[1]}</button>`).join("")}</div><p class="src"></p></div>`;
+  }).join("") + `<p class="cfgsrc">${Object.entries(CFGOPT).map(([k,g])=>{ if(k==="tenon"&&CFG.support==="post_above") return ""; const o=g.opts.find(x=>x[0]===CFG[k]); return o?o[2]:""; }).filter(Boolean).join("; ")}</p>`;
   el.querySelectorAll("button").forEach(b=>b.onclick=()=>{ const k=b.dataset.k; let v=b.dataset.v; if(k==="removed") v=(v==="true");
     CFG[k]=v; if(k==="support"&&!(v==="beam"||v==="post_below")) CFG.removed=false; if(k==="support"&&v!=="post_below"&&CFG.lock==="wedges") CFG.lock="blind";
     if(k==="support"){ const R=(kk,id)=>P[kk].rules.find(x=>x.id===id);
@@ -814,16 +814,26 @@ function derived(X){
   const tw=(X.tw===undefined?0.28*H:X.tw), td=(X.td===undefined?0.55*W:X.td);  // post tenon
   const pl=(X.pl===undefined?0.714*H:X.pl);
   const sdv=(X.sd||0);
-  const sdA = (CFG.support==="beam"||CFG.support==="post_below") ? sdv : 0;
-  const sdB = CFG.support==="post_above" ? sdv : 0;
-  const sd = sdA;
   const nw = CFG.support==="beam" ? 1.05*H : H;
-  const cd = CFG.support==="beam" ? (X.cd||0) : 0, cw = (X.cw===undefined?0.4*nw:Math.min(X.cw,nw-6));
-  const through = CFG.tenon!=="stub";
+  const cdv = CFG.support==="beam" ? (X.cd||0) : 0, cw = (X.cw===undefined?0.4*nw:Math.min(X.cw,nw-6));
+  // The seat housing (and the cog slot under it) may not reach the scarf: each is
+  // held to the depth that leaves 0.1 H of wood between it and the cut, the
+  // minimum the checks assume. An absolute rule (1寸) is deeper than that on a
+  // small section; the depth the rule gave is kept to be reported.
+  const wood=(fromTop,cogw)=>{ let m=1e9; for(let i=0;i<=60;i++){ const x=O/2-nw/2+nw*i/60, xc=Math.max(0,Math.min(O,x)), y=cutY({H,O,t,j,jr},xc);
+      m=Math.min(m,(fromTop?H-y:y)-((cogw&&Math.abs(x-O/2)<=cw/2)?cogw:0)); } return m-0.1*H; };
+  const below = CFG.support==="beam"||CFG.support==="post_below";
+  let sdA = below ? sdv : 0, cd = cdv;
+  if(sdA>0){ sdA=Math.max(0,Math.min(sdA,wood(false,cd))); if(cd>0) cd=Math.max(0,Math.min(cd,wood(false,0)-sdA)); }
+  const sdB = CFG.support==="post_above" ? Math.max(0,Math.min(sdv,wood(true,0))) : 0;
+  const sd = sdA, sdRule = sdv, cdRule = cdv, sdCapped = (below?sdA:sdB)<sdv-0.05 || cd<cdv-0.05;
+  const through = CFG.tenon!=="stub" && CFG.support!=="post_above";   // the post above: a stub tenon, always
   const availA = H/2-j/2-sdA, availB = H/2-j/2-sdB;
-  const stubA = X.tl===undefined?Math.max(0,0.6*availA):X.tl, stubB = X.tl===undefined?Math.max(0,0.6*availB):X.tl;
+  // a stub tenon (and so its mortise) may not reach the scarf: held to the wood at the centre less 10 mm, as the check asks
+  const stubA = X.tl===undefined?Math.max(0,0.6*availA):Math.max(0,Math.min(X.tl,availA-10)), stubB = X.tl===undefined?Math.max(0,0.6*availB):Math.max(0,Math.min(X.tl,availB-10));
+  const tlRule = X.tl;
   const ext=Math.max(O*0.55,H*1.6);
-  return {H,W,O,t,j,jr,ml,mw,run,ps,drop,ang,s1,s2,ext,bd,tw,td,pl,sd,sdA,sdB,nw,cd,cw,through,stubA,stubB,availA,availB,X};
+  return {H,W,O,t,j,jr,ml,mw,run,ps,drop,ang,s1,s2,ext,bd,tw,td,pl,sd,sdA,sdB,nw,cd,cw,through,stubA,stubB,availA,availB,sdRule,cdRule,sdCapped,tlRule,X};
 }
 function profile(D,tongue){
   const {H,O,t,j,jr,ml,ext}=D;
@@ -872,17 +882,17 @@ function checks(D){
     const inside = b < D.O - 3 && a > 3, hit = pegHitSeat(0,D.sdA+D.cd);
     const ok = inside && left >= 0.1*D.H && !hit;
     const name = CFG.support==="beam" ? "T-shaped seat on the beam (watari ago)" : "Seat housing for the post below";
-    out.push({s: ok?"pass":"fail", t:name, d: ok ? `Housing ${fmtAbs(D.sdA)} deep${D.cd>0?`, cog slot ${fmtAbs(D.cd)} deeper and ${fmtLen(D.cw)} wide`:""}; ${fmtLen(left)} of wood left under the cut (assumed minimum 0.1 H).` : (hit ? "A dowel, pin or bolt runs into the seat. Move the locking outwards." : "The seat leaves too little wood under the cut, or runs past the scarf. Make it shallower.")});
+    out.push({s: ok?"pass":"fail", t:name, d: ok ? `Housing ${fmtAbs(D.sdA)} deep${D.cd>0?`, cog slot ${fmtAbs(D.cd)} deeper and ${fmtLen(D.cw)} wide`:""}; ${fmtLen(left)} of wood left under the cut (assumed minimum 0.1 H).${D.sdCapped?` Held shallower than the rule gives (housing ${fmtAbs(D.sdRule)}${D.cdRule>0?`, cog ${fmtAbs(D.cdRule)}`:""}), which would reach the scarf on this section.`:""}` : (hit ? "A dowel, pin or bolt runs into the seat. Move the locking outwards." : "The seat leaves too little wood under the cut, or runs past the scarf. Make it shallower.")});
   }
   if(D.sdB>0){
     const a=D.O/2-D.nw/2, b2=D.O/2+D.nw/2; let left=1e9; for(let i=0;i<=60;i++){ const x=a+(b2-a)*i/60; left=Math.min(left, D.H-cutY(D,Math.max(0,Math.min(D.O,x)))-D.sdB); }
     const _l=left, inside = a>3 && D.O/2+D.nw/2 < D.O-3, hit = pegHitSeat(D.H-D.sdB,D.H);
     const ok = inside && left >= 0.1*D.H && !hit;
-    out.push({s: ok?"pass":"fail", t:"Seat housing for the post above", d: ok ? `Housing ${fmtAbs(D.sdB)} deep on top of the upper piece; ${fmtLen(left)} of wood left above the cut (assumed minimum 0.1 H).` : (hit ? "A dowel, pin or bolt runs into the housing. Move the locking outwards." : "The housing leaves too little wood above the cut. Make it shallower.")});
+    out.push({s: ok?"pass":"fail", t:"Seat housing for the post above", d: ok ? `Housing ${fmtAbs(D.sdB)} deep on top of the upper piece; ${fmtLen(left)} of wood left above the cut (assumed minimum 0.1 H).${D.sdCapped?` Held shallower than the rule gives (${fmtAbs(D.sdRule)}), which would reach the scarf on this section.`:""}` : (hit ? "A dowel, pin or bolt runs into the housing. Move the locking outwards." : "The housing leaves too little wood above the cut. Make it shallower.")});
   }
   if((CFG.support==="post_below"||CFG.support==="post_above") && !D.through){
     const st = CFG.support==="post_below" ? D.stubA : D.stubB, av = CFG.support==="post_below" ? D.availA : D.availB, ok = st>=10 && st<=av-10;
-    out.push({s: ok?"pass":"fail", t:"Stub tenon fits within one piece", d: ok ? `Stub tenon ${fmtAbs(st)} long in the ${CFG.support==="post_below"?"lower":"upper"} piece, which has ${fmtLen(av)} of wood at the centre.` : `A ${fmtAbs(st)} stub tenon does not fit: the ${CFG.support==="post_below"?"lower":"upper"} piece has ${fmtLen(av)} of wood at the centre, less 10 mm. Use a shorter tenon, a through tenon, or a shallower housing.`});
+    out.push({s: ok?"pass":"fail", t:"Stub tenon fits within one piece", d: ok ? `Stub tenon ${fmtAbs(st)} long in the ${CFG.support==="post_below"?"lower":"upper"} piece, which has ${fmtLen(av)} of wood at the centre.${D.tlRule!==undefined&&st<D.tlRule-0.05?` Held shorter than the rule gives (${fmtAbs(D.tlRule)}), which would reach the scarf on this section.`:""}` : `A ${fmtAbs(st)} stub tenon does not fit: the ${CFG.support==="post_below"?"lower":"upper"} piece has ${fmtLen(av)} of wood at the centre, less 10 mm. Use a shorter tenon, a through tenon, or a shallower housing.`});
   }
   if(CFG.support==="post_below"||CFG.support==="post_above"){
     out.push({s:"pass", t:"Post shoulder bears on the joint", d: (CFG.support==="post_below" ? "The post shoulder (dōzuki) bears in the housing under the lower piece; " : "The post above bears in the housing on the upper piece; ") + (D.through ? "its tenon runs through mortises in both pieces." : "its stub tenon enters one piece only.")});
@@ -1045,7 +1055,13 @@ function build(D){
   root.position.set(-D.O/2,-D.H/2+D.H*0.55,0);
   ifRefresh();
 }
-document.getElementById("xray").onchange=e=>{ [matA,matB].forEach(m=>{ m.transparent=e.target.checked; m.opacity=e.target.checked?0.3:1; m.depthWrite=!e.target.checked; m.needsUpdate=true; }); };
+/* Show hidden parts: the timbers that hide them (the two elements, and on the
+   daimochi the post and the post above) go see-through; pegs, keys and tenons stay solid. */
+let XRAY=false; const XRAY_MATS=[matA,matB,matC,matU];
+function xraySet(on){ XRAY=on;
+  XRAY_MATS.forEach(m=>{ m.transparent=on||m===matC; if(m!==matC) m.opacity=on?0.3:1; m.depthWrite=!on; m.needsUpdate=true; });
+  if(FORMVIEW) ifApply(); }
+document.getElementById("xray").onchange=e=>xraySet(e.target.checked);
 /* orbit */
 let theta=-0.75, phi=0.42, dist=1;
 function frame(D,reset){ const span=D.O+2*D.ext; if(reset||!frame.base){frame.base=span; dist=1;} }
@@ -1189,7 +1205,7 @@ function buildSteps(){
   if(CFG.lock==="through") st.push({b:"Drive draw pins", txt:"Two square draw pins (大栓 daisen) are driven down through both halves and lock the splice.", B:0,P:0,C:1,U:1});
   if(CFG.lock==="wedges") st.push({b:"Drive wedges", txt:"Two wedges (kusabi) are driven in beside the post tenon at the top, locking both pieces to the post.", B:0,P:0,C:1,U:1});
   if(CFG.lock==="bolts") st.push({b:"Bolt up", txt:"Bolts are passed through both halves and tightened.", B:0,P:0,C:1,U:1});
-  if(CFG.support==="post_above") st.push({b:"Post above", txt:`The post above seats in the housing on the upper piece; its tenon ${CFG.tenon==="stub"?"enters the upper piece only":"passes down through both pieces"}.`, B:0,P:0,C:1,U:0});
+  if(CFG.support==="post_above") st.push({b:"Post above", txt:`The post above seats in the housing on the upper piece; its stub tenon enters the upper piece only.`, B:0,P:0,C:1,U:0});
   if(below){
     st.push({b:"Remove "+supName, txt:`For repair, the ${supName} under the joint is taken out. The splice now has to carry the roof load across the gap. This is the column-removal case of the FE model; this viewer gives no structural verdict.`, B:0,P:0,C:0,U:0, rm:true});
     st.push({b:"Replace "+supName, txt:`A new or repaired ${supName} is set back under the joint.`, B:0,P:0,C:1,U:0});
@@ -1285,7 +1301,7 @@ function tick(){
   ["a","b","p","c","u"].forEach(n=>{ if(dragging!==n) Q[n]+=(QT[n]-Q[n])*k; });
   if(meshA) meshA.position.y=Q.a;
   groupB.position.y=Q.a+Q.b; groupP.position.y=Q.a+Q.p;
-  supGroup.position.y=Q.c; const cv=1+Q.c/(1.4*D.H); supGroup.visible=cv>0.02; matC.opacity=0.15+0.85*Math.max(0,Math.min(cv,1));
+  supGroup.position.y=Q.c; const cv=1+Q.c/(1.4*D.H); supGroup.visible=cv>0.02; matC.opacity=(XRAY?0.3:1)*(0.15+0.85*Math.max(0,Math.min(cv,1)));
   aboveGroup.position.y=Q.u;
   const now=performance.now(), objs={a:meshA,b:groupB,p:groupP,c:supGroup,u:aboveGroup}, mats={a:[matA],b:[matB],p:[matP],c:[matC],u:[matU]};
   Object.keys(objs).forEach(kk=>{ const o=objs[kk]; if(!o) return; const fx=FX[kk]||{};
@@ -1430,7 +1446,7 @@ function refresh(reset){
   cur=derived();
   Object.keys(P).forEach(k=>document.getElementById("v-"+k).textContent=fmt(k));
   build(cur); frame(cur,reset); drawMarking(cur); renderZones(); renderInst(); renderOrder(); renderMaking();
-  [["sd",CFG.support!=="none"],["cd",CFG.support==="beam"],["cw",CFG.support==="beam"],["tl",(CFG.support==="post_below"||CFG.support==="post_above")&&CFG.tenon==="stub"],["tw",CFG.support==="post_below"||CFG.support==="post_above"],["td",CFG.support==="post_below"||CFG.support==="post_above"],["mw",(S.ml||0)>0]].forEach(([k,on])=>{ const w=document.getElementById("in-"+k).closest(".param"); w.style.opacity=on?1:0.35; inputs[k].disabled=!on; });
+  [["sd",CFG.support!=="none"],["cd",CFG.support==="beam"],["cw",CFG.support==="beam"],["tl",(CFG.support==="post_below"&&CFG.tenon==="stub")||CFG.support==="post_above"],["tw",CFG.support==="post_below"||CFG.support==="post_above"],["td",CFG.support==="post_below"||CFG.support==="post_above"],["mw",(S.ml||0)>0]].forEach(([k,on])=>{ const w=document.getElementById("in-"+k).closest(".param"); w.style.opacity=on?1:0.35; inputs[k].disabled=!on; });
   ["p","q","pl"].forEach(k=>{ const off = (CFG.lock==="none"||CFG.lock==="wedges") || (k==="pl" && CFG.lock!=="blind");
     const w=document.getElementById("in-"+k).closest(".param"); w.style.opacity=off?0.35:1; inputs[k].disabled=off; });
   document.querySelector('label[for="in-p"]').textContent = CFG.lock==="bolts" ? "Bolt size (bolt diameter is half this)" : (CFG.lock==="through"?"Draw pin size":"Dowel size");
@@ -4552,7 +4568,7 @@ Object.values(IF_JOINTS).forEach(J=>{ J.en=J.title; });
 const IF_COMP={
   daimochi:{sogi:["●","the oblique scarf, with a land at each end"],ryaku:["●","the step at mid-scarf"],mechi:["●","the tongue at each tip, in a groove at the other piece's shoulder"],
     yatoi:["○","dowels (太枘 dabo), set in before the upper piece"],sen:["○","through draw pins (大栓 daisen), driven last"],kusabi:["○","wedges on the post tenon"],
-    hozo:["○","the post tenon through both pieces, when it sits on a post"],oire:["○","the housing on the lower piece's underside that the post's shoulder (dōzuki) seats in"],ago:["○","the cog over a beam below"]},
+    hozo:["○","the post tenon: from a post below, through both pieces or a stub; from a post above, a stub into the upper piece"],oire:["○","the housing on the lower piece's underside that the post's shoulder (dōzuki) seats in"],ago:["○","the cog over a beam below"]},
   kamatsugi:{koshi:["●","the seat the upper element rests on"],kama:["●","the gooseneck and its socket"],mechi:["○","the 目違い notch (Toda's variant)"],sen:["○","the 込栓, driven sideways (Toda's variant)"]},
   aritsugi:{koshi:["●","the seat, cut to H/2"],ari:["●","the dovetail and its socket"],mechi:["○","the 目違い stub (size assumed)"]},
   kanawa:{aikaki:["●","the level runs, split at half the depth"],ryaku:["●","the step at the centre"],mechi:["●","the toe (目違い) at each tip"],
@@ -4583,7 +4599,7 @@ function ifName(id,short){ const f=IF[id]; return short?`${f.en} ${f.kj}`:`${f.e
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009004118";
+const ASSET_V="20261009012218";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4676,7 +4692,7 @@ function renderHome(){
   <section class="home-sec"><p class="home-intro">Japanese timber joints are described here by a making grammar (after Knight and Stiny 2015): a vocabulary of interface forms (基本形), with rules that combine them into interfaces between components, size them from sourced scaling rules, and link each interface form to the actions that make, assemble and repair it.</p>
     <p class="note">A <b>component</b> is a physically bounded piece: each beam end, a post, a pin, a key, a dowel. An <b>interface</b> is everything connecting two components, such as the beam–beam interface of a daimochi or each pin–beam interface. An <b>interface form</b> (基本形) is a shaped part of an interface, a mating 凸凹 pair. A <b>feature</b> is an interface form as a machine cuts it: a pocket, a slot, a drilling.</p></section>
   <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#home-comp">Composition</a><a href="#home-proc">From interface forms to processes</a><a href="#home-joints">The joints</a><a href="#home-terms">Terms and sources</a></nav>
-  <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (its dimensions follow the member by rule), fixed size (a set size, usually a tool or 寸 standard), partly scales (some dimensions scale, others are fixed or capped), not restricted (no rule of its own; its size is set by the members it joins), or no rule found (none in the sources checked; one may exist). Each rule shows its source and its evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the 3D view of a joint.</p>${ifCatalogueHTML()}</section>
+  <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (its dimensions follow the member by rule), fixed size (a set size, usually a tool or 寸 standard), partly scales (some dimensions scale, others are fixed or capped), not restricted (no rule of its own; its size is set by the members it joins), or no rule found (none in the sources checked; one may exist). Each rule shows its source and its evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the Interface forms diagram on each joint page.</p>${ifCatalogueHTML()}</section>
   <section class="home-sec" id="home-comp"><h2>Composition</h2><p class="note">Which interface forms make up each joint. Ticks open the catalogue entry; joint names open the joint.</p>${ifMatrixHTML()}</section>
   <section class="home-sec" id="home-proc"><h2>From interface forms to processes</h2><p class="note">Each interface form decides how the joint is assembled, taken apart and repaired, and how it is made by hand and by CNC. Select an interface form or an outcome to see its links.</p><div id="ifp"></div>
     <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than oblique scarf, halving, seat, abbreviated gooseneck, stub tenon, gooseneck, dovetail and pin are reasoned from their geometry and shown dashed until checked against sources. Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p>
@@ -4734,7 +4750,7 @@ function groupPanel(panel){
   { const d=document.createElement("div"); d.className="readsec jdhost";
     d.innerHTML=`<div class="readhead"><span>Interface forms</span></div><div class="body">
       <figure class="ifimg jdfig" data-if="jd"></figure><div class="jdkey iftags-row"></div>
-      <p class="note">The joint's components pulled apart, each interface form in its colour (the same as on the landing page and in the 3D view). Drag the background to rotate, scroll to zoom, drag a part to move it; click a face for its name.</p></div>`;
+      <p class="note">The joint's components pulled apart, each interface form in its colour (the same as on the landing page). Drag the background to rotate, scroll to zoom, drag a part to move it; click a face for its name.</p></div>`;
     kids.push(d); }
   if(jkey==="daimochi"&&panel.id!=="otherpanel"&&!kids.some(n=>ifPanelTitle(n)==="Validation")){
     const d=document.createElement("details");
@@ -4895,7 +4911,7 @@ async function ifvOpen(fig, given){
   const up=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=0;
     // a click on a face, not a drag: name its interface form
     if(given&&drag&&drag.part&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<4&&!drag.ax){ const fid=(data[drag.i].ids||[])[drag.face], cap=box.querySelector(".ifv-cap");
-      if(cap) cap.innerHTML=fid?`<span class="ifsw" style="background:${IF_COL[fid]||"#ccc"}"></span><a href="#form-${fid}">${IF[fid].en} ${IF[fid].kj}</a>: ${((IF_COMP[ifCurrentJoint()]||{})[fid]||["",""])[1]}`:"An uncoloured face: the timber's own surface."; }
+      if(cap){ const F=fid&&jdForm(fid); cap.innerHTML=F?`<span class="ifsw" style="background:${F.col||"#ccc"}"></span><a href="#form-${F.id}">${F.en} ${F.kj}</a>: ${F.note}`:"An uncoloured face: the timber's own surface."; } }
     if(!ptrs.size) drag=null; };
   cv.addEventListener("pointerup",up); cv.addEventListener("pointercancel",up);
   cv.addEventListener("wheel",e=>{ e.preventDefault(); V.zoom=Math.max(0.3,Math.min(8,V.zoom*Math.exp(-e.deltaY*0.0015))); dirty=true; },{passive:false});
@@ -5038,7 +5054,8 @@ function ifApply(){
     tris.forEach((t,i)=>{ const id=typeof f==="function"?f(t):f; ids.push(id); if(id) seen.add(id);
       const c=id&&IF_COL[id]?new THREE.Color(IF_COL[id]):base; for(let k=0;k<3;k++){ col[i*9+k*3]=c.r; col[i*9+k*3+1]=c.g; col[i*9+k*3+2]=c.b; } });
     g.setAttribute("color",new THREE.BufferAttribute(col,3)); g.computeVertexNormals();
-    m.geometry=g; m.material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.85,transparent:!!sv.mat.transparent,opacity:sv.mat.opacity??1,depthWrite:sv.mat.depthWrite!==false});
+    m.geometry=g; const xr=XRAY&&XRAY_MATS.includes(sv.mat);   // see-through under Show hidden parts, like the timber it stands for
+    m.material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.85,transparent:xr||!!sv.mat.transparent,opacity:xr?0.3:(sv.mat.opacity??1),depthWrite:!xr&&sv.mat.depthWrite!==false});
     m.userData.formTri=ids; });
   ifLegend(seen);
 }
@@ -5051,6 +5068,45 @@ function ifRefresh(){ if(FORMVIEW) ifApply(); jdSchedule(); }
    each in its own frame (stage moves left out), pulled apart, every face in the
    colour of its interface form; a live box, as on the landing page. */
 let JD_PENDING=false;
+/* A daimochi element with the post's mortise cut through it: its profile
+   (x, y), extruded across the width W, cut into cells along the mortise's
+   planes, the cell that is the mortise left out. Faces between two cells are
+   dropped; faces onto the mortise are its walls. hole: {x0,x1,y0,y1,z} in the
+   element's own frame. Returns [[9 numbers], isMortiseWall] per triangle. */
+function jdMortised(P,W,h){
+  const area=P.reduce((a,p,i)=>{ const q=P[(i+1)%P.length]; return a+p[0]*q[1]-q[0]*p[1]; },0); if(area<0) P=P.slice().reverse();
+  const clip=(poly,ax,v,keepLess)=>{ const out=[], ins=p=>keepLess?p[ax]<=v+1e-9:p[ax]>=v-1e-9;
+    for(let i=0;i<poly.length;i++){ const a=poly[i], b=poly[(i+1)%poly.length], ia=ins(a), ib=ins(b);
+      if(ia) out.push(a);
+      if(ia!==ib){ const [u,w]=a[ax]<b[ax]?[a,b]:[b,a], f=(v-u[ax])/(w[ax]-u[ax]); const c=[u[0]+f*(w[0]-u[0]),u[1]+f*(w[1]-u[1])]; c[ax]=v; out.push(c); } }
+    return out.length>=3?out:null; };
+  const xs=[[-1e9,h.x0],[h.x0,h.x1],[h.x1,1e9]], ys=[[-1e9,h.y0],[h.y0,h.y1],[h.y1,1e9]], zs=[[-W/2,-h.z],[-h.z,h.z],[h.z,W/2]];
+  const inP=(x,y)=>{ let c=false; for(let i=0,j=P.length-1;i<P.length;j=i++){ const a=P[i], b=P[j]; if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]) c=!c; } return c; };
+  const inHole=(x,y,z)=>x>h.x0&&x<h.x1&&y>h.y0&&y<h.y1&&Math.abs(z)<h.z;
+  const out=[];
+  const face=(A,B,C)=>{ const ux=B[0]-A[0],uy=B[1]-A[1],uz=B[2]-A[2], vx=C[0]-A[0],vy=C[1]-A[1],vz=C[2]-A[2];
+    let nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx; const l=Math.hypot(nx,ny,nz); if(l<1e-9) return; nx/=l; ny/=l; nz/=l;
+    const e=0.05, q=[(A[0]+B[0]+C[0])/3+nx*e,(A[1]+B[1]+C[1])/3+ny*e,(A[2]+B[2]+C[2])/3+nz*e];
+    if(inHole(...q)) out.push([[...A,...B,...C],true]);
+    else if(!(inP(q[0],q[1])&&Math.abs(q[2])<W/2)) out.push([[...A,...B,...C],false]); };
+  xs.forEach(([xa,xb],xi)=>ys.forEach(([ya,yb],yi)=>{
+    let c=clip(P,0,xa,false); c=c&&clip(c,0,xb,true); c=c&&clip(c,1,ya,false); c=c&&clip(c,1,yb,true); if(!c) return;
+    // clipping a non-convex profile can leave zero-width spikes along a cut line: take out repeated points and spike tips
+    for(let again=true;again&&c.length>=3;){ again=false;
+      for(let i=0;i<c.length&&c.length>=3;i++){ const p0=c[(i+c.length-1)%c.length], p=c[i], q=c[(i+1)%c.length];
+        const ux=p[0]-p0[0], uy=p[1]-p0[1], vx=q[0]-p[0], vy=q[1]-p[1];
+        if(Math.hypot(ux,uy)<1e-6||(Math.abs(ux*vy-uy*vx)<1e-6*(1+Math.hypot(ux,uy)*Math.hypot(vx,vy))&&ux*vx+uy*vy<0)){ c.splice(i,1); again=true; break; } } }
+    if(c.length<3||Math.abs(c.reduce((a,p,i)=>{ const q=c[(i+1)%c.length]; return a+p[0]*q[1]-q[0]*p[1]; },0))<1e-3) return;   // a cut on the element's face leaves no cell
+    const tri=THREE.ShapeUtils.triangulateShape(c.map(p=>new THREE.Vector2(p[0],p[1])),[]);
+    zs.forEach(([z0,z1],zi)=>{ if(xi===1&&yi===1&&zi===1) return;
+      tri.forEach(([i,j,k])=>{ face([...c[i],z1],[...c[j],z1],[...c[k],z1]); face([...c[k],z0],[...c[j],z0],[...c[i],z0]); });
+      c.forEach((p,i)=>{ const q=c[(i+1)%c.length]; face([...p,z0],[...q,z0],[...q,z1]); face([...p,z0],[...q,z1],[...p,z1]); }); }); }));
+  return out;
+}
+/* the diagram's own names for the two halves of a mortise and tenon */
+const JD_SUB={"hozo~m":{base:"hozo",en:"Mortise",kj:"枘穴",ro:"hozo-ana",col:"#00838F",note:"the mortise the post tenon runs in; with the tenon it makes the Mortise and tenon 枘"},
+  "hozo":{base:"hozo",en:"Tenon",kj:"枘",ro:"hozo",col:IF_COL.hozo,note:"the post tenon (hiragara); with the mortise it makes the Mortise and tenon 枘"}};
+const jdForm=id=>{ const S=JD_SUB[id]; return S?{id:S.base,en:S.en,kj:S.kj,col:S.col,note:S.note}:{id,en:IF[id].en,kj:IF[id].kj,col:IF_COL[id],note:((IF_COMP[ifCurrentJoint()]||{})[id]||["",""])[1]}; };
 function jdSchedule(){ if(JD_PENDING) return; JD_PENDING=true; requestAnimationFrame(()=>requestAnimationFrame(()=>{ JD_PENDING=false; jdDraw(); })); }
 function jdData(){
   const j=ifCurrentJoint(), list=ifMeshList(), groups=new Map();
@@ -5065,16 +5121,29 @@ function jdData(){
       else if(aboveGroup.children.includes(m)){ key="above"; M.copy(m.matrix); }
       else { key="loose"+pegs.indexOf(m); M.copy(m.matrix); }
     } else { key=pipeA.children.includes(m)?"lower":pipeB.children.includes(m)?"upper":"loose"+pipeP.children.indexOf(m); M.copy(m.matrix); }
-    const g0=(IF_SAVED.get(m)||{g:m.geometry}).g, g=g0.index?g0.toNonIndexed():g0, tris=ifTri(g), P=g.attributes.position.array, v=new THREE.Vector3();
+    let g0=(IF_SAVED.get(m)||{g:m.geometry}).g, mort=null;
+    if(j==="daimochi"&&(key==="lower"||key==="upper")&&g0.type==="ExtrudeGeometry"&&(CFG.support==="post_below"||CFG.support==="post_above")){
+      const D=cur, A=key==="lower", yb=D.H-D.sdB;
+      let [y0,y1]=CFG.support==="post_below" ? [D.sdA, D.through?D.H:D.sdA+D.stubA] : [D.through?0:yb-D.stubB, yb];
+      if(!A){ [y0,y1]=[D.H-y1,D.H-y0]; }                                      // the upper element is turned end for end
+      const pf=(A?profileA:profileB)(D,D.ml>0?"groove":false), cut=jdMortised(pf.map(p=>[p[0],p[1]]),D.W,{x0:D.O/2-D.tw/2,x1:D.O/2+D.tw/2,y0,y1,z:D.td/2});
+      if(cut.some(c=>c[1])){ const arr=new Float32Array(cut.length*9); cut.forEach((c,i)=>arr.set(c[0],i*9)); g0=new THREE.BufferGeometry(); g0.setAttribute("position",new THREE.BufferAttribute(arr,3)); mort=cut.map(c=>c[1]); } }
+    const g=g0.index?g0.toNonIndexed():g0, tris=ifTri(g), P=g.attributes.position.array, v=new THREE.Vector3();
     const G=groups.get(key)||{key,t:[],col:[],ids:[]}; groups.set(key,G);
-    tris.forEach((t,i)=>{ const id=typeof f==="function"?f(t):f, q=[];
+    tris.forEach((t,i)=>{ const id=mort&&mort[i]?"hozo~m":typeof f==="function"?f(t):f, q=[];
       for(let k=0;k<3;k++){ v.set(P[i*9+k*3],P[i*9+k*3+1],P[i*9+k*3+2]).applyMatrix4(M); q.push(v.x,-v.z,v.y); }   // y up -> z up
-      G.t.push(q); G.ids.push(id||null); G.col.push(id&&IF_COL[id]?tint(IF_COL[id]):[1,1,1]); }); });
+      G.t.push(q); G.ids.push(id||null); G.col.push(id&&jdForm(id).col?tint(jdForm(id).col):[1,1,1]); }); });
   const parts=[...groups.values()]; if(!parts.length) return null;
-  // pull them apart: the upper element above, pins and dowels between, a post where it stands
+  // pull them apart, clear of one another, so each can be dragged: the support
+  // below the lower element, pegs and dowels above it, the upper element above
+  // them, a post above on top; a gap of a quarter of the section between each
   const zr=G=>{ let lo=1e9,hi=-1e9; G.t.forEach(q=>{ for(let k=2;k<9;k+=3){ lo=Math.min(lo,q[k]); hi=Math.max(hi,q[k]); } }); return [lo,hi]; };
-  const low=parts.find(G=>G.key==="lower"), H=low?zr(low)[1]-zr(low)[0]:100;
-  const lift={upper:1.0*H, above:1.9*H}; parts.forEach(G=>{ const dz=G.key.startsWith("loose")?0.5*H:(lift[G.key]||0); if(dz) G.t.forEach(q=>{ q[2]+=dz; q[5]+=dz; q[8]+=dz; }); });
+  const shift=(G,dz)=>G.t.forEach(q=>{ q[2]+=dz; q[5]+=dz; q[8]+=dz; });
+  const low=parts.find(G=>G.key==="lower"), [l0,l1]=low?zr(low):[0,100], gap=0.25*(l1-l0);
+  const sup=parts.find(G=>G.key==="support"); if(sup) shift(sup,l0-gap-zr(sup)[1]);
+  let top=l1; const loose=parts.filter(G=>G.key.startsWith("loose"));
+  if(loose.length){ const lo=Math.min(...loose.map(G=>zr(G)[0])); loose.forEach(G=>shift(G,top+gap-lo)); top=Math.max(...loose.map(G=>zr(G)[1])); }
+  ["upper","above"].forEach(k=>{ const G=parts.find(P=>P.key===k); if(G){ shift(G,top+gap-zr(G)[0]); top=zr(G)[1]; } });
   return parts;
 }
 function jdDraw(){
@@ -5083,7 +5152,8 @@ function jdDraw(){
   const seen=[...new Set([].concat(...data.map(G=>G.ids)).filter(Boolean))];
   const fig=host.querySelector("figure.jdfig");
   ifvOpen(fig,{data,label:IF_JOINTS[ifCurrentJoint()].ro+": its components apart, each interface form in colour"});
-  host.querySelector(".jdkey").innerHTML=IF_USED.filter(id=>seen.includes(id)).map(id=>`<a class="iftag" href="#form-${id}" style="--fc:${IF_COL[id]}"><span class="ifsw" style="background:${IF_COL[id]}"></span>${IF[id].en} ${IF[id].kj}</a>`).join("");
+  const order=[]; IF_USED.forEach(id=>{ if(id==="hozo"){ ["hozo","hozo~m"].forEach(k=>{ if(seen.includes(k)) order.push(k); }); } else if(seen.includes(id)) order.push(id); });
+  host.querySelector(".jdkey").innerHTML=order.map(k=>{ const F=jdForm(k); return `<a class="iftag" href="#form-${F.id}" style="--fc:${F.col}"><span class="ifsw" style="background:${F.col}"></span>${F.en} ${F.kj}</a>`; }).join("");
 }
 function ifLegend(seen){
   const el=document.getElementById("iflegend"); if(!el) return;
@@ -5105,7 +5175,7 @@ function ifCard(id){
   el.querySelector(".ifx").onclick=()=>ifCard(null);
 }
 
-document.getElementById("formview").onchange=e=>{ FORMVIEW=e.target.checked; if(FORMVIEW) ifApply(); else ifRemove(); };
+const FV_BOX=document.getElementById("formview"); if(FV_BOX) FV_BOX.onchange=e=>{ FORMVIEW=e.target.checked; if(FORMVIEW) ifApply(); else ifRemove(); };
 { let down=null;
   canvas.addEventListener("pointerdown",e=>{ down=[e.clientX,e.clientY]; },true);
   canvas.addEventListener("click",e=>{
