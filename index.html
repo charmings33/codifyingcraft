@@ -4858,7 +4858,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009040839";
+const ASSET_V="20261009041020";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4926,7 +4926,7 @@ function ifDiagram(host){
     el("rect",{x:LX,y:ly[id]-14,width:LW,height:28,rx:5,fill:"#ffffff",stroke:IF_COL[id]||"#9aa19d","stroke-width":IF_COL[id]?2:1},g);
     const t=el("text",{x:LX+10,y:ly[id],"dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g);
     const s1=el("tspan",{},t); s1.textContent=ifpName(f.en)+"  "; const s2=el("tspan",{"font-weight":500},t); s2.textContent=f.kj+" "; const s3=el("tspan",{fill:"#5f6663","font-style":"italic"},t); s3.textContent=IF_HALVES[id]?"":f.ro;
-    const tg=el("text",{x:LX+LW-8,y:ly[id],"text-anchor":"end","dominant-baseline":"central","font-size":11,fill:"#5C6763"},g); tg.textContent=IF_FN[f.fn]+" · "+IF_SZ[IF_PROP[id][0]];
+    
     bind(g,"m",id); }
   IF_CATS.forEach(([c,,items])=>items.forEach(([id,,tools,tip])=>{ const life="ADR".includes(c); const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]+(tools?", tools: "+tools:"")});
     const hh=tools?40:24; el("rect",{x:RX,y:ry[id]-hh/2,width:RW,height:hh,rx:5,fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8","stroke-width":1},g);
