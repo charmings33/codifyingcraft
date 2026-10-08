@@ -4,7 +4,7 @@ A making grammar for computing the geometry, assembly, repair and fabrication of
 
 Ming Shan Ng, Esmaeil Ghorbani, Jürgen Hackl
 
-**Open it:** https://charmings33.github.io/codifying-craft/
+**Open it:** https://charmings33.github.io/codifyingcraft/
 
 This repository holds the published website only: a single page with its images.
 Everything that runs in the browser works here. Rebuilding geometry from the
