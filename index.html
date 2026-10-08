@@ -255,6 +255,7 @@ figure.ifimg figcaption{font-size:11.5px;color:var(--muted);margin-top:3px;line-
 figure.ifimg-s{float:right;width:200px;margin:0 0 6px 12px}
 @media (max-width:560px){figure.ifimg-s{float:none;width:100%;margin:0 0 6px}}
 .iftags{font-size:13px;color:var(--muted);margin:0 0 6px}
+.ifdef{font-size:13.5px;margin:0 0 4px}
 .ifcols{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13.5px}
 .ifcols ul{margin:2px 0 6px;padding-left:18px}.ifcols li{margin:2px 0}
 @media (max-width:720px){.ifcols{grid-template-columns:1fr}}
@@ -4375,32 +4376,32 @@ function wireRatios(key){
    of Chaya, Yagi, Miyakawa and Yamahata 1985; the assignment is ours). */
 const IF_GROUPS=[
 ["Bearing faces",[
- ["tsuki","Butt face, shoulder","突き付け","tsukitsuke","put"],
+ ["tsuki","Butt face","突き付け","tsukitsuke","put"],
  ["sogi","Scarf","殺ぎ","sogi","put"],
  ["aikaki","Half lap","相欠き","aikaki","put"],
  ["koshi","Seat","腰掛け","koshikake","put"],
- ["tome","Miter","留め","tome","put"]]],
+ ["tome","Mitre","留め","tome","put"]]],
 ["Housings and notches",[
  ["kaki","Notch","欠き込み","kakikomi","put"],
  ["oire","Housing","大入れ","ōire","put"],
- ["wanagi","Slot housing","輪薙ぎ込み","wanagikomi","put"],
+ ["wanagi","Open slot","輪薙ぎ込み","wanagikomi","put"],
  ["ago","Cog","渡り腮","watari-ago","put"],
- ["nuki","Through-penetration","貫通し","nuki-tōshi","put"],
- ["hako","Box, sleeve","箱","hako","put"]]],
+ ["nuki","Through mortise","貫通し","nuki-tōshi","put"],
+ ["hako","Box housing","箱","hako","put"]]],
 ["Steps and tongues",[
- ["ryaku","Abbreviated gooseneck step","略鎌","ryakukama","hook"],
+ ["ryaku","Abbreviated gooseneck","略鎌","ryakukama","hook"],
  ["mechi","Stub tenon","目違い","mechigai","put"],
  ["eri","Collar","襟輪","eriwa","put"]]],
 ["Tenons and bridles",[
- ["hozo","Tenon and mortise","枘","hozo","put"],
- ["sao","Long tenon with key slots","竿","sao","hook"],
+ ["hozo","Mortise and tenon","枘","hozo","put"],
+ ["sao","Keyed long tenon","竿","sao","hook"],
  ["sanmai","Bridle","三枚組","sanmai-gumi","put"]]],
 ["Interlocking heads",[
  ["kama","Gooseneck","鎌","kama","hook"],
  ["ari","Dovetail","蟻","ari","hook"]]],
 ["Added pieces and locks",[
- ["yatoi","Loose piece (dowel, butterfly key)","雇い","yatoi","hook"],
- ["sen","Pin, peg","栓","sen","fix"],
+ ["yatoi","Loose tenon (dowel, butterfly key)","雇い","yatoi","hook"],
+ ["sen","Peg","栓","sen","fix"],
  ["shachi","Key","車知","shachi","fix"],
  ["kusabi","Wedge","楔","kusabi","fix"]]]];
 const IF_CATS=[["A","Assembly",[["a1","Set first"],["a2","Lowered from above"],["a3","Side, then axial"],["a7","Pushed in along the axis"],["a4","Draw tight"],["a5","Lock goes in last"],["a6","Held by load above"]]],
@@ -4464,6 +4465,7 @@ const IF_EVID=id=>IF_NEW.has(id)
 const IF_SCHEMATIC=new Set(["hako","eri"]);
 function ifImg(id,cls){ return `<figure class="${cls||"ifimg"}"><img src="forms/form_${id}.png" alt="${IF[id].en}: a sample joint, its components apart, the interface form outlined in red" loading="lazy">`+
   `<figcaption>${IF_SCHEMATIC.has(id)?"Schematic, our reading; not checked against a source drawing.":"A minimal sample, components apart; red marks the interface form."}</figcaption></figure>`; }
+const IF_DEF={tsuki:"A face of one component bearing flat against another: the end of a member, or the shoulder (胴付き) at the root of a tenon."};
 function ifName(id,short){ const f=IF[id]; return short?`${f.en} ${f.kj}`:`${f.en} ${f.kj} <i>${f.ro}</i>`; }
 
 /* ---------- the landing page: the making grammar ---------- */
@@ -4482,7 +4484,7 @@ function ifCatalogueHTML(){
   return IF_GROUPS.map(([g,list])=>`<h4 class="ifgroup">${g}</h4>`+list.map(([id])=>{ const f=IF[id], [tag,rules]=IF_PROP[id];
     const used=Object.entries(IF_COMP).filter(([,c])=>c[id]).map(([j,c])=>`<li><a href="#joint-${j}">${IF_JOINTS[j].en} ${IF_JOINTS[j].kj}</a> ${c[id][0]} ${c[id][1]}</li>`).join("");
     return `<article class="ifc" id="form-${id}">${ifImg(id)}<div class="ifc-body"><h5>${IF_COL[id]?`<span class="ifsw" style="background:${IF_COL[id]}"></span>`:""}${ifName(id)}</h5>
-      <p class="iftags">Main function: <b>${IF_FN[f.fn]}</b> · Sizing: <b>${IF_SZ[tag]}</b></p>
+      ${IF_DEF[id]?`<p class="ifdef">${IF_DEF[id]}</p>`:""}<p class="iftags">Main function: <b>${IF_FN[f.fn]}</b> · Sizing: <b>${IF_SZ[tag]}</b></p>
       <div class="ifcols"><div><p class="ifh">Rules, per joint</p>${rules.length?`<ul>${rules.map(r=>`<li>${r[0]} <span class="ifsrc">(${r[1]})</span></li>`).join("")}</ul>`:`<p class="ifsrc">No proportion rule found in the sources checked so far.</p>`}
         <p class="ifh">Joints that use it</p>${used?`<ul>${used}</ul>`:`<p class="ifsrc">None of the five joints modelled here.</p>`}</div>
         <div><p class="ifh">Processes it implies</p><ul>${outs(id)}</ul><p class="ifsrc"><b>Evidence:</b> ${IF_EVID(id)}</p></div></div></div></article>`; }).join("")).join("");
@@ -4546,7 +4548,7 @@ function ifDiagram(host){
     else status.textContent=fc==="all"?"Showing all links.":"Showing "+IF_CATS.find(c=>c[0]===fc)[1].toLowerCase()+" only."; };
   const showDetail=()=>{ if(!sel||sel[0]!=="m"){ detail.innerHTML=HINT; return; }
     const id=sel[1], f=IF[id], [tag,rules]=IF_PROP[id];
-    detail.innerHTML=ifImg(id,"ifimg ifimg-s")+`<h3>${ifName(id)}</h3><p class="ifsrc">Main function: ${IF_FN[f.fn]}. Sizing: ${IF_SZ[tag]}. Proportions depend on the joint the interface form is part of, so each rule names its joint where the source does. <a href="#form-${id}">In the catalogue</a>.</p>`+
+    detail.innerHTML=ifImg(id,"ifimg ifimg-s")+`<h3>${ifName(id)}</h3>${IF_DEF[id]?`<p>${IF_DEF[id]}</p>`:""}<p class="ifsrc">Main function: ${IF_FN[f.fn]}. Sizing: ${IF_SZ[tag]}. Proportions depend on the joint the interface form is part of, so each rule names its joint where the source does. <a href="#form-${id}">In the catalogue</a>.</p>`+
       (rules.length?`<ul>${rules.map(r=>`<li>${r[0]} <span class="ifsrc">(${r[1]})</span></li>`).join("")}</ul>`:`<p class="ifp-hint">No proportion rule found in the sources checked so far.</p>`); };
   const focus=(k,id)=>{ sel=(sel&&sel[1]===id)?null:[k,id]; render(); showDetail(); };
   host.querySelector(".ifp-inf").addEventListener("change",render);
@@ -4563,7 +4565,7 @@ function renderHome(){
   <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (with the member), fixed size (usually a tool or 寸 standard), partly scales, or no size rule found. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the 3D view of a joint.</p>${ifCatalogueHTML()}</section>
   <section class="home-sec" id="home-comp"><h2>Composition</h2><p class="note">Which interface forms make up each joint. Ticks open the catalogue entry; joint names open the joint.</p>${ifMatrixHTML()}</section>
   <section class="home-sec" id="home-proc"><h2>From interface forms to processes</h2><p class="note">Each interface form decides how the joint is assembled, taken apart and repaired, and how it is made by hand and by CNC. Select an interface form or an outcome to see its links.</p><div id="ifp"></div>
-    <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than scarf, half lap, seat, abbreviated gooseneck step, stub tenon, gooseneck, dovetail and pin are reasoned from their geometry and shown dashed until checked against sources. Sliding slope, taper, draw-bore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p></section>
+    <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than scarf, half lap, seat, abbreviated gooseneck, stub tenon, gooseneck, dovetail and peg are reasoned from their geometry and shown dashed until checked against sources. Sliding slope, taper, draw-bore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p></section>
   <section class="home-sec" id="home-joints"><h2>The joints</h2>${ifCardsHTML()}</section>
   <section class="home-sec" id="home-terms"><h2>Terms and sources</h2><p>Terms follow AIJ 『建築学用語辞典』 (2nd ed., 1999) where listed, otherwise JAANUS; romanisation modified Hepburn. Interface forms follow the basic forms (基本形) of Kanasaki (2011), after Minamoto (1985) and Uchida (1981).</p>
     <p class="note">Functions after Chaya, Yagi, Miyakawa and Yamahata (1985). Making grammar after Knight and Stiny (2015). Rules and links from Bauer and Pauli, <i>The Joinery Compendium</i>; Wang (2024), Princeton senior thesis; Toda (2012), Hokkaido Forest Products Research Institute Report 541; Shimoyama's commentary on 日本家屋構造 (1904); MiGumi (Ganeshan et al. 2025); denmoku-db; carpenters' accounts (林建築, 谷口工務店, アラキ工務店); プレカット factory sources.</p></section>`;
