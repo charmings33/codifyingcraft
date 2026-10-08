@@ -242,6 +242,13 @@ table.dcmp td,table.dcmp th{font-size:12.5px}
 h1 a.homelink{color:inherit;text-decoration:none}
 header p.subtitle{font-size:16px;margin:6px 0 0;color:var(--ink);max-width:none}
 #home{max-width:1200px;margin:0 auto;padding:4px 18px 40px}
+/* the landing page in two columns: interface forms and composition; processes and terms */
+#home{max-width:1760px}
+.home-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 32px;align-items:start}
+.home-col .ifc{grid-template-columns:minmax(140px,190px) 1fr}
+.home-col .ifcols{grid-template-columns:1fr}
+.home-col svg.ifp-g{width:100%}
+@media (max-width:1100px){.home-cols{grid-template-columns:minmax(0,1fr)}}
 .home-sec{margin:26px 0;scroll-margin-top:10px}
 .home-sec h2{font-family:var(--serif);font-weight:400;font-size:26px;margin:0 0 8px}
 .home-intro{font-size:14px;line-height:1.55;max-width:none;margin:8px 0}
@@ -296,7 +303,7 @@ h3.grp:first-child{border-top:0;padding-top:12px}
 .namesec + .readsec{border-top:1px solid #DDE2DF}
 .readsec + h3.grp{border-top:2px solid #C3CAC6}
 figure.jdfig{margin:0}.jdkey{margin:6px 0 2px}
-details.rules>summary{cursor:pointer;font-size:calc(14px*var(--hs,1));margin:4px 0 8px}
+details.rules-d{margin:4px 0 10px}code.rid{font-family:inherit;font-size:.92em;color:#3d4441;white-space:nowrap}details.rules-d>summary::before{content:"▸ "}details.rules-d[open]>summary::before{content:"▾ "}details.rules-d>summary{cursor:pointer;font-size:calc(13px*var(--hs,1));color:#3d4441}
 h3.rules-h{font-size:calc(15px*var(--hs,1));margin:16px 0 6px}
 table.rules-t{border-collapse:collapse;font-size:calc(12px*var(--hs,1));width:100%}table.rules-t th,table.rules-t td{border-bottom:1px solid #E3E7E5;padding:3px 6px;text-align:left;vertical-align:top}
 .ifat{font-size:.9em;color:#16876a}.ifp-badge{pointer-events:none}
@@ -4067,6 +4074,34 @@ function camLiveBlock(key){
       <span class="note" id="camstat-${key}" aria-live="polite"></span></p>`;
 }
 const CAM_JOBS={};
+/* Files for the joint as the sliders and options set it: CAD (STEP, STL), its
+   spec, and an FE input deck, made by the build server (imagecad.export) from
+   the same geometry the toolpaths use. */
+const XFILE_DESC=[[/_assembly\.step$/,"CAD, every part as assembled (STEP)"],[/_files\.zip$/,"everything, in one zip"],[/_tension\.inp$/,"FE input deck (CalculiX): tension along the beam, written, not solved"],
+  [/^spec\.json$/,"the spec the parts are cut from (JSON)"],[/\.step$/,"CAD, one part (STEP)"],[/\.stl$/,"mesh, one part (STL)"],[/README\.txt$/,"what each file is"]];
+function exportBlock(key){
+  return `<div class="xfiles" data-xkey="${key}"><p style="margin:6px 0 4px"><b>From the dimensions on the page.</b> CAD files (STEP, STL), the spec they are cut from, and an FE input deck, for the joint as the sliders and options set it now.</p>
+    <p><button data-xmake="${key}">Make the files</button> <span class="note xstat" aria-live="polite"></span></p><ul class="prov xlist"></ul>
+    <p class="note">Built by the shared builder${key==="daimochi"?" from Wang's thesis spec: the two elements, the tongues and the dowels (the support, its housing and the post tenon are not cut)":""}, the parts placed as assembled; lengths in mm. The FE deck uses the project's contact writer: C3D4 tetrahedra, friction 0.5, Wang's orthotropic timber, the lower element's far end held and the upper element's pulled 1 mm along the beam. Needs the build server (<code>viewer/server.py</code>).</p></div>`; }
+async function exportFiles(key,box){
+  const st=box.querySelector(".xstat"), list=box.querySelector(".xlist"), say=t=>{ st.textContent=t; };
+  if(noServer()){ say(NOSERVER_MSG); return; }
+  if(location.protocol==="file:"){ say("Opened as a file: run viewer/server.py and open the page over http."); return; }
+  const payload=camPayload(key); if(!payload){ say("No geometry to send for this joint."); return; }
+  list.innerHTML=""; say("Building…");
+  try{
+    let r=await (await fetch("api/export",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})).json();
+    while(r.status==="running"){ say(`Building the parts and meshing for the FE deck… ${r.elapsed_s||0} s`); await new Promise(f=>setTimeout(f,2000)); r=await (await fetch("api/export/"+r.job)).json(); }
+    if(r.status!=="done"){ say("Could not make the files: "+(r.error||"unknown error").split("\n").filter(Boolean).slice(-1)[0]); return; }
+    const S=r.summary||{}, fit=S.fit&&S.fit.checked?(S.fit.passed?"the parts fit":"the parts overlap by "+S.fit.overlap_volume_mm3+" mm³"):"";
+    say(`Made for the geometry on the sliders${fit?"; "+fit:""}${S.fe_error?". No FE deck: "+S.fe_error:""}.`);
+    const order=f=>XFILE_DESC.findIndex(([re])=>re.test(f));
+    list.innerHTML=r.files.slice().sort((a,b)=>order(a)-order(b)||a.localeCompare(b)).map(f=>{ const d=(XFILE_DESC.find(([re])=>re.test(f))||[0,""])[1];
+      return `<li><a href="api/export/${r.job}/${f}" download="${f}">${f}</a> <span class="ifsrc">${d}</span></li>`; }).join("");
+  }catch(e){ say("Could not reach the build server ("+(e.message||e)+")."); }
+}
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("button[data-xmake]"); if(!b) return;
+  exportFiles(b.dataset.xmake,b.closest(".xfiles")); });
 async function camFabricate(key){
   const payload=camPayload(key), st=()=>document.getElementById("camstat-"+key);
   if(!payload) return;
@@ -4644,7 +4679,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009014626";
+const ASSET_V="20261009023147";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4798,44 +4833,80 @@ function ifLibEv(r){ const t=`${r.label} ${r.doc||""}`, ref=r.ref||"";
   if(IF_PRIMARY.test(ref)) return "documented";
   return "secondary"; }
 const ifHalfName=(id,h)=>h&&IF_HALVES[id]?`${IF[id].en}, ${h==="m"?"凸 "+IF_HALVES[id].m[0]:"凹 "+IF_HALVES[id].f[0]}`:IF[id].en;
+/* rule IDs: C.<joint>.<n> combination, F.<form> sizing per form, S.<joint>.<dimension>
+   sizing per joint, P.<form> process; the derivation cites them */
+const RULE_SRC_SKIP=new Set(["none","inferred","user",""]);
+function rulesConflicts(){ const out=[];
+  Object.keys(IF_JOINTS).forEach(j=>{ const L=ifLib(j), map=IF_LIBFORM[j]||{};
+    L.order.forEach(k=>{ const prm=L.params[k]; if(!prm||!prm.rules||!map[k]) return;
+      // different sources giving different values; variants one source documents do not count
+      const val=r=>JSON.stringify([r.kind,r.base,r.a,r.c,r.lo,r.hi]), rs=prm.rules.filter(r=>!RULE_SRC_SKIP.has(r.ref||""));
+      const differ=rs.some(x=>rs.some(y=>x.ref!==y.ref&&val(x)!==val(y)));
+      const flagged=/conflict|disagree|contested|inconsistent/i.test(prm.src||"");
+      if(differ||flagged) out.push({id:`S.${j}.${k}`,j,k,label:prm.label,form:map[k],flagged,note:prm.src||"",rules:prm.rules.filter(r=>!RULE_SRC_SKIP.has(r.ref||""))}); }); });
+  return out; }
+function rulesCounts(){
+  const C=Object.values(IF_COMB).reduce((n,c)=>n+c.ifs.length,0), Copt=Object.values(IF_COMB).reduce((n,c)=>n+c.ifs.filter(x=>x[2]).length,0);
+  const F=Object.values(IF_PROP).flatMap(x=>x[1]), Finf=F.filter(r=>(r[2]||[]).includes("inferred")).length;
+  const lib={}; Object.keys(IF_JOINTS).forEach(j=>{ const L=ifLib(j), map=IF_LIBFORM[j]||{};
+    L.order.forEach(k=>{ const prm=L.params[k]; if(!prm||!prm.rules||!map[k]) return; prm.rules.forEach(r=>{ const t=ifLibType(r), e=ifLibEv(r); (lib[t]=lib[t]||{n:0,inf:0}).n++; if(e==="inferred") lib[t].inf++; }); }); });
+  const proc={}; IF_CATS.forEach(([,name])=>proc[name]={n:0,inf:0});
+  Object.keys(IF_LINKS).forEach(id=>ifLinks(id).forEach(x=>{ const c=IF_OUT[x.r].name; proc[c].n++; if(x.inf) proc[c].inf++; }));
+  return {C,Copt,F:F.length,Finf,lib,proc}; }
 function rulesDoc(){
-  const B=[], J=Object.keys(IF_JOINTS), jn=j=>`*${IF_JOINTS[j].ro}* ${IF_JOINTS[j].kj}`, nm=id=>`${IF[id].en} ${IF[id].kj}`;
-  B.push(["p","Rules of the making grammar, written out from the viewer's own data: the interface forms (vocabulary), the rules that combine them into each joint's interfaces, the rules that size them, the rules that link them to assembly, repair and fabrication, and one joint derived by applying them. Nothing here is added to the data the joint pages use. Each sizing rule keeps its source and evidence label (documented, secondary, generic, inferred, verify); where sources disagree, each rule is listed with its own source. Inferred rules are marked."]);
+  const B=[], J=Object.keys(IF_JOINTS), nm=id=>`{{f:${id}}}`, jl=j=>`{{j:${j}}}`;
+  const CAT={A:"Assembly",D:"Disassembly",R:"Repair",M:"Hand",G:"CNC"};
+  B.push(["p","Rules of the making grammar, written out from the viewer's own data: the interface forms (vocabulary), the rules that combine them into each joint's interfaces, the rules that size them, the rules that link them to assembly, repair and fabrication, and one joint derived by applying them. Nothing here is added to the data the joint pages use. Each rule has an ID (C. combination, F. sizing per form, S. sizing per joint, P. process) so that the derivation can name the rule behind each step. Each sizing rule keeps its source and evidence label; where sources disagree, each rule is listed with its own source. Inferred rules are marked."]);
+  const K=rulesCounts();
+  B.push(["table",["Rules","Number","Of which inferred"],[
+    ["Combination (C.): interfaces of the five joints",String(K.C),`— (${K.Copt} hold only with an option or variant)`],
+    ["Sizing per form (F.), from the sources",String(K.F),String(K.Finf)],
+    ...Object.entries(K.lib).map(([t,v])=>[`Sizing per joint (S.), ${t}`,String(v.n),String(v.inf)]),
+    ...Object.entries(K.proc).map(([c,v])=>[`Process (P.), ${c[0].toLowerCase()+c.slice(1)}`,String(v.n),String(v.inf)])]]);
   // 1. vocabulary
   B.push(["h3","1. Vocabulary"]);
   B.push(["p","The 23 interface forms. Where both halves of a mating pair (凸 projecting, 凹 receiving) have names, both are given; the pair is one interface form. Main function after Chaya et al. (1985): bears, interlocks, locks."]);
   const voc=[]; IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const f=IF[id], H=IF_HALVES[id];
-    voc.push([g,f.en,f.kj,`*${f.ro}*`,IF_FN[f.fn]+(H&&!H.ok?"; 凹 term unverified":"")]); }));
+    voc.push([g,`{{fe:${id}}}`,f.kj,`*${f.ro}*`,IF_FN[f.fn]+(H&&!H.ok?"; 凹 term unverified":"")]); }));
   B.push(["table",["Group","Interface form","Kanji","Romanisation","Main function"],voc]);
   // 2. combination
   B.push(["h3","2. Combination rules"]);
-  B.push(["p","For each joint, its components and its interfaces, and the interface forms each interface is built from. ×2: the form occurs twice (at each tip, on each toe). Options and variants are named after the rule; without one, the rule holds in every configuration the viewer models."]);
-  J.forEach(j=>{ const C=IF_COMB[j]; B.push(["p",`**${jn(j)}**. Components: ${C.comp}`]);
-    B.push(["ul",C.ifs.map(([n,forms,opt])=>`${n} = ${forms.map(([id,c])=>nm(id)+(c>1?` ×${c}`:"")).join(" + ")}${opt?` *(${opt})*`:""}`).concat(C.note?[C.note]:[])]); });
+  B.push(["p","Which interface forms make each interface of each joint. ×2: the form occurs twice (at each tip, on each toe). A rule with an option or variant holds only with it; one without holds in every configuration the viewer models."]);
+  const crow=[]; J.forEach(j=>IF_COMB[j].ifs.forEach(([n,forms,opt],i)=>crow.push([`C.${j}.${i+1}`,i?"":jl(j),n,forms.map(([id,c])=>nm(id)+(c>1?` ×${c}`:"")).join(" + "),opt||"every configuration"])));
+  B.push(["table",["ID","Joint","Interface","= interface forms","Holds"],crow]);
+  B.push(["detail","Components of each joint",J.map(j=>["p",`${jl(j)}: ${IF_COMB[j].comp}${IF_COMB[j].note?` ${IF_COMB[j].note}`:""}`])]);
   // 3. sizing
   B.push(["h3","3. Sizing rules"]);
   B.push(["p",`Rule types: ${Object.entries(IF_SZ).map(([k,l])=>`*${l}* (${IF_SZ_DEF[k]})`).join("; ")}. Evidence: ${Object.entries(IF_EVL).map(([k,l])=>`*${k}* (${l})`).join("; ")}.`]);
-  B.push(["p","**3a. Per interface form**, as collected from the sources; a rule names its joint where the source does. Rules of a two-halved form are listed under the half they describe."]);
-  IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const [tag,rules]=IF_PROP[id], H=IF_HALVES[id];
+  const srow=[]; IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const [tag,rules]=IF_PROP[id], ev={};
+    rules.forEach(r=>(r[2]||[]).forEach(e=>ev[e]=(ev[e]||0)+1));
+    const dims=J.flatMap(j=>Object.entries(IF_LIBFORM[j]||{}).filter(([,v])=>v[0]===id).map(([k])=>`S.${j}.${k}`));
+    srow.push([`F.${id}`,nm(id),IF_SZ[tag],String(rules.length),Object.entries(ev).map(([e,n])=>`${e} ${n}`).join(", ")||"—",dims.join(", ")||"—"]); }));
+  B.push(["table",["ID","Interface form","Sizing","Rules from sources","Evidence","Per-joint dimensions"],srow]);
+  const f3a=[]; IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const [tag,rules]=IF_PROP[id], H=IF_HALVES[id];
     const line=r=>`${H?(r[3]==="m"?`凸 ${H.m[0]}: `:r[3]==="f"?`凹 ${H.f[0]}: `:"Both halves: "):""}${r[0]} (${r[1]}) [${(r[2]||[]).join(", ")}]`;
     const items=rules.map(line); const note=IF_RNOTE[id]||IF_NORULE[id]; if(note) items.push(`*Note:* ${note}`); if(!items.length) items.push("No rule found in the sources checked.");
-    B.push(["p",`**${nm(id)}**: ${IF_SZ[tag]}.`]); B.push(["ul",items]); }));
-  B.push(["p","**3b. Per joint**: each joint's rule library, as its Proportions panel uses it. For each dimension, the interface form it sizes, then every rule offered, with its type, value, source and evidence; the first is the one the page starts from. Evidence is assigned from each rule's own source note by a fixed rule: a placeholder is *inferred*; a rule of thumb is *generic*; a rule the note calls inferred or unverified is *inferred*; one read from a snippet is *verify*; one read through a paraphrase or commentary is *secondary*; one naming a primary source (denmoku-db, Saitō 1904, AIJ, Toda, HOWTEC, MLIT, Kijima, the dimensioned drawings, Wang) is *documented*; any other is *secondary*."]);
+    f3a.push(["p",`**F.${id}** ${nm(id)}: ${IF_SZ[tag]}.`],["ul",items]); }));
+  B.push(["detail","Sizing per form (F.): every rule with its source and evidence; a rule names its joint where the source does, and a two-halved form's rules sit under the half they describe",f3a]);
+  const f3b=[["p","Each joint's rule library, as its Proportions panel uses it: for each dimension, the interface form it sizes, then every rule offered, with its type, value, source and evidence; the first is the one the page starts from. Evidence is assigned from each rule's own source note by a fixed rule: a placeholder is *inferred*; a rule of thumb is *generic*; a rule the note calls inferred or unverified is *inferred*; one read from a snippet is *verify*; one read through a paraphrase or commentary is *secondary*; one naming a primary source (denmoku-db, Saitō 1904, AIJ, Toda, HOWTEC, MLIT, Kijima, the dimensioned drawings, Wang) is *documented*; any other is *secondary*. Section dimensions (height, width) are the member's, not rules."]];
   J.forEach(j=>{ const L=ifLib(j), map=IF_LIBFORM[j]||{}, rows=[];
     L.order.forEach(k=>{ const prm=L.params[k]; if(!prm||!prm.rules||!map[k]) return; const [id,h]=map[k];
-      prm.rules.forEach((r,i)=>rows.push([i?"":prm.label,i?"":ifHalfName(id,h),r.label,ifLibType(r),`${r.ref||""}${r.doc?` (${r.doc})`:""}`,ifLibEv(r)])); });
-    B.push(["p",`**${jn(j)}**`]); B.push(["table",["Dimension","Interface form","Rule","Type","Source","Evidence"],rows]); });
-  B.push(["p","Section dimensions (height, width) are the member's, not rules; the kanawa and okkake depths and width are Toda's tested sizes."]);
+      prm.rules.forEach((r,i)=>rows.push([i?"":`S.${j}.${k}`,i?"":prm.label,i?"":(h&&IF_HALVES[id]?`${nm(id)}, ${h==="m"?"凸":"凹"}`:nm(id)),r.label,ifLibType(r),`${r.ref||""}${r.doc?` (${r.doc})`:""}`,ifLibEv(r)])); });
+    f3b.push(["p",`**${jl(j)}**`],["table",["ID","Dimension","Interface form","Rule","Type","Source","Evidence"],rows]); });
+  B.push(["detail","Sizing per joint (S.): each joint's rule library, every alternative with its source",f3b]);
+  const cf=rulesConflicts();
+  B.push(["p",`**Where sources disagree**: in ${cf.length} dimensions, different sources give different values, or the page notes that they conflict (variants that one source documents are not counted). Each rule is kept with its source; none is merged.`]);
+  B.push(["detail","The dimensions where sources disagree",[["table",["ID","Dimension","Interface form","Rules, each with its source"],
+    cf.map(c=>[c.id,c.label,nm(c.form[0]),c.rules.map(r=>`${r.label} (${r.ref})`).join("; ")+(c.flagged?` *(${c.note})*`:"")])]]]);
   // 4. process
   B.push(["h3","4. Process rules"]);
-  B.push(["p",`For each interface form, the rules linking it to actions: assembly direction, disassembly, repair consequence, hand operations, CNC operations, and what stays manual. Each link is *documented* (stated by a source, or consistent across sources) or *inferred* (reasoned from the form's geometry or general practice). Attributes: ${[...new Set(Object.values(IF_LATTR).map(a=>a[0]))].map(k=>`*${k}*: ${Object.values(IF_LATTR).filter(a=>a[0]===k).map(a=>a[1]).join(" / ")}`).join("; ")}.`]);
-  const CAT={A:"Assembly",D:"Disassembly",R:"Repair",M:"Hand",G:"CNC"};
-  IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const ls=ifLinks(id), items=[];
-    ["A","D","R","M","G"].forEach(c=>{ const xs=ls.filter(x=>IF_OUT[x.r].c===c); if(!xs.length) return;
-      items.push(`${CAT[c]}: ${xs.map(x=>`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""} (${x.inf?"inferred":"documented"})`).join("; ")}`); });
+  B.push(["p",`For each interface form (P.), the rules linking it to actions. *(i)*: inferred (reasoned from the form's geometry or from general practice); otherwise documented, or consistent across sources. Attributes in brackets: ${[...new Set(Object.values(IF_LATTR).map(a=>a[0]))].map(k=>`*${k}*: ${Object.values(IF_LATTR).filter(a=>a[0]===k).map(a=>a[1]).join(" / ")}`).join("; ")}.`]);
+  const short=x=>`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").replace(/^Post-processing: /,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""}${x.inf?" *(i)*":""}`;
+  const prow=[]; IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const ls=ifLinks(id);
     const man=ls.filter(x=>x.r==="c6"||x.r==="h8"||x.at.includes("hand"));
-    items.push(`Stays manual: ${man.length?man.map(x=>`${IF_OUT[x.r].lab.toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""} (${x.inf?"inferred":"documented"})`).join("; "):"nothing recorded"}`);
-    B.push(["p",`**${nm(id)}**`]); B.push(["ul",items]); }));
+    prow.push([`P.${id}`,nm(id),...["A","D","R","M","G"].map(c=>ls.filter(x=>IF_OUT[x.r].c===c).map(short).join("; ")||"—"),man.length?man.map(short).join("; "):"—"]); }));
+  B.push(["table",["ID","Interface form","Assembly","Disassembly","Repair","Hand (手刻み)","CNC (プレカット)","Stays manual"],prow]);
+  B.push(["detail","The operations, with their tools and machine processings",[["ul",IF_CATS.filter(c=>c[0]==="M"||c[0]==="G").flatMap(([c,name,items])=>items.map(([id,lab,tools,tip])=>`${name}: **${lab}**. Tools: ${tools}.${tip?` ${tip}.`:""}`))]]]);
   // 5. derivation
   B.push(["h3","5. Derivation example: daimochi tsugi"]);
   B.push(...rulesDerivation());
@@ -4851,69 +4922,87 @@ function rulesDerivation(){
     Object.assign(CFG,{support:"post_below",lock:"blind",tenon:"through",stock:"square",removed:false});
     const X={H,W,q:0.25}, used={}; RULED.forEach(k=>{ const r=P[k].rules[0]; X[k]=evalR(r,H,W); used[k]=r; });
     const D=derived(X); cur=D;
-    const f1=v=>(Math.round(v*10)/10).toString();
-    out.push(["p","**Configuration**: post below with its tenon through both elements, locked by dowels, square timber; member 120 × 120 mm (4寸, the section Saitō's fixed sizes assume)."]);
-    out.push(["p","**Step 1, components**: lower element, upper element (the same part turned end for end), two dowels, the post below."]);
-    out.push(["p","**Step 2, interfaces** (combination rules, section 2):"]);
-    out.push(["ul",["Beam–beam interface = Oblique scarf 殺ぎ + Abbreviated gooseneck 略鎌 (the step) + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2",
-      "Dowel–element interfaces: each of the two dowels in both elements = Loose tenon 雇い (dowel, 太枘 dabo)",
-      "Post–element interfaces = Tenon / mortise 枘 / 枘穴 (tenon on the post, mortise through both elements) + Housing 大入れ (the post's shoulder, dōzuki, seated in the lower element)"]]);
-    out.push(["p","**Step 3, sizes** (the first rule of each dimension in the daimochi's rule library, section 3b, at H = W = 120 mm):"]);
-    const rows=[]; RULED.forEach(k=>{ const map=IF_LIBFORM.daimochi[k]; if(!map) return;
-      if(["cd","cw","tl"].includes(k)) return;                       // not used in this configuration
-      rows.push([P[k].label,ifHalfName(map[0],map[1]),used[k].label,`${f1(X[k])} mm`,ifLibEv(used[k])]); });
-    rows.push(["Through tenon length","Tenon / mortise, 凸 tenon","H − housing depth (through both elements)",`${f1(D.H-D.sdA)} mm`,"geometry"]);
-    out.push(["table",["Dimension","Interface form","Rule","Value","Evidence"],rows]);
+    const f1=v=>(Math.round(v*10)/10).toString(), nm=id=>`{{f:${id}}}`;
+    const forms=["sogi","ryaku","mechi","yatoi","hozo","oire"];
+    const linksOf=c=>forms.flatMap(id=>ifLinks(id).filter(x=>IF_OUT[x.r].c===c).map(x=>({id,x})));
+    const cite=c=>{ const by={}; linksOf(c).forEach(({id,x})=>(by[id]=by[id]||[]).push(`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""}${x.inf?" *(i)*":""}`));
+      return "form rules, which hold across joints: "+(Object.entries(by).map(([id,v])=>`P.${id}: ${v.join(", ")}`).join("; ")||"—"); };
+    // sizes
+    const dims=RULED.filter(k=>IF_LIBFORM.daimochi[k]&&!["cd","cw","tl"].includes(k));
+    const sizeRows=dims.map(k=>{ const [id,h]=IF_LIBFORM.daimochi[k]; return [`S.${P[k].rules.length?`daimochi.${k}`:""}`,P[k].label,h&&IF_HALVES[id]?`${nm(id)}, ${h==="m"?"凸":"凹"}`:nm(id),used[k].label,`${f1(X[k])} mm`,ifLibEv(used[k])]; });
+    sizeRows.push(["geometry","Through tenon length",`${nm("hozo")}, 凸`,"H − housing depth: through both elements",`${f1(D.H-D.sdA)} mm`,"geometry"]);
     const ck=checks(D), bad=ck.filter(c=>c.s==="fail"), warn=ck.filter(c=>c.s==="warn");
-    out.push(["p",`Checked against the page's own checks: ${ck.length-bad.length-warn.length} pass${warn.length?`, ${warn.length} warn (${warn.map(c=>c.t).join("; ")})`:""}${bad.length?`, ${bad.length} fail (${bad.map(c=>c.t).join("; ")})`:""}.`]);
-    // sequences, from the contact between the parts (as on the joint page)
+    // order and repair, from the contact between the parts
     const o=derivedOrder(), parts=partsNow(), nmP=k=>partName(k).toLowerCase(), pre=[];
     o.edges.forEach(([x,k])=>pre.push([k,x])); if(parts.includes("c")) pre.push(["c","a"]);
     let left=parts.slice(), al=[], g=0;
     while(left.length&&g++<8){ const ready=left.filter(k=>!pre.some(([a2,b2])=>b2===k&&left.includes(a2))); if(!ready.length) break; al.push(ready); left=left.filter(k=>!ready.includes(k)); }
-    out.push(["p","**Step 4, assembly and disassembly** (derived from the contact between the parts, as on the joint page, not scripted):"]);
-    out.push(["ul",[`Putting together: ${al.map(l=>l.map(nmP).join(" and ")).join(" → ")}`,
-      `Taking apart: ${o.layers.map(l=>l.map(nmP).join(" and ")).join(" → ")}${o.stuck.length?` (stuck: ${o.stuck.map(nmP).join(", ")})`:""}`,
-      ...stepsFor().filter(s=>!/^(Remove|Replace|Assembled)/.test(s.b)).map(s=>`${s.b}: ${s.txt}`),
-      "Form rules that set this order: the tenon / mortise is pushed in along the axis (the lower element is set down over the post tenon); the loose tenons are set first (dowels into the lower element before the upper); the oblique scarf and the step are lowered from above (the upper element last)."]]);
-    out.push(["p","**Step 5, repair set** (what must come out to replace each part, from the same contact limits):"]);
-    out.push(["ul",parts.map(k=>{ const need=repairSet(k), stays=parts.filter(x=>x!==k&&!need.includes(x));
-      return `Replace the ${nmP(k)}: ${need.length?`take out ${need.map(nmP).join(", then ")}`:"nothing else comes out"}${TEMP[k]?`; ${TEMP[k]}`:""}. Stays: ${stays.length?stays.map(nmP).join(", "):"none"}.`; })]);
-    // routes: the page's own fabrication steps, each with its operations
+    const put=al.map(l=>l.map(nmP).join(" and ")).join(" → "), take=o.layers.map(l=>l.map(nmP).join(" and ")).join(" → ");
+    const rep=parts.map(k=>{ const need=repairSet(k); return `${nmP(k)}: ${need.length?`take out ${need.map(nmP).join(", then ")}`:"nothing else comes out"}`; });
     const OPS={mark:"marking out",saw_rip:"rip-sawing",saw_cross:"cross-cutting",saw:"sawing",chisel:"chiselling",mortiser:"chiselling",paring:"paring",plane:"planing",
       em_half:"roughing (½ in end mill)",em_quarter:"finishing (¼ in end mill)",ball:"finishing (ball-nose cutter)",key:"fitting",mallet:"fitting"};
-    const ops=(ts,f,cnc)=>[...new Set((ts||[]).map(t=>cnc&&t==="paring"?"post-processing":OPS[t.replace("?","")]).filter(Boolean))].filter(o=>!f.toLowerCase().includes(o)).join(", ");
-    out.push(["p","**Step 6, hand and CNC routes** (the daimochi's documented sequences, Wang 2024, with the operations of section 4):"]);
-    out.push(["ul",[`Hand (手刻み): ${MAKING_HAND.map(m=>{ const o=ops(DM_TOOLS.hand[m.k],m.f); return `${m.f.toLowerCase()}${o?` (${o})`:""}`; }).join(" → ")}.`,
-      `CNC: ${MAKING_CNC.map(m=>{ const o=ops(DM_TOOLS.cnc[m.k],m.f,true); return `${m.f.toLowerCase()}${o?` (${o})`:""}`; }).join(" → ")}. Stays manual: squaring the corners and filing (post-processing), fitting.`]]);
+    const opsOf=(ts,f,cnc)=>[...new Set((ts||[]).map(t=>cnc&&t==="paring"?"squaring corners and filing":OPS[t.replace("?","")]).filter(Boolean))].filter(x=>!f.toLowerCase().includes(x)).join(", ");
+    out.push(["p","**Configuration**: post below with its tenon through both elements, locked by dowels, square timber; member H = W = 120 mm (4寸, the section Saitō's fixed sizes assume). Each step applies the rules named on the right; the IDs are those of sections 2–4."]);
+    out.push(["table",["Step","Result","Rule applied"],[
+      ["1. Components","lower element, upper element (the same part, turned end for end), two dowels, a post below",`the daimochi's components with two options chosen: locking by dowels (C.daimochi.2) and a post below (C.daimochi.4)`],
+      ["2. Interfaces","beam–beam; dowel–element (each of two dowels in both elements); post–element","C.daimochi.1, C.daimochi.2, C.daimochi.4"],
+      ["3. Interface forms",`${nm("sogi")} + ${nm("ryaku")} + ${nm("mechi")} ×2; ${nm("yatoi")} (dowels); ${nm("hozo")} + ${nm("oire")}`,"the right-hand sides of C.daimochi.1, .2 and .4"],
+      ["4. Sizes",`joint ${f1(D.O)}, tip land ${f1(D.t)}, step ${f1(D.j)} high and ${f1(D.jr)} long, tongues ${f1(X.ml)} × ${f1(X.mw)}, dowels ${f1(X.p)} square × ${f1(X.pl)}, housing ${f1(D.sdA)} deep, tenon ${f1(D.tw)} × ${f1(D.td)} × ${f1(D.H-D.sdA)} (mm). Checks: ${ck.length-bad.length-warn.length} pass${warn.length?`, ${warn.length} warn`:""}${bad.length?`, ${bad.length} fail`:""}`,
+        `the first rule of each dimension: ${dims.map(k=>`S.daimochi.${k}`).join(", ")}; the tenon's length from the geometry`],
+      ["5. Assembly",`${put}`,`${cite("A")}; the order itself from the contact between the parts (what blocks what)`],
+      ["6. Disassembly",`${take}`,`${cite("D")}; the order from the same contact`],
+      ["7. Repair set",rep.join("; "),`${cite("R")}; each set from the contact: what must come out before the part can`],
+      ["8. Hand route (手刻み)",MAKING_HAND.map(m=>{ const x=opsOf(DM_TOOLS.hand[m.k],m.f); return `${m.f.toLowerCase()}${x?` (${x})`:""}`; }).join(" → "),`${cite("M")}; in the order of the documented sequence (Wang 2024)`],
+      ["9. CNC route (プレカット)",MAKING_CNC.map(m=>{ const x=opsOf(DM_TOOLS.cnc[m.k],m.f,true); return `${m.f.toLowerCase()}${x?` (${x})`:""}`; }).join(" → "),`${cite("G")}; in the order of the documented sequence (Wang 2024)`]]]);
+    out.push(["detail","Step 4 in full: each size and the rule that gives it",[["table",["Rule","Dimension","Interface form","Rule applied","Value","Evidence"],sizeRows],
+      ["p",`Checked against the page's own checks: ${ck.length-bad.length-warn.length} pass${warn.length?`, ${warn.length} warn (${warn.map(c=>c.t).join("; ")})`:""}${bad.length?`, ${bad.length} fail (${bad.map(c=>c.t).join("; ")})`:""}.`]]]);
+    out.push(["detail","Steps 5 to 9 in full: the assembly steps, repair sets and routes",[["ul",[
+      ...stepsFor().filter(s=>!/^(Remove|Replace|Assembled)/.test(s.b)).map(s=>`${s.b}: ${s.txt}`),
+      `Taking apart: ${take}${o.stuck.length?` (stuck: ${o.stuck.map(nmP).join(", ")})`:""}.`,
+      ...parts.map(k=>{ const need=repairSet(k), stays=parts.filter(x=>x!==k&&!need.includes(x));
+        return `Replace the ${nmP(k)}: ${need.length?`take out ${need.map(nmP).join(", then ")}`:"nothing else comes out"}${TEMP[k]?`; ${TEMP[k]}`:""}. Stays: ${stays.length?stays.map(nmP).join(", "):"none"}.`; }),
+      `Hand (手刻み): ${MAKING_HAND.map(m=>{ const x=opsOf(DM_TOOLS.hand[m.k],m.f); return `${m.f.toLowerCase()}${x?` (${x})`:""}`; }).join(" → ")}.`,
+      `CNC: ${MAKING_CNC.map(m=>{ const x=opsOf(DM_TOOLS.cnc[m.k],m.f,true); return `${m.f.toLowerCase()}${x?` (${x})`:""}`; }).join(" → ")}. Stays manual: squaring the corners and filing (post-processing), fitting.`]]]]);
   } finally { Object.keys(CFG).forEach(k=>delete CFG[k]); Object.assign(CFG,keepCFG); cur=keepCur; }
   return out;
 }
+const rulesTok=(t,md)=>String(t).replace(/\{\{(f|fe|j):([a-z]+)\}\}/g,(m,k,id)=>{
+  if(k==="j"){ const J=IF_JOINTS[id]; return md?`*${J.ro}* ${J.kj}`:`<a href="#joint-${id}"><i>${J.ro}</i> ${J.kj}</a>`; }
+  const f=IF[id], t2=k==="fe"?f.en:`${f.en} ${f.kj}`; return md?t2:`<a href="#form-${id}">${t2}</a>`; });
 const rulesEsc=t=>String(t).replace(/&(?![a-z#0-9]+;)/gi,"&amp;").replace(/<(?!\/?(i|b|a|span|sub|sup)\b)/g,"&lt;");
-const rulesInl=t=>rulesEsc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>");
-function rulesHTML(){ return rulesDoc().map(([k,a,b])=>k==="h3"?`<h3 class="rules-h">${rulesInl(a)}</h3>`:k==="p"?`<p>${rulesInl(a)}</p>`:k==="ul"?`<ul>${a.map(x=>`<li>${rulesInl(x)}</li>`).join("")}</ul>`:
-  `<div class="ifmx-wrap"><table class="rules-t"><thead><tr>${a.map(h=>`<th>${rulesInl(h)}</th>`).join("")}</tr></thead><tbody>${b.map(r=>`<tr>${r.map(c=>`<td>${rulesInl(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join(""); }
-function rulesMD(){ const cell=c=>String(c).replace(/\|/g,"\\|").replace(/<[^>]+>/g,"");
-  return ["# Making grammar: the rules","","Written out by `viewer/tools/grammar_rules.py` from the viewer's own data (`viewer/index.html`); edit the page's data, not this file. The same text is the Rules section of the landing page.",""].concat(
-    rulesDoc().flatMap(([k,a,b])=>k==="h3"?[`## ${a.replace(/^\d+\.\s*/,m=>m)}`,""]:k==="p"?[cell(a),""]:k==="ul"?a.map(x=>`- ${cell(x)}`).concat([""]):
-      [`| ${a.map(cell).join(" | ")} |`,`|${a.map(()=>"---").join("|")}|`,...b.map(r=>`| ${r.map(cell).join(" | ")} |`),""])).join("\n"); }
+const RULE_ID=/\b([CFSP]\.[a-z]+(?:\.[A-Za-z0-9]+)?)\b/g;
+const rulesInl=t=>rulesTok(rulesEsc(t)).replace(RULE_ID,'<code class="rid">$1</code>').replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>");
+function rulesBlockHTML([k,a,b]){ return k==="h3"?`<h3 class="rules-h">${rulesInl(a)}</h3>`:k==="p"?`<p>${rulesInl(a)}</p>`:k==="ul"?`<ul>${a.map(x=>`<li>${rulesInl(x)}</li>`).join("")}</ul>`:
+  k==="detail"?`<details class="rules-d"><summary>${rulesInl(a)}</summary>${b.map(rulesBlockHTML).join("")}</details>`:
+  `<div class="ifmx-wrap"><table class="rules-t"><thead><tr>${a.map(h=>`<th>${rulesInl(h)}</th>`).join("")}</tr></thead><tbody>${b.map(r=>`<tr>${r.map(c=>`<td>${rulesInl(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`; }
+function rulesHTML(){ return rulesDoc().map(rulesBlockHTML).join(""); }
+function rulesMD(){ const cell=c=>rulesTok(c,true).replace(/\|/g,"\\|").replace(/<[^>]+>/g,"").replace(RULE_ID,"`$1`");
+  const md=([k,a,b])=>k==="h3"?[`## ${a}`,""]:k==="p"?[cell(a),""]:k==="ul"?a.map(x=>`- ${cell(x)}`).concat([""]):
+    k==="detail"?[`**${cell(a)}**`,""].concat(b.flatMap(md)):[`| ${a.map(cell).join(" | ")} |`,`|${a.map(()=>"---").join("|")}|`,...b.map(r=>`| ${r.map(cell).join(" | ")} |`),""];
+  return ["# Making grammar: the rules","","Written out by `viewer/tools/grammar_rules.py` from the viewer's own data (`viewer/index.html`); edit the page's data, not this file. The landing page's Rules section shows the same rules as compact tables, with the detail folded.",""].concat(rulesDoc().flatMap(md)).join("\n"); }
+/* the full version as a file: made here from the same rules on the local viewer;
+   the published copies cannot save files, so they link to the copy on the public site */
+const RULES_FILE_URL="https://charmings33.github.io/codifyingcraft/grammar_rules.md";
+function rulesFileLink(label){ return `<a class="rulesdl" href="${RULES_FILE_URL}" download="grammar_rules.md">${label||"grammar_rules.md"}</a>`; }
+document.addEventListener("click",e=>{ const a=e.target.closest&&e.target.closest("a.rulesdl"); if(!a||typeof CC_PUBLISHED!=="undefined") return;
+  e.preventDefault(); save("grammar_rules.md",rulesMD(),"text/markdown"); });
 window.CC_RULES_MD=rulesMD;
 function renderHome(){
   const h=document.getElementById("home"); if(!h||h.dataset.done) return;
   h.innerHTML=`
   <section class="home-sec"><p class="home-intro">Japanese timber joints are described here by a making grammar (after Knight and Stiny 2015): a vocabulary of interface forms (基本形), with rules that combine them into interfaces between components, size them from sourced scaling rules, and link each interface form to the actions that make, assemble and repair it.</p>
     <p class="note">A <b>component</b> is a physically bounded piece: each beam end, a post, a pin, a key, a dowel. An <b>interface</b> is everything connecting two components, such as the beam–beam interface of a daimochi or each pin–beam interface. An <b>interface form</b> (基本形) is a shaped part of an interface, a mating 凸凹 pair. A <b>feature</b> is an interface form as a machine cuts it: a pocket, a slot, a drilling.</p></section>
-  <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#home-comp">Composition</a><a href="#home-rules">Rules</a><a href="#home-proc">From interface forms to processes</a><a href="#home-joints">The joints</a><a href="#home-terms">Terms and sources</a></nav>
+  <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#home-comp">Composition</a><a href="#home-proc">From interface forms to processes</a><a href="#home-terms">Terms and sources</a></nav>
+  <div class="home-cols"><div class="home-col">
   <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (its dimensions follow the member by rule), fixed size (a set size, usually a tool or 寸 standard), partly scales (some dimensions scale, others are fixed or capped), not restricted (no rule of its own; its size is set by the members it joins), or no rule found (none in the sources checked; one may exist). Each rule shows its source and its evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the Interface forms diagram on each joint page.</p>${ifCatalogueHTML()}</section>
   <section class="home-sec" id="home-comp"><h2>Composition</h2><p class="note">Which interface forms make up each joint. Ticks open the catalogue entry; joint names open the joint.</p>${ifMatrixHTML()}</section>
-  <section class="home-sec" id="home-rules"><h2>Rules</h2><details class="rules"><summary>The making grammar's rules, written out: vocabulary, combination, sizing, process, and one derivation</summary>${rulesHTML()}</details></section>
+  </div><div class="home-col">
   <section class="home-sec" id="home-proc"><h2>From interface forms to processes</h2><p class="note">Each interface form decides how the joint is assembled, taken apart and repaired, and how it is made by hand and by CNC. Select an interface form or an outcome to see its links.</p><div id="ifp"></div>
     <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than oblique scarf, halving, seat, abbreviated gooseneck, stub tenon / stub mortise, gooseneck / gooseneck socket, dovetail / dovetail socket and peg / peg hole are reasoned from their geometry and shown dashed until checked against sources. Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p>
     <p class="note"><b>Sizing:</b> no rule found = not found in the sources checked; not restricted = size set by the members joined. <b>Evidence:</b> documented = a primary source (Saitō 1904, denmoku-db, AIJ); secondary = commentary or later sources; generic = a general woodworking convention, not a Japanese timber-frame rule; inferred = a proxy or ratio derived by us; verify = read only from a snippet, to be checked against the original.</p>
     <p class="note">Fixed sizes from Saitō (1904) assume Meiji-era members of about 4寸 (120 mm); larger timbers may differ.</p></section>
-  <section class="home-sec" id="home-joints"><h2>The joints</h2>${ifCardsHTML()}</section>
   <section class="home-sec" id="home-terms"><h2>Terms and sources</h2><p>Terms follow AIJ 『建築学用語辞典』 (2nd ed., 1999) where listed, otherwise JAANUS; romanisation modified Hepburn. Interface forms follow the basic forms (基本形) of Kanasaki (2011), after Minamoto (1985) and Uchida (1981). Where both halves of a form have names, the receiving half's term was checked against JAANUS: 枘穴 <i>hozo-ana</i> (hozoana), 蟻ほぞ穴 <i>arihozo-ana</i> (yose-ari) and 目違ほぞ穴 <i>mechigai hozo-ana</i> (koshikake aritsugi) are found there; 鎌穴 <i>kama-ana</i> and 栓穴 <i>sen-ana</i> were not found in the sources checked and are marked unverified (†).</p>
-    <p class="note">Functions after Chaya, Yagi, Miyakawa and Yamahata (1985). Making grammar after Knight and Stiny (2015). Rules and links from Saitō (1904), 『日本家屋構造』, read through Shimoyama's commentary; Bauer and Pauli, <i>The Joinery Compendium</i>; Wang (2024), Princeton senior thesis; Toda (2012), Hokkaido Forest Products Research Institute Report 541; MiGumi (Ganeshan et al. 2025); denmoku-db; carpenters' accounts (林建築, 谷口工務店, アラキ工務店); プレカット factory sources.</p></section>`;
+    <p class="note">Functions after Chaya, Yagi, Miyakawa and Yamahata (1985). Making grammar after Knight and Stiny (2015). Rules and links from Saitō (1904), 『日本家屋構造』, read through Shimoyama's commentary; Bauer and Pauli, <i>The Joinery Compendium</i>; Wang (2024), Princeton senior thesis; Toda (2012), Hokkaido Forest Products Research Institute Report 541; MiGumi (Ganeshan et al. 2025); denmoku-db; carpenters' accounts (林建築, 谷口工務店, アラキ工務店); プレカット factory sources.</p></section></div></div>`;
   ifDiagram(document.getElementById("ifp"));
   h.dataset.done="1";
 }
@@ -4960,8 +5049,9 @@ function groupPanel(panel){
   const kids=[...panel.children].filter(n=>!n.classList.contains("grp")&&!n.classList.contains("grp-name")&&!n.classList.contains("namesec"));
   const jkey=panel.id==="otherpanel"?ifCurrentJoint():"daimochi";
   for(let i=kids.length-1;i>=0;i--) if(ifPanelTitle(kids[i])==="Interface forms"||ifPanelTitle(kids[i])==="Names"||(kids[i].classList&&kids[i].classList.contains("namesec"))) kids.splice(i,1);
-  { const d=document.createElement("div"); d.className="readsec jdhost";
-    d.innerHTML=`<div class="readhead"><span>Interface forms</span></div><div class="body">
+  { const d=document.createElement("details"); d.className="jdhost";
+    d.addEventListener("toggle",()=>{ if(d.open) jdSchedule(); else if(IFV.fig&&d.contains(IFV.fig)) ifvClose(); });
+    d.innerHTML=`<summary>Interface forms <small>each form in its colour, in 3D</small></summary><div class="body">
       <figure class="ifimg jdfig" data-if="jd"></figure><div class="jdkey iftags-row"></div>
       <p class="note">The joint's components pulled apart, each interface form in its colour (the same as on the landing page). Drag the background to rotate, scroll to zoom, drag a part to move it; click a face for its name.</p></div>`;
     kids.push(d); }
@@ -4978,10 +5068,9 @@ function groupPanel(panel){
   const frag=document.createDocumentFragment();
   const jk=panel.id==="otherpanel"?ifCurrentJoint():"daimochi", J=IF_JOINTS[jk];
   // Names, always open, at the top
-  if(J){ const B=(typeof BAUER!=="undefined"&&BAUER.names[jk])||null, d=document.createElement("div"); d.className="readsec namesec";
-    d.innerHTML=`<div class="readhead"><span>Names</span></div><div class="body"><div class="kv wide">
-      <span>Japanese</span><span>${J.kj} <i>${J.ro}</i></span><span>English</span><span>${J.gl}</span>
-      ${B?`<span>Bauer and Pauli</span><span>${B.en}</span>`:""}</div></div>`;
+  if(J){ const d=document.createElement("div"); d.className="readsec namesec";
+    d.innerHTML=`<div class="readhead"><span>Name</span></div><div class="body"><div class="kv wide">
+      <span>Japanese</span><span>${J.kj} <i>${J.ro}</i></span><span>English</span><span>${J.gl}</span></div></div>`;
     frag.appendChild(d); }
   const match=byTitle.get("Match a drawing"); if(match){ frag.appendChild(match); byTitle.delete("Match a drawing"); }
   byTitle.delete("Names");
@@ -4990,6 +5079,10 @@ function groupPanel(panel){
     if(g==="Form and documentation") [...byTitle.values()].filter(n=>!IF_PANEL_ORDER.some(([,ts])=>ts.includes(ifPanelTitle(n)))).forEach(n=>{ frag.appendChild(n); byTitle.delete(ifPanelTitle(n)); }); });
   rest.forEach(n=>frag.appendChild(n));
   panel.innerHTML=""; panel.appendChild(frag);
+  // Files: the making grammar's rules, for all five joints, as one file
+  const files=[...panel.children].find(n=>ifPanelTitle(n)==="Files"), fb=files&&files.querySelector(".body");
+  if(fb&&!fb.querySelector(".xfiles")) fb.insertAdjacentHTML("beforeend",exportBlock(jkey));
+  if(fb&&!fb.querySelector(".rulesdl")) fb.insertAdjacentHTML("beforeend",`<p class="note">The making grammar's rules, for all five joints (the landing page's Rules section in full): ${rulesFileLink("grammar_rules.md")}.</p>`);
   fillAssembly();
 }
 /* The Assembly panel: the stage's own steps, in words, and the order derived from contact. */
@@ -5364,7 +5457,7 @@ function jdData(){
   return parts;
 }
 function jdDraw(){
-  const host=[...document.querySelectorAll(".jdhost")].find(h=>h.offsetParent!==null); if(!host) return;
+  const host=[...document.querySelectorAll(".jdhost")].find(h=>h.open&&h.offsetParent!==null); if(!host) return;
   const data=jdData(); if(!data) return;
   const seen=[...new Set([].concat(...data.map(G=>G.ids)).filter(Boolean))];
   const fig=host.querySelector("figure.jdfig");
