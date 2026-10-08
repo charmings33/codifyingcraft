@@ -3786,7 +3786,7 @@ function ariPanelHTML(J){
       <li><b>denmoku 蟻掛け</b>: the flare of 曲尺幅半分, 7.5 mm.</li>
       <li><b>下山</b>: the 目違い against twisting of the lower part.</li>
       <li><b>告示1460</b> and the Z-mark 短ざく金物 S-450, for 桁 and 胴差.</li>
-      <li><b>${BAUER.id}</b> p.${N.page}: names and the step strip. ${BAUER.cite} ${BAUER.note}</li>
+      <li><b>${BAUER.id}</b> p.${N.page}: names and the step strip.</li>
       <li>Ng, Wang, Ghorbani, Hackl. Design for Repair and Reuse, and Digital Fabrication of Traditional Japanese Timber Joinery. ISARC 2026.</li></ol>
       <p class="note">Full bibliographic details are not recorded in the project; these are the names as given.</p>
       <h4 class="occh">Evidence notes</h4><ul class="prov">${ARI_FLAGS.map(f=>`<li>${f}</li>`).join("")}</ul>
@@ -4323,7 +4323,7 @@ function showRefJoint(key){
       <h4 class="occh">References</h4><ol class="srcs">
       <li>Wang, A. <i>Join(t)ing the past and present</i>. Senior thesis, Princeton University, 2024.</li>
       <li>Ng, Wang, Ghorbani, Hackl. Design for Repair and Reuse, and Digital Fabrication of Traditional Japanese Timber Joinery. ISARC 2026.</li>
-      <li>${BAUER.cite} ${BAUER.note}</li></ol>
+</ol>
       <h4 class="occh">How the project read this joint</h4>
       <p class="note">From <code>joints/${J.name}/inputs/</code>, recorded in <code>params.json</code>:</p>
       <ul class="prov">${p.assumptions.map(a=>`<li>${a}</li>`).join("")}</ul>
@@ -4673,7 +4673,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009024047";
+const ASSET_V="20261009024223";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
