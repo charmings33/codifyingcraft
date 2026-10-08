@@ -452,12 +452,12 @@ header p.authors{font-size:calc(13px*.625)}
 
 
   <details>
-    <summary>Hand fabrication (手刻み) <small>step by step</small></summary>
+    <summary>Making manually <small>step by step</small></summary>
     <div class="body"><p class="note">Where the traditional sequence and the tested specimen differ, both are given. Sketches are drawn from this model at its current proportions; hatched areas with a dotted outline are the material removed in that step.</p><div id="mk-hand"></div></div>
   </details>
 
   <details>
-    <summary>Digital fabrication (CNC / プレカット) <small>step by step</small></summary>
+    <summary>Digital fabrication <small>step by step</small></summary>
     <div class="body"><div id="mk-cnc"></div><div id="mk-cnc-sim"></div>
       <p class="note"><b>What changes from manual fabrication:</b> the milling cutter leaves rounded inside corners, so the square dowels and the tongue need hand finishing; the fit is set by a programmed clearance instead of paring; and the cutter chips the edges of the timber.</p></div>
   </details>
@@ -3251,14 +3251,14 @@ function showSpecJoint(key){
       each tip, shows on the two side views; on the top and bottom only the seam at one lip shows${key==="kanawa"?", with the dovetail standing in it":""}.
       <b>What is drawn is our reading, settled on rendered drawings</b> against the references, at the sizes
       on the sliders.</p>`, true)
-+ sec("Hand fabrication (手刻み)","step by step", `
++ sec("Making manually","step by step", `
     <p class="note">Sketches are drawn from this model at its current proportions. As for the daimochi, each starts from the whole timber and shows the piece as it stands before that step, plan above and side below, with the material that step removes hatched; heavy dashed lines are saw cuts and pared faces, light dashed lines are cuts hidden behind the surface.</p>
     ${toolLegend([].concat(...SPEC_MAKING[key].map(g=>g.steps.map(s=>s.tools))))}
     ${SPEC_MAKING[key].map(g=>`<h4 class="occh">${g.g}${g.sub?` <span class="note">— ${g.sub}</span>`:""}</h4>`+
       g.steps.map((s,i)=>`<div class="mk2"><div data-sketch="${key}|${g.up?1:0}|${s.k}"></div><div>${toolRow(s.tools)}<h5>${i+1}. ${s.k}</h5>${s.t}</div></div>`).join("")).join("")}
     ${key==="kanawa"?`<p class="gap"><b>Both halves are the same part.</b> One sequence, A1 to A9, made twice.</p>`
       :`<p class="gap">The A and B sequences run through the same operations in the same order: both halves are the same part.</p>`}`, true)
-+ sec("Digital fabrication (CNC / プレカット)","step by step, proposed", digHTML(key,{tol:SPEC_TOL, stock:mm(V.L+2*SPEC_BODY), V}), true)
++ sec("Digital fabrication","step by step, proposed", digHTML(key,{tol:SPEC_TOL, stock:mm(V.L+2*SPEC_BODY), V}), true)
 + tba("Where it is built","a building, in section",
       "No building has been recorded carrying this joint, and no section has been redrawn for it. The daimochi has the Senjūji Mieidō.")
 + tba("Where it occurs","survey of restoration records",
@@ -3751,7 +3751,7 @@ function ariPanelHTML(J){
     <p class="note">Solid lines are visible edges; dashed lines are hidden edges inside the timber. Drawn from the proportion model at its current values, so the views follow the sliders. Dimensions are written as their rule gives them: a proportion of H or W where the rule is one (the seat depth H/2, the tip as neck + 2e), a size where it is fixed (the neck 30, the seat 15). The dovetail flares across the top face, so it follows W; the seat shows on the side, so it follows H.</p>
     ${ARI.variant.mechigai!=="none"?`<p class="gap"><b>目違い, at an assumed size.</b> A stub under the upper element's lap, in a slot at the end of the seat: half the seat long, the neck wide, H/6 deep. No drawing of it has been read.</p>`:""}
     ${ARI.variant.reinf!=="none"?`<p class="gap"><b>短ざく金物.</b> 450 mm long by its designation (Z-mark S-450), centred on the joint on the side face; 40 mm wide and 3.2 mm thick assumed. Its bolt positions and the face it goes on have not been read from a drawing.</p>`:""}`)
-+ sec("Hand fabrication (手刻み)","step by step", `
++ sec("Making manually","step by step", `
     <p class="note">As for the daimochi, each sketch starts from the whole timber and shows the piece as it stands before that step, drawn from this model at its current proportions: plan above, side below, the material that step removes hatched. Heavy dashed lines are saw cuts and pared faces; light dashed lines are cuts hidden behind the surface. The steps recompute as the sliders move.</p>
     <p class="note">Traditional and machine pre-cut (プレカット) wording is given where they differ. The denmoku sheet does not record how its test specimens were made, so no "tested specimen" wording is given.</p>
     ${toolLegend([].concat(...M.map(g=>g.steps.map(s=>ARI_TOOLS_MK[g.p][s.k]||[]))))}
@@ -3761,7 +3761,7 @@ function ariPanelHTML(J){
       <p class="note">Read off ${BAUER.id} p.${N.page+1}. The book prints no text for these steps: the wording is a reading of the figures, not a quotation.</p>
       ${ARI_MAKING.map(g=>`<h4 class="occh">${g.g}${g.sub?` <span class="note">— ${g.sub}</span>`:""}</h4><ul class="prov">${
         g.steps.map(s=>`<li>${toolRow(ARI_TOOLS[s.k])}<b>${s.k}</b> — ${s.t}</li>`).join("")}</ul>`).join("")}</div></details>`)
-+ sec("Digital fabrication (CNC / プレカット)","step by step, proposed", digHTML("aritsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V}))
++ sec("Digital fabrication","step by step, proposed", digHTML("aritsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V}))
 + tba("Where it is built","a building, in section","No building has been recorded carrying this joint here. Its members are the 土台, the 大引 and light 母屋 and 桁 (see Record).")
 + tba("Where it occurs","survey of restoration records","No survey has been read for this joint.")
 + sec("Repair","what has to come out to replace one part", rrSection("aritsugi")+
@@ -3795,7 +3795,7 @@ function ariPanelHTML(J){
       <ul class="prov">${p.assumptions.map(a=>`<li>${a}</li>`).join("")}</ul>`)
 + sec("Files","take the record with you", `
     <div class="kv wide">${row("Geometry","Rebuild builds the pieces as STEP and STL through the shared builder")}
-    ${row("Toolpaths","simulated per setup, under Digital fabrication (CNC / プレカット); served from the toolpath cache, not the repository")}
+    ${row("Toolpaths","simulated per setup, under Digital fabrication; served from the toolpath cache, not the repository")}
     ${row("Pipeline's model",`joints/${J.name}/outputs/: ${J.gcode.length} G-code programmes, pipeline_result.json`)}</div>`);
 }
 
@@ -4264,20 +4264,20 @@ function showRefJoint(key){
     <p class="gap"><b>The tapered mating faces (suberi kōbai) are not drawn.</b> The 1/10 ratio is sourced and kept as a rule, but nothing has been read that fixes where the slope sits or how far it runs: placing it at the shoulder over the full 鎌せい gives a ${(KV.d/10).toFixed(2)} mm run, and the second drawing dimensions its run as 10 mm, which that reading does not reproduce. <code>cad_kamatsugi.py</code> cuts no slope either. Rather than draw a construction of our own beside dimensions taken off the drawings, it is left out until it is read.</p>`, true)
     : tba("Details","faces, as marked out on the timber",
       "No dimensioned plan or side drawing has been read for this joint, so there is nothing to draw the views from."))
-+ (K ? sec("Hand fabrication (手刻み)","step by step", `
++ (K ? sec("Making manually","step by step", `
     <p class="note">As for the daimochi, each sketch starts from the whole timber and shows the piece as it stands before that step, drawn from this model at its current proportions: plan above, side below, the material that step removes hatched. Heavy dashed lines are saw cuts and pared faces; light dashed lines are cuts hidden behind the surface.</p>
     ${toolLegend([].concat(...KAMA_MAKING.map(g=>g.steps.map(s=>KAMA_TOOLS[g.p][s.k]))))}
     ${KAMA_MAKING.map(g=>`<h4 class="occh">${g.g} <span class="note">— ${g.sub}</span></h4>`+
       g.steps.map((s,i)=>`<div class="mk2"><div data-ksketch="${KAMA_MAKING.indexOf(g)}|${i}">${kamaSketch(Object.assign({p:g.p},s),KV,KAMA.anchors.W)}</div><div>${toolRow(KAMA_TOOLS[g.p][s.k])}<h5>${i+1}. ${s.ja}</h5>${s.t}</div></div>`).join("")).join("")}
     <p class="note">The halves are called the lower element (shitaki) and the upper element (uwaki), as on the daimochi page.</p>`, true)
-    : sec("Hand fabrication (手刻み)","step by step", `
+    : sec("Making manually","step by step", `
     <p class="note">Read off Bauer's step strip, p.${BAUER.names.aritsugi.page+1}. The book prints <b>no text</b> for these steps: the figures are the instruction, so the wording below is a reading of the drawings, not a quotation. Each figure shows a tool and the material that step takes off. No sketches are drawn here: the sketch code is written for the daimochi tsugi and the koshikake kama tsugi, and would draw the wrong joint.</p>
     ${toolLegend(Object.values(ARI_TOOLS))}
     ${ARI_MAKING.map(g=>`<h4 class="occh">${g.g}${g.sub?` <span class="note">— ${g.sub}</span>`:""}</h4><ul class="prov">${
       g.steps.map(s=>`<li>${toolRow(ARI_TOOLS[s.k])}<b>${s.k}</b> — ${s.t}</li>`).join("")}</ul>`).join("")}
     <p class="gap">Which face each cut is made on is mostly not resolvable at the size the step figures are printed, and nothing is claimed about it above. For a sequence with named operations, compare the koshikake kama tsugi's, which comes from a page that does carry text.</p>`, true))
-+ (K ? sec("Digital fabrication (CNC / プレカット)","step by step, proposed", digHTML("kamatsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V:Object.assign({},KV,{H:KAMA.anchors.H,W:KAMA.anchors.W})}), true)
-    : sec("Digital fabrication (CNC / プレカット)","toolpaths, simulated", `
++ (K ? sec("Digital fabrication","step by step, proposed", digHTML("kamatsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V:Object.assign({},KV,{H:KAMA.anchors.H,W:KAMA.anchors.W})}), true)
+    : sec("Digital fabrication","toolpaths, simulated", `
       <p class="note">No step-by-step route has been written up for this joint. The pipeline emits ${J.gcode.length} G-code programmes for it, listed under Files; below are the shared builder's setups and programs, simulated.</p>
       ${camSimHTML("aritsugi")}${camLiveBlock("aritsugi")}`, true))
 + tba("Where it is built","a building, in section",
@@ -4671,7 +4671,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009025225";
+const ASSET_V="20261009025349";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -5002,7 +5002,7 @@ function renderHome(){
 
 /* ---------- joint pages: three groups of panels ---------- */
 const IF_PANEL_ORDER=[["Form and documentation",["Interface forms","How it differs","Proportions","Details","Where it is built","Where it occurs","Record"]],
-  ["Process",["Assembly","Repair","Hand fabrication (手刻み)","Digital fabrication (CNC / プレカット)"]],
+  ["Process",["Assembly","Repair","Making manually","Digital fabrication"]],
   ["Evidence",["Checks","Validation","Tests","Sources","Files","Files to Download"]]];
 /* each joint's interface forms, grouped by interface (○ in IF_COMP: an option) */
 const IF_INTERFACES={
@@ -5032,15 +5032,18 @@ const DAIMOCHI_VALIDATION=`
   <h4 class="occh">Finite elements, against her tension tests</h4>
   <p><b>Differed, by an order of magnitude.</b> At her full pull the model's reaction is 372 kN; the tests peaked at 21.7 and 29.0 kN (hand-cut, 4 and 6 springs) and 18.4 and 20.8 kN (CNC-made). The model is linear-elastic with no crushing, slip or failure, so it cannot reach a peak load: it is not validated against the tests, and no stiffness comparison has been made.</p>
   <h4 class="occh">Toolpaths</h4>
-  <p>Regenerated from the documented strategy (thesis 4.3), simulated: the setups, programs and remaining material are listed under Digital fabrication (CNC / プレカット). Not milled, and not compared with her original toolpaths, which are not available.</p>`;
+  <p>Regenerated from the documented strategy (thesis 4.3), simulated: the setups, programs and remaining material are listed under Digital fabrication. Not milled, and not compared with her original toolpaths, which are not available.</p>`;
 function ifPanelTitle(n){
   if(n.classList&&n.classList.contains("readsec")){ const s=n.querySelector(".readhead span"); return s?s.textContent.trim():""; }
   if(n.tagName==="DETAILS"){ const s=n.querySelector(":scope > summary"); return s?(s.firstChild&&s.firstChild.nodeType===3?s.firstChild.textContent:s.textContent).trim():""; }
   return null; }
 function groupPanel(panel){
   if(!panel) return;
-  const kids=[...panel.children].filter(n=>!n.classList.contains("grp")&&!n.classList.contains("grp-name")&&!n.classList.contains("namesec"));
+  const kids=[...panel.children].flatMap(n=>n.classList.contains("grp-hidden")?[...n.children]:[n]).filter(n=>!n.classList.contains("grp")&&!n.classList.contains("grp-name")&&!n.classList.contains("namesec"));
   const jkey=panel.id==="otherpanel"?ifCurrentJoint():"daimochi";
+  // not shown on the joint pages: kept, hidden, because the page still writes into them
+  const HIDE=["Checks","How it differs","Record"], hidden=[];
+  for(let i=kids.length-1;i>=0;i--) if(HIDE.includes(ifPanelTitle(kids[i]))){ hidden.push(kids[i]); kids.splice(i,1); }
   for(let i=kids.length-1;i>=0;i--) if(ifPanelTitle(kids[i])==="Interface forms"||ifPanelTitle(kids[i])==="Names"||(kids[i].classList&&kids[i].classList.contains("namesec"))) kids.splice(i,1);
   { const d=document.createElement("details"); d.className="jdhost";
     d.addEventListener("toggle",()=>{ if(d.open) jdSchedule(); else if(IFV.fig&&d.contains(IFV.fig)) ifvClose(); });
@@ -5071,7 +5074,12 @@ function groupPanel(panel){
     titles.forEach(t=>{ const n=byTitle.get(t); if(n){ frag.appendChild(n); byTitle.delete(t); } });
     if(g==="Form and documentation") [...byTitle.values()].filter(n=>!IF_PANEL_ORDER.some(([,ts])=>ts.includes(ifPanelTitle(n)))).forEach(n=>{ frag.appendChild(n); byTitle.delete(ifPanelTitle(n)); }); });
   rest.forEach(n=>frag.appendChild(n));
+  if(hidden.length){ const h=document.createElement("div"); h.className="grp-hidden"; h.hidden=true; hidden.forEach(n=>h.appendChild(n)); frag.appendChild(h); }
   panel.innerHTML=""; panel.appendChild(frag);
+  // Sources: the citations only
+  const srcs=[...panel.children].find(n=>ifPanelTitle(n)==="Sources"), sb=srcs&&srcs.querySelector(".body");
+  if(sb&&sb.querySelector("ol.srcs")){ const keep=[...sb.querySelectorAll("ol.srcs")], one=keep[0];
+    keep.slice(1).forEach(o=>[...o.children].forEach(li=>one.appendChild(li))); sb.innerHTML=""; sb.appendChild(one); }
   // Files to Download: three buttons, the files made from the sliders by the build server
   const files=[...panel.children].find(n=>/^Files( to Download)?$/.test(ifPanelTitle(n)||"")), fb=files&&files.querySelector(".body");
   if(files&&!fb.querySelector(".xfiles")){ const sm=files.querySelector(":scope > summary"); if(sm) sm.textContent="Files to Download";
