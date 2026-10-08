@@ -6,7 +6,7 @@
 <title>Codifying Craft</title>
 <style>
 :root{
-  --fs-title:25px; --fs-large:20px; --fs-body:14px; --fs-small:10px;
+  --fs-title:25px; --fs-large:16px; --fs-body:14px; --fs-small:10px;
   --lh-title:1.2; --lh-large:1.25; --lh-body:1.5; --lh-small:1.4;
   --plaster:#FFFFFF; --paper:#FFFFFF; --ink:#1C2321; --muted:#5C6763;
   --ai:#2B4C7E; --hinoki:#E2C38F; --sugi:#B98D57; --kashi:#5E4630; --warn:#7A5400; --fail:#A33327;
@@ -4858,7 +4858,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009041020";
+const ASSET_V="20261009041236";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
