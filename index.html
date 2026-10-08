@@ -293,7 +293,10 @@ svg.ifp-g{width:70%;height:auto;display:block;background:#fff;border:1px solid #
 @media (prefers-reduced-motion:reduce){.ifp-ln,.ifc{transition:none}}
 h3.grp{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;padding:16px 14px 4px;border-top:2px solid #C3CAC6}
 h3.grp:first-child{border-top:0;padding-top:12px}
-p.jname{margin:0;padding:12px 14px 2px;font-size:15px}p.jname + h3.grp{border-top:0;padding-top:8px}
+.namesec + .readsec{border-top:1px solid #DDE2DF}
+.readsec + h3.grp{border-top:2px solid #C3CAC6}
+figure.jdfig{margin:0}.jdkey{margin:6px 0 2px}
+.ifv-cap{margin:0;padding:4px 6px;font-size:12.5px;border-top:1px solid #E3E7E5;min-height:1.6em}
 h3.grp + details{border-top:0}
 .iftags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 a.iftag{font-size:11px;line-height:1.4;padding:0 6px;border:1px solid var(--fc);border-left-width:4px;border-radius:2px;color:var(--ink);text-decoration:none;background:#fff}
@@ -4580,7 +4583,7 @@ function ifName(id,short){ const f=IF[id]; return short?`${f.en} ${f.kj}`:`${f.e
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261008234152";
+const ASSET_V="20261009004118";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4687,7 +4690,7 @@ function renderHome(){
 }
 
 /* ---------- joint pages: three groups of panels ---------- */
-const IF_PANEL_ORDER=[["Form and documentation",["Match a drawing","How it differs","Names","Interface forms","Proportions","Details","Where it is built","Where it occurs","Record","Sources"]],
+const IF_PANEL_ORDER=[["Form and documentation",["Interface forms","How it differs","Proportions","Details","Where it is built","Where it occurs","Record","Sources"]],
   ["Process",["Assembly","Repair","Manual fabrication","Digital fabrication"]],
   ["Evidence",["Checks","Validation","Tests","Files"]]];
 /* each joint's interface forms, grouped by interface (○ in IF_COMP: an option) */
@@ -4725,11 +4728,13 @@ function ifPanelTitle(n){
   return null; }
 function groupPanel(panel){
   if(!panel) return;
-  const kids=[...panel.children].filter(n=>!n.classList.contains("grp")&&!n.classList.contains("grp-name"));
+  const kids=[...panel.children].filter(n=>!n.classList.contains("grp")&&!n.classList.contains("grp-name")&&!n.classList.contains("namesec"));
   const jkey=panel.id==="otherpanel"?ifCurrentJoint():"daimochi";
-  if(!kids.some(n=>ifPanelTitle(n)==="Interface forms")){
-    const d=document.createElement("details");
-    d.innerHTML=`<summary>Interface forms <small>by interface, with their sizing</small></summary><div class="body">${ifInterfacesHTML(jkey)}</div>`;
+  for(let i=kids.length-1;i>=0;i--) if(ifPanelTitle(kids[i])==="Interface forms"||ifPanelTitle(kids[i])==="Names"||(kids[i].classList&&kids[i].classList.contains("namesec"))) kids.splice(i,1);
+  { const d=document.createElement("div"); d.className="readsec jdhost";
+    d.innerHTML=`<div class="readhead"><span>Interface forms</span></div><div class="body">
+      <figure class="ifimg jdfig" data-if="jd"></figure><div class="jdkey iftags-row"></div>
+      <p class="note">The joint's components pulled apart, each interface form in its colour (the same as on the landing page and in the 3D view). Drag the background to rotate, scroll to zoom, drag a part to move it; click a face for its name.</p></div>`;
     kids.push(d); }
   if(jkey==="daimochi"&&panel.id!=="otherpanel"&&!kids.some(n=>ifPanelTitle(n)==="Validation")){
     const d=document.createElement("details");
@@ -4743,7 +4748,14 @@ function groupPanel(panel){
   kids.forEach(n=>{ const t=ifPanelTitle(n); if(t&&!byTitle.has(t)) byTitle.set(t,n); else rest.push(n); });
   const frag=document.createDocumentFragment();
   const jk=panel.id==="otherpanel"?ifCurrentJoint():"daimochi", J=IF_JOINTS[jk];
-  if(J){ const h=document.createElement("p"); h.className="jname grp-name"; h.innerHTML=`<i>${J.ro}</i> ${J.kj}: ${J.gl}`; frag.appendChild(h); }
+  // Names, always open, at the top
+  if(J){ const B=(typeof BAUER!=="undefined"&&BAUER.names[jk])||null, d=document.createElement("div"); d.className="readsec namesec";
+    d.innerHTML=`<div class="readhead"><span>Names</span></div><div class="body"><div class="kv wide">
+      <span>Japanese</span><span>${J.kj} <i>${J.ro}</i></span><span>English</span><span>${J.gl}</span>
+      ${B?`<span>Bauer and Pauli</span><span>${B.en}</span>`:""}</div></div>`;
+    frag.appendChild(d); }
+  const match=byTitle.get("Match a drawing"); if(match){ frag.appendChild(match); byTitle.delete("Match a drawing"); }
+  byTitle.delete("Names");
   IF_PANEL_ORDER.forEach(([g,titles])=>{ const h=document.createElement("h3"); h.className="grp"; h.textContent=g; frag.appendChild(h);
     titles.forEach(t=>{ const n=byTitle.get(t); if(n){ frag.appendChild(n); byTitle.delete(t); } });
     if(g==="Form and documentation") [...byTitle.values()].filter(n=>!IF_PANEL_ORDER.some(([,ts])=>ts.includes(ifPanelTitle(n)))).forEach(n=>{ frag.appendChild(n); byTitle.delete(ifPanelTitle(n)); }); });
@@ -4776,24 +4788,26 @@ function ifvClose(){
   IFV.fig.classList.remove("ifv-on"); const box=IFV.fig.querySelector(".ifv"); if(box) box.remove();
   IFV.fig=null; IFV.renderer=null;
 }
-async function ifvOpen(fig){
-  const id=fig.dataset.if; if(IFV.fig===fig) return; ifvClose();
-  let data; try{ data=(await ifSamples())[id]; }catch(e){ return; }      // opened as a file: the picture stays
+async function ifvOpen(fig, given){
+  const id=fig.dataset.if; if(IFV.fig===fig&&!given) return; ifvClose();
+  // a catalogue sample, or (given) a joint's own geometry with each face's interface form
+  let data; try{ data=given?given.data:(await ifSamples())[id]; }catch(e){ return; }      // opened as a file: the picture stays
   if(!data) return;
   IFV.fig=fig; fig.classList.add("ifv-on");
   const box=document.createElement("div"); box.className="ifv";
-  box.innerHTML=`<canvas aria-label="${IF[id].en}: a sample joint in 3D. Drag the background to rotate, scroll or pinch to zoom, drag a part to move it."></canvas>
-    <div class="ifv-bar" role="group" aria-label="Move parts along"><span>Move along</span>${["auto","x","y","z"].map(a=>`<button data-ax="${a}" aria-pressed="${a==="auto"}">${a==="auto"?"auto":a}</button>`).join("")}<button data-reset>Reset</button><button data-close aria-label="Back to the picture">×</button></div>`;
+  box.innerHTML=`<canvas aria-label="${given?given.label:IF[id].en+": a sample joint"} in 3D. Drag the background to rotate, scroll or pinch to zoom, drag a part to move it."></canvas>
+    <div class="ifv-bar" role="group" aria-label="Move parts along"><span>Move along</span>${["auto","x","y","z"].map(a=>`<button data-ax="${a}" aria-pressed="${a==="auto"}">${a==="auto"?"auto":a}</button>`).join("")}<button data-reset>Reset</button>${given?"":`<button data-close aria-label="Back to the picture">×</button>`}</div>${given?`<p class="ifv-cap" aria-live="polite">Click a coloured face for its interface form.</p>`:""}`;
   fig.insertBefore(box,fig.firstChild);
   const cv=box.querySelector("canvas"), renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true}); IFV.renderer=renderer;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2)); renderer.setClearColor(0xffffff,1);
   const scene=new THREE.Scene(), parts=[], bb=new THREE.Box3();
   data.forEach(c=>{ const g=new THREE.Group(), pos=[], col=[];
-    c.t.forEach((t,i)=>{ for(let k=0;k<9;k++) pos.push(t[k]); const h=c.h[i]; for(let k=0;k<3;k++) col.push(...(h?[0.97,0.80,0.78]:[1,1,1])); });
+    c.t.forEach((t,i)=>{ for(let k=0;k<9;k++) pos.push(t[k]); const h=c.col?c.col[i]:(c.h[i]?[0.97,0.80,0.78]:[1,1,1]); for(let k=0;k<3;k++) col.push(...h); });
     const geo=new THREE.BufferGeometry(); geo.setAttribute("position",new THREE.Float32BufferAttribute(pos,3)); geo.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
     const mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1}));
     g.add(mesh); geo.computeBoundingBox(); bb.union(geo.boundingBox);
-    [0,1].forEach(red=>{ const seg=[]; c.e.forEach((e,i)=>{ if(c.eh[i]!==red) return; for(let k=0;k+5<e.length;k+=3) seg.push(e[k],e[k+1],e[k+2],e[k+3],e[k+4],e[k+5]); });
+    if(!c.e){ g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo,20),new THREE.LineBasicMaterial({color:0x1C2321}))); }
+    else [0,1].forEach(red=>{ const seg=[]; c.e.forEach((e,i)=>{ if(c.eh[i]!==red) return; for(let k=0;k+5<e.length;k+=3) seg.push(e[k],e[k+1],e[k+2],e[k+3],e[k+4],e[k+5]); });
       if(seg.length){ const lg=new THREE.BufferGeometry(); lg.setAttribute("position",new THREE.Float32BufferAttribute(seg,3));
         g.add(new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:red?0xD0021B:0x1C2321}))); } });
     mesh.userData.part=g; scene.add(g); parts.push(g); });
@@ -4842,8 +4856,15 @@ async function ifvOpen(fig){
   const cam=new THREE.OrthographicCamera(-1,1,1,-1,-20*span,20*span); cam.up.set(0,0,1);
   box.__cam=cam;
   const V={th:-0.95, ph:0.55, zoom:1};
+  let H0=null;   // a joint's own drawing is framed to its outline in the first view, not its diagonal
   const fit=()=>{ const w=cv.clientWidth||300, h=cv.clientHeight||190; renderer.setSize(w,h,false);
-    const half=span*0.55/V.zoom, asp=w/h; cam.left=-half*asp; cam.right=half*asp; cam.top=half; cam.bottom=-half;
+    const asp=w/h;
+    if(given&&H0===null){ const th=-0.95, ph=0.55, d=new THREE.Vector3(Math.cos(ph)*Math.cos(th),Math.cos(ph)*Math.sin(th),Math.sin(ph)),
+        r=new THREE.Vector3().crossVectors(d,new THREE.Vector3(0,0,1)).normalize(), u=new THREE.Vector3().crossVectors(r,d).normalize(); let mu=0, mv=0;
+      [0,1].forEach(i=>[0,1].forEach(j=>[0,1].forEach(k=>{ const q=new THREE.Vector3(i?bb.max.x:bb.min.x,j?bb.max.y:bb.min.y,k?bb.max.z:bb.min.z).sub(ctr);
+        mu=Math.max(mu,Math.abs(q.dot(r))); mv=Math.max(mv,Math.abs(q.dot(u))); })));
+      H0=Math.max(mv,mu/asp)*1.08; }
+    const half=(given?H0:span*0.55)/V.zoom; cam.left=-half*asp; cam.right=half*asp; cam.top=half; cam.bottom=-half;
     cam.position.set(ctr.x+span*Math.cos(V.ph)*Math.cos(V.th), ctr.y+span*Math.cos(V.ph)*Math.sin(V.th), ctr.z+span*Math.sin(V.ph));
     cam.lookAt(ctr); cam.updateProjectionMatrix(); cam.updateMatrixWorld(); };
   let dirty=true; const loop=()=>{ if(dirty){ fit(); renderer.render(scene,cam); dirty=false; } IFV.raf=requestAnimationFrame(loop); }; loop();
@@ -4851,7 +4872,7 @@ async function ifvOpen(fig){
   let axis="auto";
   box.querySelectorAll("[data-ax]").forEach(b=>b.onclick=()=>{ axis=b.dataset.ax; box.querySelectorAll("[data-ax]").forEach(x=>x.setAttribute("aria-pressed",x===b)); });
   box.querySelector("[data-reset]").onclick=()=>{ parts.forEach(p=>p.position.set(0,0,0)); V.th=-0.95; V.ph=0.55; V.zoom=1; dirty=true; };
-  box.querySelector("[data-close]").onclick=e=>{ e.stopPropagation(); ifvClose(); };
+  if(!given) box.querySelector("[data-close]").onclick=e=>{ e.stopPropagation(); ifvClose(); };
   // pointer: a part is moved along an axis; the background turns the view; two fingers zoom
   const ray=new THREE.Raycaster(), ptrs=new Map(); let drag=null, pinch=0;
   const ndc=e=>{ const r=cv.getBoundingClientRect(); return new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1); };
@@ -4860,7 +4881,7 @@ async function ifvOpen(fig){
   cv.addEventListener("pointerdown",e=>{ cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId,[e.clientX,e.clientY]);
     if(ptrs.size===2){ drag=null; const [a,b]=[...ptrs.values()]; pinch=Math.hypot(a[0]-b[0],a[1]-b[1]); return; }
     ray.setFromCamera(ndc(e),cam); const hit=ray.intersectObjects(parts.map(p=>p.children[0]),false)[0];
-    drag={x:e.clientX,y:e.clientY,part:hit?hit.object.userData.part:null,ax:null,v0:null}; if(drag.part) drag.i=parts.indexOf(drag.part); e.preventDefault(); });
+    drag={x:e.clientX,y:e.clientY,part:hit?hit.object.userData.part:null,ax:null,v0:null,face:hit?hit.faceIndex:-1,moved:false}; if(drag.part) drag.i=parts.indexOf(drag.part); e.preventDefault(); });
   cv.addEventListener("pointermove",e=>{ if(!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId,[e.clientX,e.clientY]);
     if(ptrs.size===2){ const [a,b]=[...ptrs.values()], d=Math.hypot(a[0]-b[0],a[1]-b[1]); if(pinch){ V.zoom=Math.max(0.3,Math.min(8,V.zoom*d/pinch)); dirty=true; } pinch=d; return; }
     if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
@@ -4871,7 +4892,11 @@ async function ifvOpen(fig){
       drag.ax=axes[k]; drag.s=screenOf(wp,axes[k].clone().multiplyScalar(span*0.1)); drag.v0=drag.part.position.clone(); }
     const s=drag.s, t=(dx*s.x+dy*s.y)/Math.max(1e-6,s.lengthSq())*span*0.1;
     moveTo(drag.i, drag.v0.clone().addScaledVector(drag.ax,t)); dirty=true; });
-  const up=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=0; if(!ptrs.size) drag=null; };
+  const up=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=0;
+    // a click on a face, not a drag: name its interface form
+    if(given&&drag&&drag.part&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<4&&!drag.ax){ const fid=(data[drag.i].ids||[])[drag.face], cap=box.querySelector(".ifv-cap");
+      if(cap) cap.innerHTML=fid?`<span class="ifsw" style="background:${IF_COL[fid]||"#ccc"}"></span><a href="#form-${fid}">${IF[fid].en} ${IF[fid].kj}</a>: ${((IF_COMP[ifCurrentJoint()]||{})[fid]||["",""])[1]}`:"An uncoloured face: the timber's own surface."; }
+    if(!ptrs.size) drag=null; };
   cv.addEventListener("pointerup",up); cv.addEventListener("pointercancel",up);
   cv.addEventListener("wheel",e=>{ e.preventDefault(); V.zoom=Math.max(0.3,Math.min(8,V.zoom*Math.exp(-e.deltaY*0.0015))); dirty=true; },{passive:false});
 }
@@ -5021,7 +5046,45 @@ function ifRemove(){
   ifMeshList().forEach(({m})=>{ const sv=IF_SAVED.get(m); if(sv){ m.geometry=sv.g; m.material=sv.mat; IF_SAVED.delete(m); } delete m.userData.formTri; });
   ifLegend(null); ifCard(null);
 }
-function ifRefresh(){ if(FORMVIEW) ifApply(); }
+function ifRefresh(){ if(FORMVIEW) ifApply(); jdSchedule(); }
+/* The joint's interface forms, drawn: its components from the page's model,
+   each in its own frame (stage moves left out), pulled apart, every face in the
+   colour of its interface form; a live box, as on the landing page. */
+let JD_PENDING=false;
+function jdSchedule(){ if(JD_PENDING) return; JD_PENDING=true; requestAnimationFrame(()=>requestAnimationFrame(()=>{ JD_PENDING=false; jdDraw(); })); }
+function jdData(){
+  const j=ifCurrentJoint(), list=ifMeshList(), groups=new Map();
+  const tint=hex=>{ const c=new THREE.Color(hex); return [0.45*c.r+0.55,0.45*c.g+0.55,0.45*c.b+0.55]; };
+  list.forEach(({m,f})=>{
+    let key, M=new THREE.Matrix4();
+    m.updateMatrix();
+    if(j==="daimochi"){
+      if(meshA&&m.parent===meshA){ key="lower"; meshA.updateMatrix(); M.multiplyMatrices(meshA.matrix,m.matrix); }
+      else if(meshB&&m.parent===meshB){ key="upper"; meshB.updateMatrix(); M.multiplyMatrices(meshB.matrix,m.matrix); }
+      else if(supGroup.children.includes(m)){ key="support"; M.copy(m.matrix); }
+      else if(aboveGroup.children.includes(m)){ key="above"; M.copy(m.matrix); }
+      else { key="loose"+pegs.indexOf(m); M.copy(m.matrix); }
+    } else { key=pipeA.children.includes(m)?"lower":pipeB.children.includes(m)?"upper":"loose"+pipeP.children.indexOf(m); M.copy(m.matrix); }
+    const g0=(IF_SAVED.get(m)||{g:m.geometry}).g, g=g0.index?g0.toNonIndexed():g0, tris=ifTri(g), P=g.attributes.position.array, v=new THREE.Vector3();
+    const G=groups.get(key)||{key,t:[],col:[],ids:[]}; groups.set(key,G);
+    tris.forEach((t,i)=>{ const id=typeof f==="function"?f(t):f, q=[];
+      for(let k=0;k<3;k++){ v.set(P[i*9+k*3],P[i*9+k*3+1],P[i*9+k*3+2]).applyMatrix4(M); q.push(v.x,-v.z,v.y); }   // y up -> z up
+      G.t.push(q); G.ids.push(id||null); G.col.push(id&&IF_COL[id]?tint(IF_COL[id]):[1,1,1]); }); });
+  const parts=[...groups.values()]; if(!parts.length) return null;
+  // pull them apart: the upper element above, pins and dowels between, a post where it stands
+  const zr=G=>{ let lo=1e9,hi=-1e9; G.t.forEach(q=>{ for(let k=2;k<9;k+=3){ lo=Math.min(lo,q[k]); hi=Math.max(hi,q[k]); } }); return [lo,hi]; };
+  const low=parts.find(G=>G.key==="lower"), H=low?zr(low)[1]-zr(low)[0]:100;
+  const lift={upper:1.0*H, above:1.9*H}; parts.forEach(G=>{ const dz=G.key.startsWith("loose")?0.5*H:(lift[G.key]||0); if(dz) G.t.forEach(q=>{ q[2]+=dz; q[5]+=dz; q[8]+=dz; }); });
+  return parts;
+}
+function jdDraw(){
+  const host=[...document.querySelectorAll(".jdhost")].find(h=>h.offsetParent!==null); if(!host) return;
+  const data=jdData(); if(!data) return;
+  const seen=[...new Set([].concat(...data.map(G=>G.ids)).filter(Boolean))];
+  const fig=host.querySelector("figure.jdfig");
+  ifvOpen(fig,{data,label:IF_JOINTS[ifCurrentJoint()].ro+": its components apart, each interface form in colour"});
+  host.querySelector(".jdkey").innerHTML=IF_USED.filter(id=>seen.includes(id)).map(id=>`<a class="iftag" href="#form-${id}" style="--fc:${IF_COL[id]}"><span class="ifsw" style="background:${IF_COL[id]}"></span>${IF[id].en} ${IF[id].kj}</a>`).join("");
+}
 function ifLegend(seen){
   const el=document.getElementById("iflegend"); if(!el) return;
   if(!seen){ el.innerHTML=""; el.hidden=true; return; }
