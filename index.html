@@ -3316,11 +3316,7 @@ function showSpecJoint(key){
     <div class="kv">${row("The description",`<code>${G.spec_file}</code>`)}
     ${row("Geometry",`${Object.keys(V0.volumes_mm3).join(", ")}, as STEP and STL`)}
     ${row("How to build it",`<code>env/bin/python -m imagecad.image_to_cad --spec ${G.spec_file} --out DIR</code>`)}</div>
-    <p class="note">Built by the shared builder from the spec; no dedicated builder exists for it under <code>src/</code>. Toolpaths come from <code>imagecad/fabricate.py</code>, simulated, not milled; there is no FEM deck for it yet.</p>`)
-+ `<div class="srcfoot"><ol>
-    <li>${TODA2012.cite} ${TODA2012.note}</li>
-    <li>${BAUER.cite} ${BAUER.note}</li>
-  </ol></div>`;
+    <p class="note">Built by the shared builder from the spec; no dedicated builder exists for it under <code>src/</code>. Toolpaths come from <code>imagecad/fabricate.py</code>, simulated, not milled; there is no FEM deck for it yet.</p>`);
   document.querySelectorAll("button[data-sspec]").forEach(b=>b.onclick=()=>{
     const [h,l]=b.dataset.sspec.split("|").map(Number);
     SPEC_RULE[key].h={id:"spec",custom:true,kind:"abs",label:`${h} mm, specimen`,c:h,
@@ -3790,7 +3786,8 @@ function ariPanelHTML(J){
       <li><b>denmoku 蟻掛け</b>: the flare of 曲尺幅半分, 7.5 mm.</li>
       <li><b>下山</b>: the 目違い against twisting of the lower part.</li>
       <li><b>告示1460</b> and the Z-mark 短ざく金物 S-450, for 桁 and 胴差.</li>
-      <li><b>${BAUER.id}</b> p.${N.page}: names and the step strip.</li></ol>
+      <li><b>${BAUER.id}</b> p.${N.page}: names and the step strip. ${BAUER.cite} ${BAUER.note}</li>
+      <li>Ng, Wang, Ghorbani, Hackl. Design for Repair and Reuse, and Digital Fabrication of Traditional Japanese Timber Joinery. ISARC 2026.</li></ol>
       <p class="note">Full bibliographic details are not recorded in the project; these are the names as given.</p>
       <h4 class="occh">Evidence notes</h4><ul class="prov">${ARI_FLAGS.map(f=>`<li>${f}</li>`).join("")}</ul>
       <h4 class="occh">How the pipeline read the drawing</h4>
@@ -3798,9 +3795,7 @@ function ariPanelHTML(J){
 + sec("Files","take the record with you", `
     <div class="kv wide">${row("Geometry","Rebuild builds the pieces as STEP and STL through the shared builder")}
     ${row("Toolpaths","simulated per setup, under Digital fabrication (CNC / プレカット); served from the toolpath cache, not the repository")}
-    ${row("Pipeline's model",`joints/${J.name}/outputs/: ${J.gcode.length} G-code programmes, pipeline_result.json`)}</div>`)
-+ `<div class="srcfoot"><ol><li>${BAUER.cite} ${BAUER.note}</li>
-    <li>Ng, Wang, Ghorbani, Hackl. Design for Repair and Reuse, and Digital Fabrication of Traditional Japanese Timber Joinery. ISARC 2026.</li></ol></div>`;
+    ${row("Pipeline's model",`joints/${J.name}/outputs/: ${J.gcode.length} G-code programmes, pipeline_result.json`)}</div>`);
 }
 
 /* ---------- tools, as small line icons ----------
@@ -4325,22 +4320,20 @@ function showRefJoint(key){
       <li><b>Kijima 2019; Toda 2012</b> jaw step at 5, 7.5 and 15 mm.</li></ol>
       <p class="note">A compiled school of proportions, not a single canon. Full bibliographic details are not recorded in the project; these are the names as given.</p>
       <h4 class="occh">Flags on the drawings</h4><ul class="prov">${KAMA_FLAGS.map(f=>`<li>${f}</li>`).join("")}</ul>`:"")+`
+      <h4 class="occh">References</h4><ol class="srcs">
+      <li>Wang, A. <i>Join(t)ing the past and present</i>. Senior thesis, Princeton University, 2024.</li>
+      <li>Ng, Wang, Ghorbani, Hackl. Design for Repair and Reuse, and Digital Fabrication of Traditional Japanese Timber Joinery. ISARC 2026.</li>
+      <li>${BAUER.cite} ${BAUER.note}</li></ol>
       <h4 class="occh">How the project read this joint</h4>
       <p class="note">From <code>joints/${J.name}/inputs/</code>, recorded in <code>params.json</code>:</p>
       <ul class="prov">${p.assumptions.map(a=>`<li>${a}</li>`).join("")}</ul>
       <p class="note">These sentences are the project's own record of the reading; they have not been checked against a second source.</p>`)
 + sec("Files","take the record with you", `
-    <p class="note">The downloads on the daimochi page are written for that joint. For this one the pipeline writes its own files into <code>joints/${J.name}/outputs/</code> each time it builds:</p>
+    <p class="note">Besides the files made from the sliders (below), the project pipeline writes its own into <code>joints/${J.name}/outputs/</code> each time it builds:</p>
     <div class="kv">${row("Geometry","piece_a / piece_b, as STEP and STL, plus the assembly")}
     ${row("G-code programmes",J.gcode.length+": "+J.gcode.join(", "))}
     ${row("Record","pipeline_result.json, simulation.json")}
-    ${row("FEM",steps.length?"the contact deck, mesh and results":"the contact deck and mesh")}</div>`)
-+ `<div class="srcfoot"><ol>
-    <li>${TODA2012.cite} ${TODA2012.note}</li>
-    <li>Wang, A. <i>Join(t)ing the past and present</i>. Senior thesis, Princeton University, 2024.</li>
-    <li>Ng, Wang, Ghorbani, Hackl. Design for Repair and Reuse, and Digital Fabrication of Traditional Japanese Timber Joinery. ISARC 2026.</li>
-    <li>${BAUER.cite} ${BAUER.note}</li>
-  </ol></div>`;
+    ${row("FEM",steps.length?"the contact deck, mesh and results":"the contact deck and mesh")}</div>`);
   el.querySelectorAll("button[data-spec]").forEach(b=>b.onclick=()=>{
     const sp=KAMA_SPECIMENS.find(x=>x.id===b.dataset.spec); if(!sp) return;
     KAMA.anchors.H=sp.H; KAMA.anchors.W=120;
@@ -4680,7 +4673,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009023718";
+const ASSET_V="20261009024047";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -5009,9 +5002,9 @@ function renderHome(){
 }
 
 /* ---------- joint pages: three groups of panels ---------- */
-const IF_PANEL_ORDER=[["Form and documentation",["Interface forms","How it differs","Proportions","Details","Where it is built","Where it occurs","Record","Sources"]],
+const IF_PANEL_ORDER=[["Form and documentation",["Interface forms","How it differs","Proportions","Details","Where it is built","Where it occurs","Record"]],
   ["Process",["Assembly","Repair","Hand fabrication (手刻み)","Digital fabrication (CNC / プレカット)"]],
-  ["Evidence",["Checks","Validation","Tests","Files"]]];
+  ["Evidence",["Checks","Validation","Tests","Sources","Files"]]];
 /* each joint's interface forms, grouped by interface (○ in IF_COMP: an option) */
 const IF_INTERFACES={
   daimochi:[["Beam–beam interface (lower and upper element)",["sogi","ryaku","mechi"]],["Dowel–beam interfaces (dowels option)",["yatoi"]],
