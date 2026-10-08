@@ -1,8 +1,8 @@
 # Codifying Craft
 
-A making grammar for computing the geometry, assembly, repair and fabrication of Japanese timber joints.
+a making grammar for computing the geometry, assembly, repair and fabrication of Japanese timber joints.
 
-Ming Shan (Charmaine) Ng, Esmaeil Ghorbani, Jürgen Hackl
+Ming Shan (Charmaine) Ng, Esmaeil Ghorbani, Akaneh Wang, Jürgen Hackl
 
 **Open it:** https://charmings33.github.io/codifyingcraft/
 
