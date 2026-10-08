@@ -307,7 +307,7 @@ figure.jdfig{margin:0}.jdkey{margin:6px 0 2px}
 details.rules-d{margin:4px 0 10px}code.rid{font-family:inherit;font-size:.92em;color:#3d4441;white-space:nowrap}details.rules-d>summary::before{content:"▸ "}details.rules-d[open]>summary::before{content:"▾ "}details.rules-d>summary{cursor:pointer;font-size:calc(13px*var(--hs,1));color:#3d4441}
 h3.rules-h{font-size:calc(15px*var(--hs,1));margin:16px 0 6px}
 table.rules-t{border-collapse:collapse;font-size:calc(12px*var(--hs,1));width:100%}table.rules-t th,table.rules-t td{border-bottom:1px solid #E3E7E5;padding:3px 6px;text-align:left;vertical-align:top}
-.xfiles button{display:block;min-width:7em;margin:0 0 8px}.xfiles .xstat{margin:2px 0 0}
+.xfiles .xrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}.xfiles .xlab{min-width:3.2em;font-weight:600}.xfiles .xstat{margin:2px 0 0}
 .ifat{font-size:.9em;color:#16876a}.ifp-badge{pointer-events:none}
 .ifhalves{margin:4px 0 6px;padding-left:1.1em;font-size:13px}#home .ifhalves{font-size:calc(13px*var(--hs))}.ifhalves li{margin:2px 0}
 p.ifh2{margin:6px 0 2px;font-size:12.5px;font-weight:600;color:#5f6663}#home p.ifh2{font-size:calc(12.5px*var(--hs))}.ifunv{font-size:.9em;color:#8a5a00}
@@ -4075,22 +4075,26 @@ const CAM_JOBS={};
    spec, and an FE input deck, made by the build server (imagecad.export) from
    the same geometry the toolpaths use. */
 function exportBlock(key){
-  return `<div class="xfiles" data-xkey="${key}">${[["cad","CAD"],["fem","FEM"],["step","STEP"]].map(([k,l])=>`<button data-xget="${k}">${l}</button>`).join("")}<p class="note xstat" aria-live="polite"></p></div>`; }
-/* one button, one file: the geometry on the sliders is built once by the build
-   server (imagecad.export) and each kind downloaded from it. CAD: every part as
-   STEP and STL with the spec (zip); FEM: the CalculiX deck; STEP: the assembly. */
-const XGET={cad:f=>/_cad\.zip$/.test(f),fem:f=>/_tension\.inp$/.test(f),step:f=>/_assembly\.step$/.test(f)};
+  const btn=(k,l)=>`<button data-xget="${k}">${l}</button>`;
+  return `<div class="xfiles" data-xkey="${key}">
+    <div class="xrow">${btn("3dm","3dm")}${btn("stl","stl")}${btn("step","step")}${btn("inp","FE model (Abaqus .inp)")}</div>
+    <p class="note xstat" aria-live="polite"></p></div>`; }
+/* one button, one file, for the geometry on the sliders: built once by the build
+   server (imagecad.export), each kind downloaded from it */
+const XGET={"3dm":f=>/\.3dm$/.test(f),stl:f=>/^[a-z]+\.stl$/.test(f),step:f=>/_assembly\.step$/.test(f),inp:f=>/_abaqus\.inp$/.test(f)};
+const xwait=ms=>new Promise(f=>setTimeout(f,ms)), xjson=async(u,o)=>(await fetch(u,o)).json();
+function xsave(href,name){ const a=document.createElement("a"); a.href=href; a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
 async function exportGet(key,kind,box){
   const st=box.querySelector(".xstat"), say=t=>{ st.textContent=t; };
   if(noServer()||location.protocol==="file:"){ say("Downloads work in the local viewer, served by viewer/server.py."); return; }
   const payload=camPayload(key); if(!payload){ say("No geometry to send for this joint."); return; }
   box.querySelectorAll("button").forEach(b=>b.disabled=true); say("Building…");
   try{
-    let r=await (await fetch("api/export",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})).json();
-    while(r.status==="running"){ say(`Building… ${r.elapsed_s||0} s`); await new Promise(f=>setTimeout(f,2000)); r=await (await fetch("api/export/"+r.job)).json(); }
+    let r=await xjson("api/export",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    while(r.status==="running"){ say(`Building… ${r.elapsed_s||0} s`); await xwait(2000); r=await xjson("api/export/"+r.job); }
     if(r.status!=="done"){ say("Could not make the file: "+(r.error||"unknown error").split("\n").filter(Boolean).slice(-1)[0]); return; }
-    const f=(r.files||[]).find(XGET[kind]); if(!f){ say(kind==="fem"&&r.summary&&r.summary.fe_error?"No FE deck: "+r.summary.fe_error:"That file was not made."); return; }
-    const a=document.createElement("a"); a.href=`api/export/${r.job}/${f}`; a.download=f; document.body.appendChild(a); a.click(); a.remove(); say("");
+    const f=(r.files||[]).find(XGET[kind]); if(!f){ say(kind==="inp"&&r.summary&&r.summary.fe_error?"No FE model: "+r.summary.fe_error:"That file was not made."); return; }
+    xsave(`api/export/${r.job}/${f}`,f); say("");
   }catch(e){ say("Could not reach the build server ("+(e.message||e)+")."); }
   finally{ box.querySelectorAll("button").forEach(b=>b.disabled=false); }
 }
@@ -4671,7 +4675,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009025349";
+const ASSET_V="20261009031437";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
