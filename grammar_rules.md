@@ -53,33 +53,33 @@ Which interface forms make each interface of each joint. ×2: the form occurs tw
 
 | ID | Joint | Interface | = interface forms | Holds |
 |---|---|---|---|---|
-| `C.daimochi.1` | *daimochi tsugi* 台持継 | Beam–beam interface (lower and upper element) | Oblique scarf 殺ぎ + Abbreviated gooseneck 略鎌 + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2 | every configuration |
+| `C.daimochi.1` | 台持継 *daimochi tsugi* | Beam–beam interface (lower and upper element) | Oblique scarf 殺ぎ + Abbreviated gooseneck 略鎌 + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2 | every configuration |
 | `C.daimochi.2` |  | Dowel–element interfaces (two dowels, each in both elements) | Loose tenon (dowel, butterfly key; term unverified for yatoi) 雇い | locking: dowels (blind, set in before the upper element) |
 | `C.daimochi.3` |  | Peg–element interfaces (two draw pegs, each through both elements) | Peg / peg hole 栓 / 栓穴 | locking: through draw pegs |
 | `C.daimochi.4` |  | Post–element interface (a post below, or a post above) | Tenon / mortise 枘 / 枘穴 + Housing 大入れ | support: post below (tenon through both elements, or a stub) or post above (a stub into the upper element) |
 | `C.daimochi.5` |  | Beam–element interface (a beam below) | Cog 渡り腮 | support: beam below |
 | `C.daimochi.6` |  | Wedge–tenon interfaces (two wedges beside the post tenon) | Wedge 楔 | locking: wedges, with a post below and a through tenon only |
-| `C.aritsugi.1` | *koshikake ari tsugi* 腰掛蟻継 | Beam–beam interface | Seat 腰掛け + Dovetail / dovetail socket 蟻 / 蟻ほぞ穴 | every configuration |
+| `C.aritsugi.1` | 腰掛蟻継 *koshikake ari tsugi* | Beam–beam interface | Seat 腰掛け + Dovetail / dovetail socket 蟻 / 蟻ほぞ穴 | every configuration |
 | `C.aritsugi.2` |  | Beam–beam interface, 目違い variant | Stub tenon / stub mortise 目違い / 目違ほぞ穴 | variant: 目違い付 (size assumed) |
-| `C.kamatsugi.1` | *koshikake kama tsugi* 腰掛鎌継 | Beam–beam interface | Seat 腰掛け + Gooseneck / gooseneck socket 鎌 / 鎌穴 | every configuration |
+| `C.kamatsugi.1` | 腰掛鎌継 *koshikake kama tsugi* | Beam–beam interface | Seat 腰掛け + Gooseneck / gooseneck socket 鎌 / 鎌穴 | every configuration |
 | `C.kamatsugi.2` |  | Beam–beam interface, 目違い variant | Stub tenon / stub mortise 目違い / 目違ほぞ穴 | variant: Toda's 目違い notch |
 | `C.kamatsugi.3` |  | Peg–element interfaces (one peg through both elements) | Peg / peg hole 栓 / 栓穴 | variant: Toda's 込栓, driven sideways |
-| `C.kanawa.1` | *kanawa tsugi* 金輪継 | Beam–beam interface | Halving (half-lap) 相欠き + Abbreviated gooseneck 略鎌 + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2 + Dovetail / dovetail socket 蟻 / 蟻ほぞ穴 ×2 | every configuration |
+| `C.kanawa.1` | 金輪継 *kanawa tsugi* | Beam–beam interface | Halving (half-lap) 相欠き + Abbreviated gooseneck 略鎌 + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2 + Dovetail / dovetail socket 蟻 / 蟻ほぞ穴 ×2 | every configuration |
 | `C.kanawa.2` |  | Peg–element interfaces (one peg through both elements, from the side) | Peg / peg hole 栓 / 栓穴 | variant: locked |
-| `C.okkake.1` | *okkake daisen tsugi* 追掛大栓継 | Beam–beam interface | Oblique scarf 殺ぎ + Abbreviated gooseneck 略鎌 + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2 | every configuration |
+| `C.okkake.1` | 追掛大栓継 *okkake daisen tsugi* | Beam–beam interface | Oblique scarf 殺ぎ + Abbreviated gooseneck 略鎌 + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2 | every configuration |
 | `C.okkake.2` |  | Peg–element interfaces (two pegs through both elements, from the top) | Peg / peg hole 栓 / 栓穴 | variant: locked |
 
 **Components of each joint**
 
-*daimochi tsugi* 台持継: Lower element (shitaki) and upper element (uwaki), the same part turned end for end. By option: two dowels, two draw pegs, two bolts or two wedges; a post below, a post above or a beam below. Bolts (a locking option for logs) are hardware, not an interface form of the vocabulary.
+台持継 *daimochi tsugi*: Lower element (shitaki) and upper element (uwaki), the same part turned end for end. By option: two dowels, two draw pegs, two bolts or two wedges; a post below, a post above or a beam below. Bolts (a locking option for logs) are hardware, not an interface form of the vocabulary.
 
-*koshikake ari tsugi* 腰掛蟻継: Lower element (shitaki) and upper element (uwaki).
+腰掛蟻継 *koshikake ari tsugi*: Lower element (shitaki) and upper element (uwaki).
 
-*koshikake kama tsugi* 腰掛鎌継: Lower element (shitaki) and upper element (uwaki); by variant, one 込栓 peg.
+腰掛鎌継 *koshikake kama tsugi*: Lower element (shitaki) and upper element (uwaki); by variant, one 込栓 peg.
 
-*kanawa tsugi* 金輪継: Two identical elements; in the locked variant, one 栓 peg.
+金輪継 *kanawa tsugi*: Two identical elements; in the locked variant, one 栓 peg.
 
-*okkake daisen tsugi* 追掛大栓継: Two identical elements; in the locked variant, two 込栓 pegs.
+追掛大栓継 *okkake daisen tsugi*: Two identical elements; in the locked variant, two 込栓 pegs.
 
 ## 3. Sizing rules
 
@@ -253,7 +253,7 @@ Rule types: *scales* (the form's dimensions follow the member by rule); *fixed s
 
 Each joint's rule library, as its Proportions panel uses it: for each dimension, the interface form it sizes, then every rule offered, with its type, value, source and evidence; the first is the one the page starts from. Evidence is assigned from each rule's own source note by a fixed rule: a placeholder is *inferred*; a rule of thumb is *generic*; a rule the note calls inferred or unverified is *inferred*; one read from a snippet is *verify*; one read through a paraphrase or commentary is *secondary*; one naming a primary source (denmoku-db, Saitō 1904, AIJ, Toda, HOWTEC, MLIT, Kijima, the dimensioned drawings, Wang) is *documented*; any other is *secondary*. Section dimensions (height, width) are the member's, not rules.
 
-***daimochi tsugi* 台持継**
+**台持継 *daimochi tsugi***
 
 | ID | Dimension | Interface form | Rule | Type | Source | Evidence |
 |---|---|---|---|---|---|---|
@@ -306,7 +306,7 @@ Each joint's rule library, as its Proportions panel uses it: for each dimension,
 |  |  |  | 3寸, 90 mm (長ほぞ) | fixed size | Shimoyama (single source) | secondary |
 |  |  |  | 120 mm (koyatsuka 長ほぞ, denmoku roof frame) | fixed size | DM roof (single source) | documented |
 
-***koshikake ari tsugi* 腰掛蟻継**
+**腰掛蟻継 *koshikake ari tsugi***
 
 | ID | Dimension | Interface form | Rule | Type | Source | Evidence |
 |---|---|---|---|---|---|---|
@@ -322,7 +322,7 @@ Each joint's rule library, as its Proportions panel uses it: for each dimension,
 | `S.aritsugi.s` | Seat length 腰掛 | Seat 腰掛け | 15 mm (5分) | fixed size | 腰掛鎌継 (diy-ie); Koshikake-aritsugi.pdf (not stated for the 蟻 in the sources compiled: taken from the sibling 鎌's seat. The Koshikake-aritsugi.pdf drawing does label a 15 seat) | documented |
 |  |  |  | 30 mm (1寸) | fixed size | inferred (a longer seat; inferred, not documented for the 蟻) | inferred |
 
-***koshikake kama tsugi* 腰掛鎌継**
+**腰掛鎌継 *koshikake kama tsugi***
 
 | ID | Dimension | Interface form | Rule | Type | Source | Evidence |
 |---|---|---|---|---|---|---|
@@ -350,7 +350,7 @@ Each joint's rule library, as its Proportions panel uses it: for each dimension,
 |  |  |  | 1/27 | fixed size | diy-ie; Kijima; 林建築 (documented variant) | documented |
 |  |  |  | 1/10, Toda | fixed size | TODA2012 Fig. 1 (read from Fig. 1; its leader points at the hook's flank, so the slope is a taper through the depth, not a lean along the beam) | documented |
 
-***kanawa tsugi* 金輪継**
+**金輪継 *kanawa tsugi***
 
 | ID | Dimension | Interface form | Rule | Type | Source | Evidence |
 |---|---|---|---|---|---|---|
@@ -365,7 +365,7 @@ Each joint's rule library, as its Proportions panel uses it: for each dimension,
 |  |  |  | W/8 (第廿圖) | scales | 第廿圖 (one eighth of the top face) | documented |
 |  |  |  | W/8, at least 15 mm (the 栓) | partly scales | Saitō 1904; AIJ 2009 via denmoku-db (central pin = stub tenon = W/8 to W/7 square; the pin at least 15 mm thick) | documented |
 
-***okkake daisen tsugi* 追掛大栓継**
+**追掛大栓継 *okkake daisen tsugi***
 
 | ID | Dimension | Interface form | Rule | Type | Source | Evidence |
 |---|---|---|---|---|---|---|
