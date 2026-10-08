@@ -1130,7 +1130,6 @@ canvas.addEventListener("pointerdown",e=>{
       if(k==="rb" && SPEC_JOINTS[refKey] && refDog){ const sd=new THREE.Vector3(); sd[refDog.side]=100*refDog.sideSign;
         const q1=wp.clone().add(sd).project(camera); tx=(q1.x-p0.x)/2*r.width; ty=-(q1.y-p0.y)/2*r.height; t2=tx*tx+ty*ty; }
       if(s2>0.25||t2>0.25){ drag={id:e.pointerId,k,x0:e.clientX,y0:e.clientY,v0:(k==="rp"?REFQ.p:REFQ.b),sx,sy,s2,tx,ty,t2,lx:e.clientX,ly:e.clientY,ref:true}; refDragging=true; canvas.style.cursor="grabbing";
-        if(k==="ra") refMsg="The lower piece holds the socket and stays put. Lift the gooseneck instead.";
         return; } }
     if(k && !(k==="c" && !(CFG.support==="beam"||CFG.support==="post_below"))){
       const r=canvas.getBoundingClientRect(); const wp=new THREE.Vector3(); obj.getWorldPosition(wp);
@@ -1143,7 +1142,16 @@ canvas.addEventListener("pointerdown",e=>{
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); canvas.style.cursor="grabbing";});
 canvas.addEventListener("pointermove",e=>{
   if(drag&&drag.ref&&e.pointerId===drag.id){
-    if(drag.k==="ra") return;                     // the lower half does not move
+    if(drag.k==="ra"){                            // the lower half does not move: it shakes, and what holds it flashes, as on the daimochi
+      if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)>6&&!drag.resisted){
+        const seated=Math.abs(REFQ.b)<0.5*refH&&Math.abs(REFQ.w||0)<0.5, pinned=pipeP.children.length>0&&Math.abs(REFQ.p)<0.55*refH;
+        const t=performance.now(); refFX={shakeA:t,flashB:seated?t:0,flash:pinned?t:0}; drag.resisted=true;
+        const lock=SPEC_JOINTS[refKey]?(SPEC_JOINTS[refKey].lockWord||"peg"):refKey==="kamatsugi"?"込栓 draw pin":"peg";
+        const holds=[seated&&"the upper element (uwaki)",pinned&&lock].filter(Boolean);
+        refMsg="The lower element (shitaki) is the base of the joint and stays put"+
+          (holds.length?`: ${holds.join(" and ")} ${holds.length>1?"hold":"holds"} it. Take ${holds.length>1?"them":"it"} off first.`:". Nothing else is on it now.");
+      }
+      return; }
     // how far along its own axis the pointer has carried the part
     const along=((e.clientX-drag.x0)*drag.sx+(e.clientY-drag.y0)*drag.sy)/drag.s2*100;
     if(drag.k==="rp"){                            // a pin or key, drawn straight out
@@ -1368,10 +1376,15 @@ function tick(){
   const rf=refFX.flash?(now-refFX.flash)/900:9;
   const rglow = rf<1 ? (0.5+0.5*Math.sin(rf*Math.PI*6))*(1-rf)*0.6 : 0;
   pipeP.children.forEach(m=>m.material.emissive.setRGB(rglow,0.05*rglow,0.02*rglow));
+  // the lower element dragged: it shakes, and the upper element flashes while it sits on it
+  const ra=refFX.shakeA?(now-refFX.shakeA)/450:9;
+  pipeA.position.x = ra<1 ? Math.sin(ra*Math.PI*8)*refH*0.04*(1-ra) : 0;
+  const rb=refFX.flashB?(now-refFX.flashB)/900:9;
+  if(rb<1){ const g=(0.5+0.5*Math.sin(rb*Math.PI*6))*(1-rb)*0.6; pipeB.children.forEach(m=>m.material.emissive&&m.material.emissive.setRGB(g,0.05*g,0.02*g)); }
   rrTick();                                      // a repair being shown moves single parts
   const msgEl=document.getElementById("dragmsg");
   const removedMsg = (CFG.support==="beam"||CFG.support==="post_below") && Q.c < -0.1*D.H ? "Support removed. Whether the splice carries the load across the gap needs the FE model; no verdict here." : "";
-  msgEl.textContent = refMsg || dragMsg || removedMsg;
+  msgEl.textContent = refKey ? refMsg : (dragMsg || removedMsg);   // each joint its own message, none left over from another
   place(); renderer.render(scene,camera); requestAnimationFrame(tick);
 }
 
@@ -4859,7 +4872,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009042955";
+const ASSET_V="20261009043523";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
