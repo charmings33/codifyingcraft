@@ -316,6 +316,7 @@ h3.grp + details{border-top:0}
 /* the joint pages' right column: no dividers, no subtitles, section heads at the left column's label size */
 section.panel > details, section.panel > .readsec, section.panel > h3.grp, section.panel > .readsec + details, section.panel > .namesec + .readsec, section.panel > .readsec + h3.grp{border-top:0}
 section.panel > details > summary small{display:none}
+section.panel > h3.grp::before{content:"_"}
 section.panel > details > summary, section.panel > .readsec > .readhead{font-size:13px;padding-top:8px;padding-bottom:8px}
 .iftags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 a.iftag{font-size:11px;line-height:1.4;padding:0 6px;border:1px solid var(--fc);border-left-width:4px;border-radius:2px;color:var(--ink);text-decoration:none;background:#fff}
@@ -4679,7 +4680,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009031753";
+const ASSET_V="20261009032001";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
