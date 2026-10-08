@@ -6,7 +6,7 @@
 <title>Codifying Craft</title>
 <style>
 :root{
-  --fs-title:25px; --fs-large:16px; --fs-body:14px; --fs-small:10px;
+  --fs-title:25px; --fs-large:16px; --fs-body:12px; --fs-small:8px;
   --lh-title:1.2; --lh-large:1.25; --lh-body:1.5; --lh-small:1.4;
   --plaster:#FFFFFF; --paper:#FFFFFF; --ink:#1C2321; --muted:#5C6763;
   --ai:#2B4C7E; --hinoki:#E2C38F; --sugi:#B98D57; --kashi:#5E4630; --warn:#7A5400; --fail:#A33327;
@@ -4858,7 +4858,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009041625";
+const ASSET_V="20261009042137";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -5489,20 +5489,39 @@ function ifLinkText(root){
 }
 /* Romanised Japanese is italic in running text (not in headings or buttons):
    the joints' names and the craft terms, wherever the page writes them. */
-const RO_TERMS=["daimochi tsugi","koshikake ari tsugi","koshikake kama tsugi","kanawa tsugi","okkake daisen tsugi","daimochi","kanawa","okkake","koshikake",
-  "shitaki","uwaki","dōzuki","ōire","sumitsuke","suberi kōbai","dabo","daisen","komisen","hanasen","chigiri","koyatsuka","hiragara","watari ago","yatoi","eriwa","mechigai","sao","tsugite","shiguchi"];
-const RO_RE=new RegExp("(?<![\\p{L}])("+RO_TERMS.map(t=>t.replace(/ /g,"\\s")).join("|")+")(?![\\p{L}])","gu");
+/* Every romanised Japanese term in italics, throughout: the terms are taken
+   from the page's own data (each interface form and both its halves, the
+   joints, the operations' Japanese names) and a list of the other terms the
+   text uses. Proper names (people, places, buildings) stay upright. */
+const RO_TERMS=(()=>{ const t=new Set(["daimochi tsugi","koshikake ari tsugi","koshikake kama tsugi","kanawa tsugi","okkake daisen tsugi",
+  "daimochi","kanawa","okkake","koshikake","shitaki","uwaki","dōzuki","ōire","sumitsuke","tatebiki","yokobiki","suberi kōbai","dabo","taboso",
+  "daisen","komisen","hanasen","chigiri","sane","koyatsuka","munazuka","hiragara","watari ago","yatoi","eriwa","mechigai","sao","tsugite",
+  "shiguchi","keta","shikibari","naka-hikibari","nageshi","kōnosu","hozoana","hozo","kama","ari","sen","tsugi"]);
+  IF_GROUPS.forEach(([,l])=>l.forEach(([id,,,ro])=>ro.split(" / ").forEach(r=>t.add(r.trim()))));
+  Object.values(IF_HALVES).forEach(h=>{ t.add(h.m[2]); t.add(h.f[2]); });
+  Object.values(IF_JOINTS).forEach(J=>t.add(J.ro));
+  IF_CATS.forEach(([,,items])=>items.forEach(([,lab])=>(lab.match(/[\u3040-\u9fff]+\s+([a-zōūāēī][a-zōūāēī -]*)\)/)||[])[1]&&t.add(lab.match(/[\u3040-\u9fff]+\s+([a-zōūāēī][a-zōūāēī -]*)\)/)[1])));
+  return [...t].filter(Boolean).sort((a,b)=>b.length-a.length); })();
+const RO_RE=new RegExp("(?<![\\p{L}\\-_])("+RO_TERMS.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/ /g,"\\s")).join("|")+")(?![\\p{L}\\-_])","giu");
 function roItalic(root){
-  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement&&n.parentElement.closest("i,em,h1,h2,h3,h4,h5,summary,button,select,option,label,svg,script,style,code,.jp,title,textarea")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const SVGNS="http://www.w3.org/2000/svg";
+  const skip=n=>{ const e=n.parentElement; if(!e) return true;
+    if(e.closest("i,em,script,style,code,select,option,textarea,title,.jp,[font-style=italic],.noitalic")) return true;
+    return getComputedStyle(e).fontStyle==="italic"; };
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>skip(n)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
   const nodes=[]; while(w.nextNode()) nodes.push(w.currentNode);
   nodes.forEach(n=>{ const t=n.nodeValue; RO_RE.lastIndex=0; if(!RO_RE.test(t)) return; RO_RE.lastIndex=0;
-    const f=document.createDocumentFragment(); let last=0, m;
-    while((m=RO_RE.exec(t))){ f.appendChild(document.createTextNode(t.slice(last,m.index))); const i=document.createElement("i"); i.textContent=m[0]; f.appendChild(i); last=m.index+m[0].length; }
+    const inSvg=!!n.parentElement.closest("svg"), f=document.createDocumentFragment(); let last=0, m;
+    while((m=RO_RE.exec(t))){ f.appendChild(document.createTextNode(t.slice(last,m.index)));
+      let i; if(inSvg){ i=document.createElementNS(SVGNS,"tspan"); i.setAttribute("font-style","italic"); } else i=document.createElement("i");
+      i.textContent=m[0]; f.appendChild(i); last=m.index+m[0].length; }
     f.appendChild(document.createTextNode(t.slice(last))); n.parentNode.replaceChild(f,n); });
 }
-let RO_PENDING=new Set();
+window.CC_RO_TERMS=RO_TERMS;           // for the typography check
+let RO_PENDING=new Set(), RO_SCHEDULED=false;
 new MutationObserver(recs=>{ recs.forEach(r=>{ const t=r.target.nodeType===3?r.target.parentElement:r.target; if(t) RO_PENDING.add(t); });
-  if(RO_PENDING.size===1) requestAnimationFrame(()=>{ const ts=[...RO_PENDING]; RO_PENDING=new Set(); ts.forEach(t=>{ if(t.isConnected) roItalic(t); }); }); })
+  // one pass per frame, however many changes came in
+  if(RO_PENDING.size&&!RO_SCHEDULED){ RO_SCHEDULED=true; requestAnimationFrame(()=>{ RO_SCHEDULED=false; const ts=[...RO_PENDING]; RO_PENDING=new Set(); ts.forEach(t=>{ if(t.isConnected) roItalic(t); }); }); } })
   .observe(document.body,{childList:true,subtree:true,characterData:true});
 let IF_LINK_PENDING=false;
 function ifTagSteps(){
