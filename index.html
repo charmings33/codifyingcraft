@@ -4616,7 +4616,7 @@ const IF_GROUPS=[
  ["eri","Collar (term unverified)","襟輪","eriwa","put"]]],
 ["Tenons and bridles",[
  ["hozo","Tenon / mortise","枘 / 枘穴","hozo / hozo-ana","put"],
- ["sao","Rod tenon (sao), keyed","竿","sao","hook"],
+ ["sao","Rod tenon, keyed","竿","sao","hook"],
  ["sanmai","Bridle","三枚組","sanmai gumi","put"]]],
 ["Interlocking heads",[
  ["kama","Gooseneck / gooseneck socket","鎌 / 鎌穴","kama / kama-ana","hook"],
@@ -4736,11 +4736,11 @@ const IF={}; IF_GROUPS.forEach(([g,list])=>list.forEach(([id,en,kj,ro,fn])=>{ IF
    keys or a drawbore), load (carries the load from above), lock (a separate
    piece that locks the joint). Read from the geometry the viewer draws. */
 const IF_GEOM={
-  tsuki:{insert:"axial",opens:["end"],blocked:["axial, in compression"],undercut:false,fit:["the end face"],separate:false,shoulder:true},
+  tsuki:{insert:"none",opens:["end"],blocked:["axial, in compression"],undercut:false,fit:["the end face"],separate:false,shoulder:true},
   sogi:{insert:"down",opens:["top"],blocked:["down"],undercut:false,fit:["the scarf faces","the lands"],separate:false,grain:true,shoulder:true,corners:true,sloped:true},
   aikaki:{insert:"down",opens:["top"],blocked:["down","sideways"],undercut:false,fit:["the lap faces","the shoulders"],separate:false,grain:true,shoulder:true,corners:true},
   koshi:{insert:"down",opens:["top"],blocked:["down"],undercut:false,fit:["the seat face"],separate:false,grain:true,shoulder:true,corners:true,load:true},
-  tome:{insert:"axial",opens:["end"],blocked:["axial, in compression"],undercut:false,fit:["the mitre face"],separate:false,shoulder:true,sloped:true},
+  tome:{insert:"none",opens:["end"],blocked:["axial, in compression"],undercut:false,fit:["the mitre face"],separate:false,shoulder:true,sloped:true},
   kaki:{insert:"down",opens:["top"],blocked:["down","sideways"],undercut:false,fit:["the notch faces"],separate:false,shoulder:true,corners:true},
   oire:{insert:"axial",opens:["face"],blocked:["into the face","sideways"],undercut:false,fit:["the housing walls"],separate:false,shoulder:true,corners:true},
   wanagi:{insert:"down",opens:["top","end"],blocked:["down","sideways"],undercut:false,fit:["the slot cheeks"],separate:false,grain:true,shoulder:true,corners:true},
@@ -4781,7 +4781,7 @@ const IF_PROC_RULES=[
   ["H2","cuts across the grain: cross-cutting",g=>g.shoulder&&!g.separate?["h3"]:[]],
   ["H3","square inside corners (a recess, socket or slot): chiselling",g=>g.corners?["h4"]:[]],
   ["H4","fit-critical faces inside a recess: paring",g=>g.corners&&!g.separate&&g.fit.length>0?["h5"]:[]],
-  ["H5","broad bearing faces (scarf, lap, seat, end): planing",g=>(g.grain||g.insert==="axial"&&!g.corners)&&!g.separate?["h6"]:[]],
+  ["H5","broad bearing faces (scarf, lap, seat, end): planing",g=>(g.grain||g.opens.includes("end")&&!g.corners)&&!g.separate?["h6"]:[]],
   ["H6","a hole through both members: boring peg holes",g=>g.hole?["h7"]:[]],
   ["H7","drawn tight: fitted by hand, last",g=>g.tight?["h8+last"]:[]],
   ["H8","a separate piece: made on its own",g=>g.separate?["h2+sep","h6+sep"]:[]],
@@ -4792,7 +4792,7 @@ const IF_PROC_RULES=[
   ["C5","square inside corners: the cutter leaves them round, squared by hand",g=>g.corners&&!g.separate?["c6"]:[]],
   ["C6","a hole through both members, drawn tight: drilled after assembly",g=>g.hole?["c4"+(g.tight?"+post":"")]:[]],
   ["C7","a separate piece: made by hand, not on the line",g=>[]]];
-function ifGeomText(id){ const g=IF_GEOM[id], ins={down:"lowered from above",axial:"pushed in along the member","side-axial":"in from the side, then along",set:"set into its holes first",driven:"driven in last"}[g.insert];
+function ifGeomText(id){ const g=IF_GEOM[id], ins={down:"lowered from above",axial:"pushed in along the member","side-axial":"in from the side, then along",set:"set into its holes first",driven:"driven in last",none:"no direction of its own (a contact face: it goes with the parts it belongs to)"}[g.insert];
   const f=[g.grain&&"long faces along the grain",g.shoulder&&"cuts across the grain",g.corners&&"square inside corners",g.sloped&&"sloped faces",g.hole&&"a hole through both members",g.tight&&"draws tight",g.load&&"carries the load from above"].filter(Boolean);
   return `Assembled: ${ins}. Opens to: ${g.opens.join(", ")}. Blocks: ${g.blocked.join(", ")}. Undercut: ${g.undercut?"yes":"no"}. Fit-critical: ${g.fit.join(", ")}. Separate piece: ${g.separate?"yes":"no"}.${f.length?" Features: "+f.join(", ")+".":""}`; }
 function ifDerive(id){ const g=IF_GEOM[id], out={};
@@ -4846,7 +4846,7 @@ const IF_CAPTION={shachi:"A's long tenon fully home in B; two tapered keys above
   kusabi:"A through tenon kerfed at its end, with two wedges to drive in from the far side; red marks the kerfs and wedges."};
 function ifImg(id,cls){ return `<figure class="${cls||"ifimg"}" data-if="${id}"><img src="forms/form_${id}.png?v=${ASSET_V}" alt="${IF[id].en}: a sample joint, its components apart, the interface form outlined in red. Click to explore it in 3D." title="Click to explore in 3D" loading="lazy">`+
   `<figcaption>${IF_SCHEMATIC.has(id)?"Schematic, our reading; not checked against a source drawing.":(IF_CAPTION[id]||"A minimal sample, components apart; red marks the interface form.")} Click to turn it in 3D and move its parts.</figcaption></figure>`; }
-const IF_NORULE={shachi:"No size rule found. Urakubo et al. (AIJ 2024) tested one long tenon with keys at W = 120 (see Rod tenon (sao), keyed); the key and key-slot sizes they report have not been read here. The kanawa tsugi's lock is modelled as a 栓, so its key rules are under Peg / peg hole."};
+const IF_NORULE={shachi:"No size rule found. Urakubo et al. (AIJ 2024) tested one long tenon with keys at W = 120 (see Rod tenon, keyed); the key and key-slot sizes they report have not been read here. The kanawa tsugi's lock is modelled as a 栓, so its key rules are under Peg / peg hole."};
 const IF_DEF={tsuki:"A face of one component bearing flat against another: the end of a member, or the shoulder (胴付き dōzuki) at the root of a tenon.",
   sen:"A peg driven through the joint, in a hole bored through both components. 込栓 komisen and 大栓 daisen, driven to draw the joint tight: draw peg; 鼻栓 hanasen, through a tenon end outside the joint: external draw peg.",
   yatoi:"A separate piece let into both components. The dowel 太枘 dabo: a short hardwood dowel housed across the joint plane (not a steel dowel fastener). The butterfly key 千切 chigiri. The English term for yatoi is unverified.",
@@ -4858,7 +4858,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009041236";
+const ASSET_V="20261009041625";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4906,11 +4906,33 @@ function ifDiagram(host){
    <svg class="ifp-g" viewBox="0 0 960 1000" role="img" aria-label="Bipartite diagram linking twenty-three interface forms of Japanese timber joints to twenty-seven outcomes"></svg>`;
   const NS="http://www.w3.org/2000/svg", svg=host.querySelector(".ifp-g"), status=host.querySelector(".ifp-status"), detail=host.querySelector(".ifp-detail");
   const el=(t,a,p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); (p||svg).appendChild(e); return e; };
-  const LX=16,LW=480,RX=705,RW=275, head=(x,y,t)=>{ const h=el("text",{x,y,"font-size":13,fill:"#5f6663","font-weight":600}); h.textContent=t; };
+  /* the form boxes as wide as the longest form name at the labels' size on screen
+     (--fs-small): the drawing is scaled to the column, so the width in its own
+     units is solved from the column's width */
+  const GAP=209, RW=275, MR=10, LX=16, PADPX=24;
+  const wpx=host.clientWidth||svg.clientWidth||0, fsPx=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs-small"))||10;
+  const ctx=document.createElement("canvas").getContext("2d"), fam=getComputedStyle(document.body).fontFamily;
+  const width=(t,w,i)=>{ ctx.font=`${i?"italic ":""}${w||400} ${fsPx}px ${fam}`; return ctx.measureText(t).width; };
+  const longest=Math.max(...IF_GROUPS.flatMap(([,l])=>l.map(([id])=>{ const f=IF[id];
+    return width(ifpName(f.en)+"  ")+width(f.kj+" ",500)+(IF_HALVES[id]?0:width(f.ro,400,true)); })));
+  const k=wpx?(longest+PADPX)/wpx:0, C=LX+GAP+RW+MR;
+  const LW=k>0&&k<0.6?Math.max(160,Math.round(k*C/(1-k))):480, RX=LX+LW+GAP, VW=RX+RW+MR;
+  // drawn before the column had a width, or the column changed width: draw again
+  host.__w=wpx;
+  if(!host.__ro&&window.ResizeObserver){ host.__ro=new ResizeObserver(()=>{ const w=host.clientWidth;
+      if(w&&Math.abs(w-(host.__w||0))>20){ clearTimeout(host.__rt); host.__rt=setTimeout(()=>ifDiagram(host),120); } });
+    host.__ro.observe(host); }
+  const head=(x,y,t)=>{ const h=el("text",{x,y,"font-size":13,fill:"#5f6663","font-weight":600}); h.textContent=t; };
   const ry={},cat={},label={},ly={};
   let yl=24; IF_GROUPS.forEach(([g,mods])=>{ head(LX,yl+4,g); yl+=16; mods.forEach(([id,en,kj,ro])=>{ ly[id]=yl+15; label[id]=ifpName(en)+" "+kj+" "+ro; yl+=34; }); yl+=12; });
-  let yr=24; IF_CATS.forEach(([c,name,items])=>{ head(RX,yr+4,name); yr+=16; items.forEach(([id,lab,tools])=>{ const hh=tools?40:24; ry[id]=yr+hh/2+1; cat[id]=c; label[id]=lab; yr+=hh+6; }); yr+=12; });
-  svg.setAttribute("viewBox","0 0 990 "+(Math.max(yl,yr)+6));
+  // operation boxes: the name, then the tools wrapped to the box's width, all at the labels' size on screen
+  const sc=wpx?wpx/VW:1, lineU=1.4*fsPx/sc, padU=5/sc, wrapPx=(RW-14)*sc, toolLines={}, boxH={};
+  const wrap=t=>{ const words=t.split(" "), out=[]; let line="";
+    words.forEach(w=>{ const tryL=line?line+" "+w:w; if(line&&width(tryL)>wrapPx){ out.push(line); line=w; } else line=tryL; }); if(line) out.push(line); return out; };
+  let yr=24; IF_CATS.forEach(([c,name,items])=>{ head(RX,yr+4,name); yr+=16; items.forEach(([id,lab,tools])=>{
+    toolLines[id]=tools?wrap(tools):[]; const hh=Math.max(24,2*padU+lineU*(1+toolLines[id].length)); boxH[id]=hh;
+    ry[id]=yr+hh/2+1; cat[id]=c; label[id]=lab; yr+=hh+6; }); yr+=12; });
+  svg.setAttribute("viewBox",`0 0 ${VW} `+(Math.max(yl,yr)+6));
   const lg=el("g",{}), lines=[];
   const bg=el("g",{});
   for(const m in IF_LINKS){ ifLinks(m).forEach(({r,inf,at,cat:lc,rules})=>{ const c=cat[r], life="ADR".includes(c);
@@ -4929,10 +4951,10 @@ function ifDiagram(host){
     
     bind(g,"m",id); }
   IF_CATS.forEach(([c,,items])=>items.forEach(([id,,tools,tip])=>{ const life="ADR".includes(c); const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]+(tools?", tools: "+tools:"")});
-    const hh=tools?40:24; el("rect",{x:RX,y:ry[id]-hh/2,width:RW,height:hh,rx:5,fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8","stroke-width":1},g);
-    const t=el("text",{x:RX+RW/2,y:tools?ry[id]-8:ry[id],"text-anchor":"middle","dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g); t.textContent=label[id];
-    if(tools){ const t2=el("text",{x:RX+RW/2,y:ry[id]+9,"text-anchor":"middle","dominant-baseline":"central","font-size":9.5,fill:"#5f6663"},g); t2.textContent=tools;
-      if(tools.length*5>RW-10) t2.setAttribute("textLength",RW-10), t2.setAttribute("lengthAdjust","spacingAndGlyphs"); }
+    const hh=boxH[id], top=ry[id]-hh/2, tl=toolLines[id];
+    el("rect",{x:RX,y:top,width:RW,height:hh,rx:5,fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8","stroke-width":1},g);
+    const t=el("text",{x:RX+RW/2,y:tl.length?top+padU+lineU/2:ry[id],"text-anchor":"middle","dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g); t.textContent=label[id];
+    tl.forEach((line,i)=>{ const t2=el("text",{x:RX+RW/2,y:top+padU+lineU*(1.5+i),"text-anchor":"middle","dominant-baseline":"central","font-size":9.5,fill:"#5f6663"},g); t2.textContent=line; });
     if(tip){ const ti=el("title",{},g); ti.textContent=tip; }
     bind(g,"r",id); }));
   let fc="all", sel=null;

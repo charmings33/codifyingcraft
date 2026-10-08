@@ -11,9 +11,9 @@ Rules of the making grammar, written out from the viewer's own data: the interfa
 | Sizing per joint (S.), scales | 42 | 7 |
 | Sizing per joint (S.), fixed size | 56 | 4 |
 | Sizing per joint (S.), partly scales | 6 | 3 |
-| Process (P.), assembly | 33 | 18 |
+| Process (P.), assembly | 31 | 16 |
 | Process (P.), disassembly | 5 | 2 |
-| Process (P.), repair | 27 | 25 |
+| Process (P.), repair | 25 | 23 |
 | Process (P.), hand fabrication (手刻み) | 89 | 68 |
 | Process (P.), digital fabrication (CNC / プレカット) | 64 | 50 |
 
@@ -38,7 +38,7 @@ The 23 interface forms. Where both halves of a mating pair (凸 projecting, 凹 
 | Steps and tongues | Stub tenon / stub mortise | 目違い / 目違ほぞ穴 | *mechigai / mechigai hozo-ana* | bears |
 | Steps and tongues | Collar (term unverified) | 襟輪 | *eriwa* | bears |
 | Tenons and bridles | Tenon / mortise | 枘 / 枘穴 | *hozo / hozo-ana* | bears |
-| Tenons and bridles | Rod tenon (sao), keyed | 竿 | *sao* | interlocks |
+| Tenons and bridles | Rod tenon, keyed | 竿 | *sao* | interlocks |
 | Tenons and bridles | Bridle | 三枚組 | *sanmai gumi* | bears |
 | Interlocking heads | Gooseneck / gooseneck socket | 鎌 / 鎌穴 | *kama / kama-ana* | interlocks; 凹 term unverified |
 | Interlocking heads | Dovetail / dovetail socket | 蟻 / 蟻ほぞ穴 | *ari / arihozo-ana* | interlocks |
@@ -102,7 +102,7 @@ Rule types: *scales* (the form's dimensions follow the member by rule); *fixed s
 | `F.mechi` | Stub tenon / stub mortise 目違い / 目違ほぞ穴 | partly scales | 4 | documented 4 | `S.daimochi.ml`, `S.daimochi.mw`, `S.kanawa.m`, `S.kanawa.mw`, `S.okkake.m` |
 | `F.eri` | Collar (term unverified) 襟輪 | partly scales | 1 | documented 1 | — |
 | `F.hozo` | Tenon / mortise 枘 / 枘穴 | fixed size | 3 | documented 3, verify 1 | `S.daimochi.tw`, `S.daimochi.td`, `S.daimochi.tl` |
-| `F.sao` | Rod tenon (sao), keyed 竿 | fixed size | 2 | documented 1, inferred 1 | — |
+| `F.sao` | Rod tenon, keyed 竿 | fixed size | 2 | documented 1, inferred 1 | — |
 | `F.sanmai` | Bridle 三枚組 | partly scales | 1 | generic 1 | — |
 | `F.kama` | Gooseneck / gooseneck socket 鎌 / 鎌穴 | partly scales | 6 | documented 6 | `S.kamatsugi.L`, `S.kamatsugi.hl`, `S.kamatsugi.b`, `S.kamatsugi.e`, `S.kamatsugi.d`, `S.kamatsugi.k` |
 | `F.ari` | Dovetail / dovetail socket 蟻 / 蟻ほぞ穴 | partly scales | 3 | documented 3 | `S.aritsugi.A`, `S.aritsugi.e`, `S.aritsugi.n` |
@@ -199,7 +199,7 @@ Rule types: *scales* (the form's dimensions follow the member by rule); *fixed s
 - 凸 tenon: A 45 mm tenon is about 50% stiffer and stronger than a 30 mm one (Irie and Oto, AIJ 2009) [documented]
 - 凸 tenon: Tenon thickness 1/4 to 2/7 of the post width; width 8/10 to 8.5/10 (Saitō 1904, 日本家屋構造, via Shimoyama) [documented, verify]
 
-**`F.sao`** Rod tenon (sao), keyed 竿: fixed size.
+**`F.sao`** Rod tenon, keyed 竿: fixed size.
 
 - Long tenon with keys at W = 120: tenon 30, jaw 7.5, 18 mm, length 240 (Urakubo et al., AIJ 2024 (one size tested)) [documented]
 - Tested D = 30, key 15 at W = 120, i.e. about W/4 and W/16 (AIJ 2024; MLIT 2021) [inferred]
@@ -243,7 +243,7 @@ Rule types: *scales* (the form's dimensions follow the member by rule); *fixed s
 
 **`F.shachi`** Key 車知: no rule found.
 
-- *Note:* No size rule found. Urakubo et al. (AIJ 2024) tested one long tenon with keys at W = 120 (see Rod tenon (sao), keyed); the key and key-slot sizes they report have not been read here. The kanawa tsugi's lock is modelled as a 栓, so its key rules are under Peg / peg hole.
+- *Note:* No size rule found. Urakubo et al. (AIJ 2024) tested one long tenon with keys at W = 120 (see Rod tenon, keyed); the key and key-slot sizes they report have not been read here. The kanawa tsugi's lock is modelled as a 栓, so its key rules are under Peg / peg hole.
 
 **`F.kusabi`** Wedge 楔: fixed size.
 
@@ -419,11 +419,11 @@ For each interface form (P.), its links to actions, derived by the process rules
 
 | ID | Interface form | Assembly | Disassembly | Repair | Hand (手刻み) | CNC (プレカット) | Stays manual |
 |---|---|---|---|---|---|---|---|
-| `P.tsuki` | Butt face 突き付け | pushed in along the axis *(p)* | — | needs axial clearance *(p)* | cross-cutting *(p)*; planing *(p)* | cutting to length *(p)*; roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)* | — |
+| `P.tsuki` | Butt face 突き付け | — | — | — | cross-cutting *(p)*; planing *(p)* | cutting to length *(p)*; roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)* | — |
 | `P.sogi` | Oblique scarf 殺ぎ | lowered from above *(c)* | — | needs headroom *(p)* | rip-sawing *(c)*; cross-cutting *(c)*; chiselling *(p)*; paring *(p)*; planing *(c)* | roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
 | `P.aikaki` | Halving (half-lap) 相欠き | lowered from above *(c)* | — | needs headroom *(p)* | rip-sawing *(c)*; cross-cutting *(c)*; chiselling *(p)*; paring *(p)*; planing *(p)* | roughing [standard pre-cut, one set-up] *(c)*; finishing [standard pre-cut, one set-up] *(c)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
 | `P.koshi` | Seat 腰掛け | set first; lowered from above *(c)*; held by load above *(c)* | — | needs headroom *(p)*; unload from above *(p)* | rip-sawing *(p)*; cross-cutting *(c)*; chiselling *(p)*; paring *(p)*; planing *(p)* | roughing [standard pre-cut, one set-up] *(c)*; finishing [standard pre-cut, one set-up] *(c)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
-| `P.tome` | Mitre 留め | pushed in along the axis *(p)* | — | needs axial clearance *(p)* | cross-cutting *(p)*; planing *(p)* | cutting to length *(p)*; roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)* | — |
+| `P.tome` | Mitre 留め | — | — | — | cross-cutting *(p)*; planing *(p)* | cutting to length *(p)*; roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)* | — |
 | `P.kaki` | Notch 欠き込み | lowered from above *(p)* | — | needs headroom *(p)* | cross-cutting *(p)*; chiselling *(p)*; paring *(p)* | roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
 | `P.oire` | Housing 大入れ | pushed in along the axis *(p)* | — | needs axial clearance *(p)* | cross-cutting *(p)*; chiselling *(p)*; paring *(p)* | roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
 | `P.wanagi` | Open slot mortise 輪薙ぎ込み | lowered from above *(p)* | — | needs headroom *(p)* | rip-sawing *(p)*; cross-cutting *(p)*; chiselling *(p)*; paring *(p)*; planing *(p)* | roughing *(p)*; finishing *(p)*; re-clamping for a new set-up [several set-ups] *(p)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
@@ -434,7 +434,7 @@ For each interface form (P.), its links to actions, derived by the process rules
 | `P.mechi` | Stub tenon / stub mortise 目違い / 目違ほぞ穴 | side, then axial *(c)* | shift, then out sideways *(c)* | needs side clearance *(p)* | cross-cutting *(p)*; chiselling *(c)*; paring *(p)*; planing; fitting and finishing [last] | roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)*; re-clamping for a new set-up [several set-ups]; squaring corners and filing *(c)* | fitting and finishing [last]; squaring corners and filing *(c)* |
 | `P.eri` | Collar (term unverified) 襟輪 | lowered from above *(p)* | — | needs headroom *(p)* | cross-cutting *(p)*; chiselling *(p)*; paring *(p)* | roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
 | `P.hozo` | Tenon / mortise 枘 / 枘穴 | pushed in along the axis *(p)* | — | needs axial clearance *(p)* | rip-sawing *(p)*; cross-cutting *(p)*; chiselling *(p)*; paring *(p)*; planing *(p)* | roughing [standard pre-cut, one set-up] *(p)*; finishing [standard pre-cut, one set-up] *(p)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
-| `P.sao` | Rod tenon (sao), keyed 竿 | draw tight *(p)*; pushed in along the axis *(p)* | — | needs axial clearance *(p)* | rip-sawing *(p)*; cross-cutting *(p)*; chiselling *(p)*; paring *(p)*; planing *(p)*; fitting and finishing [last] *(p)* | roughing *(p)*; finishing *(p)*; re-clamping for a new set-up [several set-ups] *(p)*; squaring corners and filing *(p)* | fitting and finishing [last] *(p)*; squaring corners and filing *(p)* |
+| `P.sao` | Rod tenon, keyed 竿 | draw tight *(p)*; pushed in along the axis *(p)* | — | needs axial clearance *(p)* | rip-sawing *(p)*; cross-cutting *(p)*; chiselling *(p)*; paring *(p)*; planing *(p)*; fitting and finishing [last] *(p)* | roughing *(p)*; finishing *(p)*; re-clamping for a new set-up [several set-ups] *(p)*; squaring corners and filing *(p)* | fitting and finishing [last] *(p)*; squaring corners and filing *(p)* |
 | `P.sanmai` | Bridle 三枚組 | pushed in along the axis *(p)* | — | needs axial clearance *(p)* | rip-sawing *(p)*; cross-cutting *(p)*; chiselling *(p)*; paring *(p)*; planing *(p)* | roughing *(p)*; finishing *(p)*; re-clamping for a new set-up [several set-ups] *(p)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
 | `P.kama` | Gooseneck / gooseneck socket 鎌 / 鎌穴 | lowered from above *(c)*; held by load above *(c)* | — | needs headroom *(p)*; unload from above *(p)* | rip-sawing; cross-cutting *(c)*; chiselling *(c)*; paring *(c)* | roughing [standard pre-cut, one set-up] *(c)*; finishing [standard pre-cut, one set-up] *(c)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
 | `P.ari` | Dovetail / dovetail socket 蟻 / 蟻ほぞ穴 | lowered from above *(c)*; held by load above *(c)* | — | needs headroom *(p)*; unload from above *(p)* | cross-cutting *(p)*; chiselling *(c)*; paring *(c)* | roughing [standard pre-cut, one set-up] *(c)*; finishing [standard pre-cut, one set-up] *(c)*; squaring corners and filing *(p)* | squaring corners and filing *(p)* |
@@ -482,11 +482,11 @@ For each interface form (P.), its links to actions, derived by the process rules
 
 | Interface form | Geometry |
 |---|---|
-| Butt face 突き付け | Assembled: pushed in along the member. Opens to: end. Blocks: axial, in compression. Undercut: no. Fit-critical: the end face. Separate piece: no. Features: cuts across the grain. |
+| Butt face 突き付け | Assembled: no direction of its own (a contact face: it goes with the parts it belongs to). Opens to: end. Blocks: axial, in compression. Undercut: no. Fit-critical: the end face. Separate piece: no. Features: cuts across the grain. |
 | Oblique scarf 殺ぎ | Assembled: lowered from above. Opens to: top. Blocks: down. Undercut: no. Fit-critical: the scarf faces, the lands. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners, sloped faces. |
 | Halving (half-lap) 相欠き | Assembled: lowered from above. Opens to: top. Blocks: down, sideways. Undercut: no. Fit-critical: the lap faces, the shoulders. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners. |
 | Seat 腰掛け | Assembled: lowered from above. Opens to: top. Blocks: down. Undercut: no. Fit-critical: the seat face. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners, carries the load from above. |
-| Mitre 留め | Assembled: pushed in along the member. Opens to: end. Blocks: axial, in compression. Undercut: no. Fit-critical: the mitre face. Separate piece: no. Features: cuts across the grain, sloped faces. |
+| Mitre 留め | Assembled: no direction of its own (a contact face: it goes with the parts it belongs to). Opens to: end. Blocks: axial, in compression. Undercut: no. Fit-critical: the mitre face. Separate piece: no. Features: cuts across the grain, sloped faces. |
 | Notch 欠き込み | Assembled: lowered from above. Opens to: top. Blocks: down, sideways. Undercut: no. Fit-critical: the notch faces. Separate piece: no. Features: cuts across the grain, square inside corners. |
 | Housing 大入れ | Assembled: pushed in along the member. Opens to: face. Blocks: into the face, sideways. Undercut: no. Fit-critical: the housing walls. Separate piece: no. Features: cuts across the grain, square inside corners. |
 | Open slot mortise 輪薙ぎ込み | Assembled: lowered from above. Opens to: top, end. Blocks: down, sideways. Undercut: no. Fit-critical: the slot cheeks. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners. |
@@ -497,7 +497,7 @@ For each interface form (P.), its links to actions, derived by the process rules
 | Stub tenon / stub mortise 目違い / 目違ほぞ穴 | Assembled: in from the side, then along. Opens to: end. Blocks: sideways, up. Undercut: no. Fit-critical: the stub's cheeks. Separate piece: no. Features: cuts across the grain, square inside corners. |
 | Collar (term unverified) 襟輪 | Assembled: lowered from above. Opens to: top. Blocks: down, sideways. Undercut: no. Fit-critical: the collar faces. Separate piece: no. Features: cuts across the grain, square inside corners. |
 | Tenon / mortise 枘 / 枘穴 | Assembled: pushed in along the member. Opens to: face. Blocks: sideways, down. Undercut: no. Fit-critical: the tenon cheeks, the shoulder. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners. |
-| Rod tenon (sao), keyed 竿 | Assembled: pushed in along the member. Opens to: through. Blocks: sideways, down, along, by the keys. Undercut: no. Fit-critical: the rod's cheeks, the key slots. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners, draws tight. |
+| Rod tenon, keyed 竿 | Assembled: pushed in along the member. Opens to: through. Blocks: sideways, down, along, by the keys. Undercut: no. Fit-critical: the rod's cheeks, the key slots. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners, draws tight. |
 | Bridle 三枚組 | Assembled: pushed in along the member. Opens to: end, through. Blocks: sideways. Undercut: no. Fit-critical: the cheeks. Separate piece: no. Features: long faces along the grain, cuts across the grain, square inside corners. |
 | Gooseneck / gooseneck socket 鎌 / 鎌穴 | Assembled: lowered from above. Opens to: top. Blocks: down, along the beam. Undercut: no. Fit-critical: the neck and head flanks. Separate piece: no. Features: cuts across the grain, square inside corners, sloped faces, carries the load from above. |
 | Dovetail / dovetail socket 蟻 / 蟻ほぞ穴 | Assembled: lowered from above. Opens to: top. Blocks: down, along the beam. Undercut: no. Fit-critical: the dovetail flanks. Separate piece: no. Features: cuts across the grain, square inside corners, carries the load from above. |
