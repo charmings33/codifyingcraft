@@ -296,6 +296,12 @@ h3.grp:first-child{border-top:0;padding-top:12px}
 .namesec + .readsec{border-top:1px solid #DDE2DF}
 .readsec + h3.grp{border-top:2px solid #C3CAC6}
 figure.jdfig{margin:0}.jdkey{margin:6px 0 2px}
+details.rules>summary{cursor:pointer;font-size:calc(14px*var(--hs,1));margin:4px 0 8px}
+h3.rules-h{font-size:calc(15px*var(--hs,1));margin:16px 0 6px}
+table.rules-t{border-collapse:collapse;font-size:calc(12px*var(--hs,1));width:100%}table.rules-t th,table.rules-t td{border-bottom:1px solid #E3E7E5;padding:3px 6px;text-align:left;vertical-align:top}
+.ifat{font-size:.9em;color:#16876a}.ifp-badge{pointer-events:none}
+.ifhalves{margin:4px 0 6px;padding-left:1.1em;font-size:13px}#home .ifhalves{font-size:calc(13px*var(--hs))}.ifhalves li{margin:2px 0}
+p.ifh2{margin:6px 0 2px;font-size:12.5px;font-weight:600;color:#5f6663}#home p.ifh2{font-size:calc(12.5px*var(--hs))}.ifunv{font-size:.9em;color:#8a5a00}
 .ifv-cap{margin:0;padding:4px 6px;font-size:12.5px;border-top:1px solid #E3E7E5;min-height:1.6em}
 h3.grp + details{border-top:0}
 .iftags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
@@ -437,12 +443,12 @@ header p.authors{font-size:calc(13px*.625)}
 
 
   <details>
-    <summary>Manual fabrication <small>step by step</small></summary>
+    <summary>Hand fabrication (手刻み) <small>step by step</small></summary>
     <div class="body"><p class="note">Where the traditional sequence and the tested specimen differ, both are given. Sketches are drawn from this model at its current proportions; hatched areas with a dotted outline are the material removed in that step.</p><div id="mk-hand"></div></div>
   </details>
 
   <details>
-    <summary>Digital fabrication <small>step by step</small></summary>
+    <summary>Digital fabrication (CNC / プレカット) <small>step by step</small></summary>
     <div class="body"><div id="mk-cnc"></div><div id="mk-cnc-sim"></div>
       <p class="note"><b>What changes from manual fabrication:</b> the milling cutter leaves rounded inside corners, so the square dowels and the tongue need hand finishing; the fit is set by a programmed clearance instead of paring; and the cutter chips the edges of the timber.</p></div>
   </details>
@@ -1193,7 +1199,7 @@ canvas.addEventListener("wheel",e=>{e.preventDefault(); dist=Math.max(0.35,Math.
 
 /* ---------- sequence ---------- */
 let STEPS=[];
-function buildSteps(){
+function stepsFor(){
   const below = CFG.support==="beam"||CFG.support==="post_below";
   const supName = CFG.support==="beam"?"beam":"post";
   const st=[];
@@ -1211,6 +1217,8 @@ function buildSteps(){
     st.push({b:"Replace "+supName, txt:`A new or repaired ${supName} is set back under the joint.`, B:0,P:0,C:1,U:0});
   }
   st.push({b:"Assembled", txt: below ? "The frame is whole again without taking the beams apart." : "The joint is assembled.", B:0,P:0,C:1,U:0});
+  return st; }
+function buildSteps(){ const st=stepsFor(), below=CFG.support==="beam"||CFG.support==="post_below";
   STEPS=st;
   ASM.steps=st.filter(s=>!/^(Remove|Replace)/.test(s.b)&&!(below&&s.b==="Assembled")).map(s=>({b:s.b,t:s.txt})); fillAssembly();
   seqEl.innerHTML=""; const SHORT={"Post below":"Post","Beam below":"Beam","Lower piece":"Lower","Set dowels":"Dowels","Upper piece":"Upper","Drive draw pins":"Pins","Bolt up":"Bolts","Drive wedges":"Wedge","Post above":"Post","Assembled":"Done"};
@@ -3234,14 +3242,14 @@ function showSpecJoint(key){
       each tip, shows on the two side views; on the top and bottom only the seam at one lip shows${key==="kanawa"?", with the dovetail standing in it":""}.
       <b>What is drawn is our reading, settled on rendered drawings</b> against the references, at the sizes
       on the sliders.</p>`, true)
-+ sec("Manual fabrication","step by step", `
++ sec("Hand fabrication (手刻み)","step by step", `
     <p class="note">Sketches are drawn from this model at its current proportions. As for the daimochi, each starts from the whole timber and shows the piece as it stands before that step, plan above and side below, with the material that step removes hatched; heavy dashed lines are saw cuts and pared faces, light dashed lines are cuts hidden behind the surface.</p>
     ${toolLegend([].concat(...SPEC_MAKING[key].map(g=>g.steps.map(s=>s.tools))))}
     ${SPEC_MAKING[key].map(g=>`<h4 class="occh">${g.g}${g.sub?` <span class="note">— ${g.sub}</span>`:""}</h4>`+
       g.steps.map((s,i)=>`<div class="mk2"><div data-sketch="${key}|${g.up?1:0}|${s.k}"></div><div>${toolRow(s.tools)}<h5>${i+1}. ${s.k}</h5>${s.t}</div></div>`).join("")).join("")}
     ${key==="kanawa"?`<p class="gap"><b>Both halves are the same part.</b> One sequence, A1 to A9, made twice.</p>`
       :`<p class="gap">The A and B sequences run through the same operations in the same order: both halves are the same part.</p>`}`, true)
-+ sec("Digital fabrication","step by step, proposed", digHTML(key,{tol:SPEC_TOL, stock:mm(V.L+2*SPEC_BODY), V}), true)
++ sec("Digital fabrication (CNC / プレカット)","step by step, proposed", digHTML(key,{tol:SPEC_TOL, stock:mm(V.L+2*SPEC_BODY), V}), true)
 + tba("Where it is built","a building, in section",
       "No building has been recorded carrying this joint, and no section has been redrawn for it. The daimochi has the Senjūji Mieidō.")
 + tba("Where it occurs","survey of restoration records",
@@ -3738,7 +3746,7 @@ function ariPanelHTML(J){
     <p class="note">Solid lines are visible edges; dashed lines are hidden edges inside the timber. Drawn from the proportion model at its current values, so the views follow the sliders. Dimensions are written as their rule gives them: a proportion of H or W where the rule is one (the seat depth H/2, the tip as neck + 2e), a size where it is fixed (the neck 30, the seat 15). The dovetail flares across the top face, so it follows W; the seat shows on the side, so it follows H.</p>
     ${ARI.variant.mechigai!=="none"?`<p class="gap"><b>目違い, at an assumed size.</b> A stub under the upper element's lap, in a slot at the end of the seat: half the seat long, the neck wide, H/6 deep. No drawing of it has been read.</p>`:""}
     ${ARI.variant.reinf!=="none"?`<p class="gap"><b>短ざく金物.</b> 450 mm long by its designation (Z-mark S-450), centred on the joint on the side face; 40 mm wide and 3.2 mm thick assumed. Its bolt positions and the face it goes on have not been read from a drawing.</p>`:""}`)
-+ sec("Manual fabrication","step by step", `
++ sec("Hand fabrication (手刻み)","step by step", `
     <p class="note">As for the daimochi, each sketch starts from the whole timber and shows the piece as it stands before that step, drawn from this model at its current proportions: plan above, side below, the material that step removes hatched. Heavy dashed lines are saw cuts and pared faces; light dashed lines are cuts hidden behind the surface. The steps recompute as the sliders move.</p>
     <p class="note">Traditional and machine pre-cut (プレカット) wording is given where they differ. The denmoku sheet does not record how its test specimens were made, so no "tested specimen" wording is given.</p>
     ${toolLegend([].concat(...M.map(g=>g.steps.map(s=>ARI_TOOLS_MK[g.p][s.k]||[]))))}
@@ -3748,7 +3756,7 @@ function ariPanelHTML(J){
       <p class="note">Read off ${BAUER.id} p.${N.page+1}. The book prints no text for these steps: the wording is a reading of the figures, not a quotation.</p>
       ${ARI_MAKING.map(g=>`<h4 class="occh">${g.g}${g.sub?` <span class="note">— ${g.sub}</span>`:""}</h4><ul class="prov">${
         g.steps.map(s=>`<li>${toolRow(ARI_TOOLS[s.k])}<b>${s.k}</b> — ${s.t}</li>`).join("")}</ul>`).join("")}</div></details>`)
-+ sec("Digital fabrication","step by step, proposed", digHTML("aritsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V}))
++ sec("Digital fabrication (CNC / プレカット)","step by step, proposed", digHTML("aritsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V}))
 + tba("Where it is built","a building, in section","No building has been recorded carrying this joint here. Its members are the 土台, the 大引 and light 母屋 and 桁 (see Record).")
 + tba("Where it occurs","survey of restoration records","No survey has been read for this joint.")
 + sec("Repair","what has to come out to replace one part", rrSection("aritsugi")+
@@ -3781,7 +3789,7 @@ function ariPanelHTML(J){
       <ul class="prov">${p.assumptions.map(a=>`<li>${a}</li>`).join("")}</ul>`)
 + sec("Files","take the record with you", `
     <div class="kv wide">${row("Geometry","Rebuild builds the pieces as STEP and STL through the shared builder")}
-    ${row("Toolpaths","simulated per setup, under Digital fabrication; served from the toolpath cache, not the repository")}
+    ${row("Toolpaths","simulated per setup, under Digital fabrication (CNC / プレカット); served from the toolpath cache, not the repository")}
     ${row("Pipeline's model",`joints/${J.name}/outputs/: ${J.gcode.length} G-code programmes, pipeline_result.json`)}</div>`)
 + `<div class="srcfoot"><ol><li>${BAUER.cite} ${BAUER.note}</li>
     <li>Ng, Wang, Ghorbani, Hackl. Design for Repair and Reuse, and Digital Fabrication of Traditional Japanese Timber Joinery. ISARC 2026.</li></ol></div>`;
@@ -4227,20 +4235,20 @@ function showRefJoint(key){
     <p class="gap"><b>The tapered mating faces (suberi kōbai) are not drawn.</b> The 1/10 ratio is sourced and kept as a rule, but nothing has been read that fixes where the slope sits or how far it runs: placing it at the shoulder over the full 鎌せい gives a ${(KV.d/10).toFixed(2)} mm run, and the second drawing dimensions its run as 10 mm, which that reading does not reproduce. <code>cad_kamatsugi.py</code> cuts no slope either. Rather than draw a construction of our own beside dimensions taken off the drawings, it is left out until it is read.</p>`, true)
     : tba("Details","faces, as marked out on the timber",
       "No dimensioned plan or side drawing has been read for this joint, so there is nothing to draw the views from."))
-+ (K ? sec("Manual fabrication","step by step", `
++ (K ? sec("Hand fabrication (手刻み)","step by step", `
     <p class="note">As for the daimochi, each sketch starts from the whole timber and shows the piece as it stands before that step, drawn from this model at its current proportions: plan above, side below, the material that step removes hatched. Heavy dashed lines are saw cuts and pared faces; light dashed lines are cuts hidden behind the surface.</p>
     ${toolLegend([].concat(...KAMA_MAKING.map(g=>g.steps.map(s=>KAMA_TOOLS[g.p][s.k]))))}
     ${KAMA_MAKING.map(g=>`<h4 class="occh">${g.g} <span class="note">— ${g.sub}</span></h4>`+
       g.steps.map((s,i)=>`<div class="mk2"><div data-ksketch="${KAMA_MAKING.indexOf(g)}|${i}">${kamaSketch(Object.assign({p:g.p},s),KV,KAMA.anchors.W)}</div><div>${toolRow(KAMA_TOOLS[g.p][s.k])}<h5>${i+1}. ${s.ja}</h5>${s.t}</div></div>`).join("")).join("")}
     <p class="note">The halves are called the lower element (shitaki) and the upper element (uwaki), as on the daimochi page.</p>`, true)
-    : sec("Manual fabrication","step by step", `
+    : sec("Hand fabrication (手刻み)","step by step", `
     <p class="note">Read off Bauer's step strip, p.${BAUER.names.aritsugi.page+1}. The book prints <b>no text</b> for these steps: the figures are the instruction, so the wording below is a reading of the drawings, not a quotation. Each figure shows a tool and the material that step takes off. No sketches are drawn here: the sketch code is written for the daimochi tsugi and the koshikake kama tsugi, and would draw the wrong joint.</p>
     ${toolLegend(Object.values(ARI_TOOLS))}
     ${ARI_MAKING.map(g=>`<h4 class="occh">${g.g}${g.sub?` <span class="note">— ${g.sub}</span>`:""}</h4><ul class="prov">${
       g.steps.map(s=>`<li>${toolRow(ARI_TOOLS[s.k])}<b>${s.k}</b> — ${s.t}</li>`).join("")}</ul>`).join("")}
     <p class="gap">Which face each cut is made on is mostly not resolvable at the size the step figures are printed, and nothing is claimed about it above. For a sequence with named operations, compare the koshikake kama tsugi's, which comes from a page that does carry text.</p>`, true))
-+ (K ? sec("Digital fabrication","step by step, proposed", digHTML("kamatsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V:Object.assign({},KV,{H:KAMA.anchors.H,W:KAMA.anchors.W})}), true)
-    : sec("Digital fabrication","toolpaths, simulated", `
++ (K ? sec("Digital fabrication (CNC / プレカット)","step by step, proposed", digHTML("kamatsugi",{tol:p.tolerance_mm, stock:`${p.timber_length_mm} mm`, V:Object.assign({},KV,{H:KAMA.anchors.H,W:KAMA.anchors.W})}), true)
+    : sec("Digital fabrication (CNC / プレカット)","toolpaths, simulated", `
       <p class="note">No step-by-step route has been written up for this joint. The pipeline emits ${J.gcode.length} G-code programmes for it, listed under Files; below are the shared builder's setups and programs, simulated.</p>
       ${camSimHTML("aritsugi")}${camLiveBlock("aritsugi")}`, true))
 + tba("Where it is built","a building, in section",
@@ -4487,25 +4495,40 @@ const IF_GROUPS=[
  ["hako","Box housing","箱","hako","put"]]],
 ["Steps and tongues",[
  ["ryaku","Abbreviated gooseneck","略鎌","ryakukama","hook"],
- ["mechi","Stub tenon","目違い","mechigai","put"],
+ ["mechi","Stub tenon / stub mortise","目違い / 目違ほぞ穴","mechigai / mechigai hozo-ana","put"],
  ["eri","Collar (term unverified)","襟輪","eriwa","put"]]],
 ["Tenons and bridles",[
- ["hozo","Mortise and tenon","枘","hozo","put"],
+ ["hozo","Tenon / mortise","枘 / 枘穴","hozo / hozo-ana","put"],
  ["sao","Rod tenon (sao), keyed","竿","sao","hook"],
  ["sanmai","Bridle","三枚組","sanmai gumi","put"]]],
 ["Interlocking heads",[
- ["kama","Gooseneck","鎌","kama","hook"],
- ["ari","Dovetail","蟻","ari","hook"]]],
+ ["kama","Gooseneck / gooseneck socket","鎌 / 鎌穴","kama / kama-ana","hook"],
+ ["ari","Dovetail / dovetail socket","蟻 / 蟻ほぞ穴","ari / arihozo-ana","hook"]]],
 ["Added pieces and locks",[
  ["yatoi","Loose tenon (dowel, butterfly key; term unverified for yatoi)","雇い","yatoi","hook"],
- ["sen","Pin","栓","sen","fix"],
+ ["sen","Peg / peg hole","栓 / 栓穴","sen / sen-ana","fix"],
  ["shachi","Key","車知","shachi","fix"],
  ["kusabi","Wedge","楔","kusabi","fix"]]]];
 const IF_CATS=[["A","Assembly",[["a1","Set first"],["a2","Lowered from above"],["a3","Side, then axial"],["a7","Pushed in along the axis"],["a4","Draw tight"],["a5","Lock goes in last"],["a6","Held by load above"]]],
 ["D","Disassembly",[["d1","Lock comes out first"],["d2","Lift against friction"],["d3","Shift, then out sideways"]]],
 ["R","Repair",[["r1","Needs side clearance"],["r2","Needs headroom"],["r5","Needs axial clearance"],["r3","Unload from above"],["r4","Cheap part to replace"]]],
-["M","Manual fabrication",[["m1","Rip saw (縦挽き)"],["m2","Crosscut saw (横挽き)"],["m3","Chisel (叩き・突き鑿)"],["m4","角のみ or mortise chisel"],["m5","Plane (鉋, 際鉋)"],["m6","Fitted by hand, last"],["m7","Made as a separate piece"]]],
-["G","Digital fabrication",[["g1","Standard プレカット"],["g2","Some factories only"],["g3","Several setups"],["g4","Corners squared by hand"],["g5","Drilled after assembly"]]]];
+["M","Hand fabrication (手刻み)",[["h1","Marking out (墨付け sumitsuke)","carpenter's square (差金), marking gauge (罫引), ink line (墨壺)"],
+  ["h2","Rip-sawing (縦挽き tatebiki)","rip saw"],["h3","Cross-cutting (横挽き yokobiki)","crosscut saw"],
+  ["h4","Chiselling","striking chisel (叩き鑿) and hammer (玄翁); chisel mortiser (角のみ)"],["h5","Paring","paring chisel (突き鑿)"],
+  ["h6","Planing","plane (鉋); shoulder plane (際鉋)"],["h7","Boring peg holes","peg-hole mortiser (込み栓角のみ), gimlet (錐) or chisel"],
+  ["h8","Fitting and finishing","chisels, planes, hammer"]]],
+["G","Digital fabrication (CNC / プレカット)",[["c1","Cutting to length","saw unit","BTLx: Cut, JackRafterCut. Pre-cut: 切断"],
+  ["c2","Roughing","½ in end mill","BTLx: Lap, Pocket, Slot, Mortise, Tenon, DovetailMortise, DovetailTenon. Pre-cut: 継手・仕口加工 (荒取り)"],
+  ["c3","Finishing","¼ in end mill or ball-nose cutter","BTLx: the same processings, finishing pass. Pre-cut: 継手・仕口加工 (仕上げ)"],
+  ["c4","Drilling","drill unit","BTLx: Drilling. Pre-cut: 穴あけ"],
+  ["c5","Re-clamping for a new set-up","clamps, jig","No BTLx processing: the part is turned or re-clamped between processings"],
+  ["c6","Post-processing: squaring corners and filing","chisel, file","No BTLx processing: by hand after the machine"]]]];
+/* attributes on a link, written after its outcome: c2+std, h8+last; ~ marks it inferred */
+const IF_LATTR={std:["availability","standard pre-cut"],spec:["availability","special machines only"],hand:["availability","hand only"],
+  one:["set-ups","one"],sev:["set-ups","several"],pre:["sequence","before assembly"],post:["sequence","after assembly"],last:["sequence","last"],
+  int:["component","integral"],sep:["component","separate piece"]};
+function ifLinks(id){ return IF_LINKS[id].split(" ").map(t=>{ const inf=t.endsWith("~")||IF_NEW.has(id), [r,...at]=t.replace("~","").split("+"); return {r,inf,at}; }); }
+const ifAttrText=at=>at.map(a=>IF_LATTR[a][1]).join(", ");
 const IF_PROP={
 tsuki:["free", [["Shoulder (胴付き dōzuki) set 5分 (c. 15 mm) into the receiving member (rafter beam into post)", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]], ["Hanging post: shoulder about 1寸 (c. 30 mm) below the beam soffit, with 1寸 clearance", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented", "verify"]]]],
 sogi:["scales", [["Daimochi: joint length about 2.5 × depth H", "Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi: joint length 2 × H", "AIJ 2009 via denmoku-db", ["documented"]]]],
@@ -4521,16 +4544,41 @@ sanmai:["partly", [["Each part one third of the member width", "general woodwork
 ago:["fixed", [["Cog where a plate sits on a beam: 1寸 to 1寸5分 (30 to 45 mm)", "Saitō 1904, 日本家屋構造", ["documented"]], ["Cog width 15–30 mm (5分 to 1寸)", "denmoku-db", ["documented"]]]],
 nuki:["partly", [["Abbreviated gooseneck in a through tie: hook longer than 30 mm, tip 30 mm high, 45°", "denmoku-db No. 106", ["documented"]], ["Hook height 1/3 to 2/3 of hook length; wedge allowance 15 mm", "denmoku-db No. 106", ["documented"]], ["Nuki about 1/4 of the post width thick", "Shimoyama", ["secondary"]], ["Tested 15–60 mm thick in 105–180 mm posts", "denmoku-db", ["documented"]]]],
 ryaku:["partly", [["Kanawa and okkake: joint length 3 to 3.5 × H", "Saitō 1904, 日本家屋構造", ["documented"]], ["Kanawa: 2 to 3 × width W; okkake: 2 to 3 × H", "AIJ 2009 via denmoku-db", ["documented"]], ["Okkake: at least 8寸 (240 mm)", "Shimoyama", ["secondary"]], ["Daimochi: step H/10, tip H/4", "denmoku-db", ["documented"]], ["Daimochi: step 8分 to 1寸 (24 to 30 mm)", "Saitō 1904, 日本家屋構造", ["documented"]], ["Jaw (腮): 15 mm, or L/15 to L/20, never above 15 to 30 mm", "denmoku-db", ["documented"]], ["Tapered mating faces (suberi kōbai) about 1/10", "Saitō 1904, 日本家屋構造; glossaries", ["documented"]]]],
-mechi:["partly", [["Kanawa and okkake: a square of W/8 to W/7", "Saitō 1904, 日本家屋構造", ["documented"]], ["Depth 15 mm", "AIJ 2009 via denmoku-db", ["documented"]], ["Daimochi: about W/4 square", "Saitō 1904, 日本家屋構造", ["documented"]], ["Okkake tongue width W/4 to W/3", "denmoku-db", ["documented"]]]],
-hozo:["fixed", [["Long tenon in a 120 mm post: 90 × 30 × 117 mm", "denmoku-db specimen", ["documented"]], ["A 45 mm tenon is about 50% stiffer and stronger than a 30 mm one", "Irie and Oto, AIJ 2009", ["documented"]], ["Tenon thickness 1/4 to 2/7 of the post width; width 8/10 to 8.5/10", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented", "verify"]]]],
+mechi:["partly", [["Kanawa and okkake: a square of W/8 to W/7", "Saitō 1904, 日本家屋構造", ["documented"], "m"], ["Depth 15 mm", "AIJ 2009 via denmoku-db", ["documented"]], ["Daimochi: about W/4 square", "Saitō 1904, 日本家屋構造", ["documented"], "m"], ["Okkake tongue width W/4 to W/3", "denmoku-db", ["documented"], "m"]]],
+hozo:["fixed", [["Long tenon in a 120 mm post: 90 × 30 × 117 mm", "denmoku-db specimen", ["documented"], "m"], ["A 45 mm tenon is about 50% stiffer and stronger than a 30 mm one", "Irie and Oto, AIJ 2009", ["documented"], "m"], ["Tenon thickness 1/4 to 2/7 of the post width; width 8/10 to 8.5/10", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented", "verify"], "m"]]],
 sao:["fixed", [["Long tenon with keys at W = 120: tenon 30, jaw 7.5, 18 mm, length 240", "Urakubo et al., AIJ 2024 (one size tested)", ["documented"]], ["Tested D = 30, key 15 at W = 120, i.e. about W/4 and W/16", "AIJ 2024; MLIT 2021", ["inferred"]]]],
-kama:["partly", [["Gooseneck length 4寸, 5寸 or 6寸 (120, 150, 180 mm), whatever the depth", "Araki; denmoku-db", ["documented"]], ["Head = neck = half the gooseneck length", "Kijima and Kumazawa 2019", ["documented"]], ["Gooseneck depth H/2", "Kijima and Kumazawa 2019", ["documented"]], ["Neck width 30 mm (1寸) in every specimen", "denmoku-db", ["documented"]], ["Jaw 7.5 mm each side (5 to 15 tested); head width = neck + 2 × jaw", "denmoku-db; Toda 2012", ["documented"]], ["Tapered mating faces (suberi kōbai) about 1/10 of the depth (1/8 also used)", "Saitō 1904, 日本家屋構造; Kijima", ["documented"]]]],
-ari:["partly", [["Neck W/4 to W/3; length W/4 to W/2, design shear length at most 25 mm", "denmoku-db", ["documented"]], ["Flare L/8 to L/16", "denmoku-db", ["documented"]], ["All parts as ratios of the top width", "Saitō 1904, 日本家屋構造", ["documented"]]]],
+kama:["partly", [["Gooseneck length 4寸, 5寸 or 6寸 (120, 150, 180 mm), whatever the depth", "Araki; denmoku-db", ["documented"], "m"], ["Head = neck = half the gooseneck length", "Kijima and Kumazawa 2019", ["documented"], "m"], ["Gooseneck depth H/2", "Kijima and Kumazawa 2019", ["documented"]], ["Neck width 30 mm (1寸) in every specimen", "denmoku-db", ["documented"], "m"], ["Jaw 7.5 mm each side (5 to 15 tested); head width = neck + 2 × jaw", "denmoku-db; Toda 2012", ["documented"], "m"], ["Tapered mating faces (suberi kōbai) about 1/10 of the depth (1/8 also used)", "Saitō 1904, 日本家屋構造; Kijima", ["documented"]]]],
+ari:["partly", [["Neck W/4 to W/3; length W/4 to W/2, design shear length at most 25 mm", "denmoku-db", ["documented"], "m"], ["Flare L/8 to L/16", "denmoku-db", ["documented"], "m"], ["All parts as ratios of the top width", "Saitō 1904, 日本家屋構造", ["documented"]]]],
 yatoi:["fixed", [["Daimochi dowels: 1寸2分 square × 1寸5分 (about 36 × 45 mm)", "Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi dowel 30 × 30 mm", "denmoku-db", ["documented"]], ["Dowel 太枘: 1寸–1寸4分 square × 2.5–3分 thick, hardwood", "Saitō 1904, 日本家屋構造, via Shimoyama", ["documented"]]]],
-sen:["partly", [["Kanawa: central pin = stub tenon = W/8 to W/7 square", "Saitō 1904, 日本家屋構造", ["documented"]], ["Pins W/8 to W/6", "AIJ 2009 via denmoku-db", ["documented"]], ["Trade sizes 5分, 6分, 8分, 1寸 (15, 18, 25, 31 mm)", "pin catalogues", ["secondary"]], ["Okkake: 2 pins at the quarter points; 4 if H > 300 mm", "denmoku-db; Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi pin length: 2/3 H in the text, H/2 + 30 in the specimen table", "denmoku-db (inconsistent)", ["documented"]], ["Drawbore: pin holes deliberately offset about 2 mm", "Kyoto training college", ["secondary"]], ["Kanawa 栓 at least 15 mm thick", "AIJ 2009 via denmoku-db", ["documented"]], ["Kanawa: tested 栓 15 mm wide", "Toda 2012", ["documented"]], ["Kanawa 栓 tapered, for example 21 to 30 mm", "builder (Matsumoto Kensetsu)", ["secondary"]]]],
+sen:["partly", [["Kanawa: central peg = stub tenon = W/8 to W/7 square", "Saitō 1904, 日本家屋構造", ["documented"], "m"], ["Pegs W/8 to W/6", "AIJ 2009 via denmoku-db", ["documented"], "m"], ["Trade sizes 5分, 6分, 8分, 1寸 (15, 18, 25, 31 mm)", "pin catalogues", ["secondary"], "m"], ["Okkake: 2 pegs at the quarter points; 4 if H > 300 mm", "denmoku-db; Saitō 1904, 日本家屋構造", ["documented"]], ["Daimochi peg length: 2/3 H in the text, H/2 + 30 in the specimen table", "denmoku-db (inconsistent)", ["documented"], "m"], ["Drawbore: peg holes deliberately offset about 2 mm", "Kyoto training college", ["secondary"], "f"], ["Kanawa 栓 at least 15 mm thick", "AIJ 2009 via denmoku-db", ["documented"], "m"], ["Kanawa: tested 栓 15 mm wide", "Toda 2012", ["documented"], "m"], ["Kanawa 栓 tapered, for example 21 to 30 mm", "builder (Matsumoto Kensetsu)", ["secondary"], "m"]]],
 shachi:["none", []],
 kusabi:["fixed", [["Wedge allowance 15 mm", "denmoku-db No. 106", ["documented"]]]]};
 const IF_FN={put:"bears",hook:"interlocks",fix:"locks"};
+/* Interface forms whose two halves have names: one interface form per mating
+   pair, the projecting half (凸) on one component, the receiving half (凹) on
+   the other. ok: whether the receiving half's Japanese term was found in a source. */
+const IF_HALVES={
+  hozo:{m:["tenon","枘","hozo"],f:["mortise","枘穴","hozo-ana"],ok:"JAANUS, hozoana ほぞ穴",
+    mOn:"the member that enters: on the daimochi tsugi, the post (below or above)",
+    fOn:"the member that receives it: on the daimochi tsugi, both elements for a post below with a through tenon, the lower element for a stub, the upper element for a post above"},
+  mechi:{m:["stub tenon","目違い","mechigai"],f:["stub mortise","目違ほぞ穴","mechigai hozo-ana"],ok:"JAANUS, koshikake aritsugi (目違ほぞ穴)",
+    mOn:"the tip of an element: each element carries one on the daimochi, kanawa and okkake tsugi (the two elements are the same part); the upper element in the koshikake variants",
+    fOn:"the other element, at its shoulder: each element carries one on the daimochi, kanawa and okkake tsugi; the lower element's seat in the koshikake variants"},
+  kama:{m:["gooseneck","鎌","kama"],f:["gooseneck socket","鎌穴","kama-ana"],ok:"",
+    mOn:"the upper element (koshikake kama tsugi)",fOn:"the lower element, open to the top (koshikake kama tsugi)"},
+  ari:{m:["dovetail","蟻","ari"],f:["dovetail socket","蟻ほぞ穴","arihozo-ana"],ok:"JAANUS, yose-ari (蟻ほぞ穴)",
+    mOn:"the upper element (koshikake ari tsugi); rising from each toe (kanawa tsugi)",fOn:"the lower element, open to the top (koshikake ari tsugi); the other element's shoulder (kanawa tsugi)"},
+  sen:{m:["peg","栓","sen"],f:["peg hole","栓穴","sen-ana"],ok:"",
+    mOn:"the peg, a separate component",fOn:"both elements, the hole bored through them (kanawa: across the width; okkake: from the top; kama tsugi and daimochi: their pegged variants)"}};
+const ifHalf=(id,h)=>{ const H=IF_HALVES[id]; if(!H) return ""; const [en,kj,ro]=H[h];
+  return `${en} ${kj} <i>${ro}</i>${h==="f"&&!H.ok?' <span class="ifunv" title="Japanese term not found in the sources checked">(Japanese term unverified)</span>':""}`; };
+function ifHalvesHTML(id){ const H=IF_HALVES[id]; if(!H) return "";
+  return `<ul class="ifhalves"><li><b>凸</b> projecting half, ${ifHalf(id,"m")}: ${H.mOn}.</li><li><b>凹</b> receiving half, ${ifHalf(id,"f")}: ${H.fOn}.</li></ul>`; }
+/* a form's rules, under the half each describes when the form has two named halves */
+function ifRulesHTML(id){ const rules=IF_PROP[id][1], H=IF_HALVES[id]; if(!rules.length) return "";
+  if(!H) return `<ul>${rules.map(ifRule).join("")}</ul>`;
+  return [["m",`凸 ${H.m[0]}`],["f",`凹 ${H.f[0]}`],[undefined,"Both halves"]].map(([h,t])=>{ const rs=rules.filter(r=>r[3]===h);
+    return rs.length?`<p class="ifh2">${t}</p><ul>${rs.map(ifRule).join("")}</ul>`:""; }).join(""); }
 // sizing: how the interface form's dimensions are set; one label per form
 const IF_SZ={scales:"scales",fixed:"fixed size",partly:"partly scales",free:"not restricted (follows the member)",none:"no rule found"};
 const IF_SZ_DEF={scales:"the form's dimensions follow the member by rule",fixed:"a set size, usually a tool or 寸 standard",
@@ -4545,16 +4593,11 @@ function ifRule(r){ return `<li>${r[0]} <span class="ifsrc">(${r[1]})</span> ${i
 // a note shown with a form's rules: no rule of its own, a proxy, or a missing dimension
 const IF_RNOTE={tsuki:"A plain contact face; its size is the section of the members joined.",tome:"Its size is set by the members joined.",
   hako:"No rule found. Proxy: as stub tenon, W/8 to W/7 (inferred).",eri:"Depth: no rule found."};
-const IF_LINKS={tsuki:"m2 m5~ g1",sogi:"a2 m1 m2 m5 g3~",aikaki:"a2 m1 m2 m3 g1",koshi:"a1 a2 a6 r3~ m2 m3 g1",tome:"m2 m6~ g4~",
-kaki:"a2 m2 m3 g1",oire:"a2 m2 m3 g1 g4",wanagi:"a2 m1 m3 g3~ g4~",ago:"a2 r3~ m2 m3 g1",nuki:"a7 r5~ m3 m4 g4~",hako:"m3 m6 g3~ g4~",
-ryaku:"a2 a3 a4 d2 r1 r2 m1 m2 m3 m5 m6 g2 g3",mechi:"a3 d3 m3 m4 m5 m6 g3 g4",eri:"m3 m6~ g4~",
-hozo:"a7 r5~ m1 m2 m3 m4 g1 g4",sao:"a7 a4 r5~ m1 m3 m4 g2~ g4~",sanmai:"a2~ m1 m3 m6~ g3~",
-kama:"a2 a4~ a6 r3~ m1 m2 m3 g1",ari:"a2 a6 r3~ m3 g1",
-yatoi:"a1 r4~ m7",sen:"a4 a5 d1 r4~ m4 m7 g2 g5",shachi:"a4 a5 d1 r4~ m3 m7 g4~",kusabi:"a4 a5 r4~ m7"};
+const IF_LINKS={tsuki:"h3 h6 c2+std c3+std",sogi:"a2 h2 h3 h6 c5+sev~",aikaki:"a2 h2 h3 h4~ c2+std c3+std",koshi:"a1 a2 a6 r3~ h3 h4~ c2+std c3+std",tome:"h3 h8+last c6",kaki:"a2 h3 h4 c2+std c3+std",oire:"a2 h3 h4 c2+std c3+std c6",wanagi:"a2 h2 h4 c5+sev c6",ago:"a2 r3 h3 h4 c2+std c3+std",nuki:"a7 r5 h4 c6",hako:"h4 h8+last c5+sev c6",ryaku:"a2 a3 a4 d2 r1 r2 h2 h3 h4 h6 h8+last c2+spec c3+spec c5+sev",mechi:"a3 d3 h4 h6 h8+last c5+sev c6",eri:"h4 h8+last c6",hozo:"a7 r5 h2 h3 h4 c2+std c3+std c6",sao:"a4 a7 r5 h2 h4 c2+spec c3+spec c6",sanmai:"a2 h2 h4 h8+last c5+sev",kama:"a2 a4~ a6 r3~ h2 h3 h4 h5 c2+std c3+std",ari:"a2 a6 r3~ h4 h5 c2+std c3+std",yatoi:"a1 r4 h2+hand+sep",sen:"a4 a5 d1 r4~ h2+sep~ h7 c4+post+spec",shachi:"a4 a5 d1 r4 h2+sep h4 c6",kusabi:"a4 a5 r4 h2+hand+sep"};
 // interface forms whose links are all reasoned from geometry, not yet checked against sources
 const IF_NEW=new Set(["tsuki","tome","kaki","oire","wanagi","ago","nuki","hako","eri","hozo","sao","sanmai","yatoi","shachi","kusabi"]);
 const IF={}; IF_GROUPS.forEach(([g,list])=>list.forEach(([id,en,kj,ro,fn])=>{ IF[id]={id,en,kj,ro,fn,group:g}; }));
-const IF_OUT={}; IF_CATS.forEach(([c,name,items])=>items.forEach(([id,lab])=>{ IF_OUT[id]={c,name,lab}; }));
+const IF_OUT={}; IF_CATS.forEach(([c,name,items])=>items.forEach(([id,lab,tools,tip])=>{ IF_OUT[id]={c,name,lab,tools,tip}; }));
 /* Composition: the interface forms in each joint, as the viewer models it.
    "●" in every configuration; "○" only in a variant or a support option. */
 // code IDs (daimochi, aritsugi, kamatsugi, kanawa, okkake) are fixed; what is shown is ro (italic in running
@@ -4567,7 +4610,7 @@ const IF_JOINTS={daimochi:{ro:"daimochi tsugi",title:"Daimochi Tsugi",kj:"台持
 Object.values(IF_JOINTS).forEach(J=>{ J.en=J.title; });
 const IF_COMP={
   daimochi:{sogi:["●","the oblique scarf, with a land at each end"],ryaku:["●","the step at mid-scarf"],mechi:["●","the tongue at each tip, in a groove at the other piece's shoulder"],
-    yatoi:["○","dowels (太枘 dabo), set in before the upper piece"],sen:["○","through draw pins (大栓 daisen), driven last"],kusabi:["○","wedges on the post tenon"],
+    yatoi:["○","dowels (太枘 dabo), set in before the upper piece"],sen:["○","through draw pegs (大栓 daisen), driven last"],kusabi:["○","wedges on the post tenon"],
     hozo:["○","the post tenon: from a post below, through both pieces or a stub; from a post above, a stub into the upper piece"],oire:["○","the housing on the lower piece's underside that the post's shoulder (dōzuki) seats in"],ago:["○","the cog over a beam below"]},
   kamatsugi:{koshi:["●","the seat the upper element rests on"],kama:["●","the gooseneck and its socket"],mechi:["○","the 目違い notch (Toda's variant)"],sen:["○","the 込栓, driven sideways (Toda's variant)"]},
   aritsugi:{koshi:["●","the seat, cut to H/2"],ari:["●","the dovetail and its socket"],mechi:["○","the 目違い stub (size assumed)"]},
@@ -4589,17 +4632,19 @@ const IF_CAPTION={shachi:"A's long tenon fully home in B; two tapered keys above
   kusabi:"A through tenon kerfed at its end, with two wedges to drive in from the far side; red marks the kerfs and wedges."};
 function ifImg(id,cls){ return `<figure class="${cls||"ifimg"}" data-if="${id}"><img src="forms/form_${id}.png?v=${ASSET_V}" alt="${IF[id].en}: a sample joint, its components apart, the interface form outlined in red. Click to explore it in 3D." title="Click to explore in 3D" loading="lazy">`+
   `<figcaption>${IF_SCHEMATIC.has(id)?"Schematic, our reading; not checked against a source drawing.":(IF_CAPTION[id]||"A minimal sample, components apart; red marks the interface form.")} Click to turn it in 3D and move its parts.</figcaption></figure>`; }
-const IF_NORULE={shachi:"No size rule found. Urakubo et al. (AIJ 2024) tested one long tenon with keys at W = 120 (see Rod tenon (sao), keyed); the key and key-slot sizes they report have not been read here. The kanawa tsugi's lock is modelled as a 栓, so its key rules are under Pin."};
+const IF_NORULE={shachi:"No size rule found. Urakubo et al. (AIJ 2024) tested one long tenon with keys at W = 120 (see Rod tenon (sao), keyed); the key and key-slot sizes they report have not been read here. The kanawa tsugi's lock is modelled as a 栓, so its key rules are under Peg / peg hole."};
 const IF_DEF={tsuki:"A face of one component bearing flat against another: the end of a member, or the shoulder (胴付き dōzuki) at the root of a tenon.",
-  sen:"A pin driven through the joint. 込栓 komisen and 大栓 daisen, driven to draw the joint tight: draw pin; 鼻栓 hanasen, through a tenon end outside the joint: external draw pin.",
+  sen:"A peg driven through the joint, in a hole bored through both components. 込栓 komisen and 大栓 daisen, driven to draw the joint tight: draw peg; 鼻栓 hanasen, through a tenon end outside the joint: external draw peg.",
   yatoi:"A separate piece let into both components. The dowel 太枘 dabo: a short hardwood dowel housed across the joint plane (not a steel dowel fastener). The butterfly key 千切 chigiri. The English term for yatoi is unverified.",
   eri:"eriwa: collar (term unverified)."};
-function ifName(id,short){ const f=IF[id]; return short?`${f.en} ${f.kj}`:`${f.en} ${f.kj} <i>${f.ro}</i>`; }
+function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
+  if(short) return `${f.en} ${f.kj}`;
+  return H?`${f.en} (${H.m[1]} <i>${H.m[2]}</i> / ${H.f[1]} <i>${H.f[2]}</i>${H.ok?"":'<span class="ifunv" title="Japanese term for the receiving half not found in the sources checked">†</span>'})`:`${f.en} ${f.kj} <i>${f.ro}</i>`; }
 
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009012218";
+const ASSET_V="20261009014626";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -4608,14 +4653,14 @@ const IF_DIFF={
   kanawa:"Level laps either side of a step, toes with dovetails, one 栓 from the side.",
   okkake:"Sloped laps either side of a step, two 込栓 draw pins."};
 function ifCatalogueHTML(){
-  const outs=id=>{ const by={}; IF_LINKS[id].split(" ").forEach(t=>{ const inf=t.endsWith("~")||IF_NEW.has(id), o=IF_OUT[t.replace("~","")];
-      (by[o.name]=by[o.name]||[]).push(o.lab+(inf?" <span class='ifinf'>(inferred)</span>":"")); });
+  const outs=id=>{ const by={}; ifLinks(id).forEach(({r,inf,at})=>{ const o=IF_OUT[r];
+      (by[o.name]=by[o.name]||[]).push(o.lab+(at.length?` <span class="ifat">[${ifAttrText(at)}]</span>`:"")+(inf?" <span class='ifinf'>(inferred)</span>":"")); });
     return Object.entries(by).map(([k,v])=>`<li><b>${k}:</b> ${v.join("; ")}</li>`).join(""); };
   return IF_GROUPS.map(([g,list])=>`<h4 class="ifgroup">${g}</h4>`+list.map(([id])=>{ const f=IF[id], [tag,rules]=IF_PROP[id];
     const used=Object.entries(IF_COMP).filter(([,c])=>c[id]).map(([j,c])=>`<li><a href="#joint-${j}"><i>${IF_JOINTS[j].ro}</i> ${IF_JOINTS[j].kj}</a> ${c[id][0]} ${c[id][1]}</li>`).join("");
     return `<article class="ifc" id="form-${id}">${ifImg(id)}<div class="ifc-body"><h5>${IF_COL[id]?`<span class="ifsw" style="background:${IF_COL[id]}"></span>`:""}${ifName(id)}</h5>
-      ${IF_DEF[id]?`<p class="ifdef">${IF_DEF[id]}</p>`:""}<p class="iftags">Main function: <b>${IF_FN[f.fn]}</b> · Sizing: <b title="${IF_SZ_DEF[tag]}">${IF_SZ[tag]}</b></p>
-      <div class="ifcols"><div><p class="ifh">Rules, per joint</p>${rules.length?`<ul>${rules.map(ifRule).join("")}</ul>`:""}${IF_RNOTE[id]||IF_NORULE[id]||!rules.length?`<p class="ifsrc">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:""}
+      ${IF_DEF[id]?`<p class="ifdef">${IF_DEF[id]}</p>`:""}${ifHalvesHTML(id)}<p class="iftags">Main function: <b>${IF_FN[f.fn]}</b> · Sizing: <b title="${IF_SZ_DEF[tag]}">${IF_SZ[tag]}</b></p>
+      <div class="ifcols"><div><p class="ifh">Rules, per joint</p>${ifRulesHTML(id)}${IF_RNOTE[id]||IF_NORULE[id]||!rules.length?`<p class="ifsrc">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:""}
         <p class="ifh">Joints that use it</p>${used?`<ul>${used}</ul>`:`<p class="ifsrc">None of the five joints modelled here.</p>`}</div>
         <div><p class="ifh">Processes it implies</p><ul>${outs(id)}</ul><p class="ifsrc"><b>Evidence:</b> ${IF_EVID(id)}</p></div></div></div></article>`; }).join("")).join("");
 }
@@ -4648,58 +4693,226 @@ function ifDiagram(host){
   const LX=16,LW=480,RX=705,RW=275, head=(x,y,t)=>{ const h=el("text",{x,y,"font-size":13,fill:"#5f6663","font-weight":600}); h.textContent=t; };
   const ry={},cat={},label={},ly={};
   let yl=24; IF_GROUPS.forEach(([g,mods])=>{ head(LX,yl+4,g); yl+=16; mods.forEach(([id,en,kj,ro])=>{ ly[id]=yl+15; label[id]=en+" "+kj+" "+ro; yl+=34; }); yl+=12; });
-  let yr=24; IF_CATS.forEach(([c,name,items])=>{ head(RX,yr+4,name); yr+=16; items.forEach(([id,lab])=>{ ry[id]=yr+13; cat[id]=c; label[id]=lab; yr+=30; }); yr+=12; });
+  let yr=24; IF_CATS.forEach(([c,name,items])=>{ head(RX,yr+4,name); yr+=16; items.forEach(([id,lab,tools])=>{ const hh=tools?40:24; ry[id]=yr+hh/2+1; cat[id]=c; label[id]=lab; yr+=hh+6; }); yr+=12; });
   svg.setAttribute("viewBox","0 0 990 "+(Math.max(yl,yr)+6));
   const lg=el("g",{}), lines=[];
-  for(const m in IF_LINKS){ IF_LINKS[m].split(" ").forEach(t=>{ const inf=t.endsWith("~")||IF_NEW.has(m), r=t.replace("~",""), c=cat[r], life="ADR".includes(c);
+  const bg=el("g",{});
+  for(const m in IF_LINKS){ ifLinks(m).forEach(({r,inf,at})=>{ const c=cat[r], life="ADR".includes(c);
     const ln=el("line",{x1:LX+LW,y1:ly[m],x2:RX,y2:ry[r],stroke:life?"#5a4fc4":"#16876a","stroke-width":1.2,"stroke-dasharray":inf?"5 4":"",opacity:.5,class:"ifp-ln"},lg);
-    lines.push({m,r,c,inf,ln}); }); }
+    // the link's attributes, as a small badge near the operation it leads to
+    let badge=null; if(at.length){ const f=0.82, bx=LX+LW+(RX-LX-LW)*f, by=ly[m]+(ry[r]-ly[m])*f; badge=el("g",{class:"ifp-badge"},bg);
+      const tx=el("text",{x:bx,y:by,"text-anchor":"middle","dominant-baseline":"central","font-size":8.5,fill:"#16876a"},badge); tx.textContent=at.map(a=>IF_LATTR[a][1]).join(" · ");
+      const w=tx.textContent.length*4.4;   /* estimated: the diagram may be drawn while hidden */ el("rect",{x:bx-w/2-3,y:by-6,width:w+6,height:12,rx:3,fill:"#fff",stroke:"#8fd0b8","stroke-width":.6},badge).parentNode.insertBefore(badge.lastChild,tx); }
+    lines.push({m,r,c,inf,at,ln,badge}); }); }
   const nodes={};
   const bind=(g,kind,id)=>{ g.addEventListener("click",()=>focus(kind,id)); g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); focus(kind,id); } }); nodes[id]=g; };
   for(const id in ly){ const f=IF[id]; const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]});
     el("rect",{x:LX,y:ly[id]-14,width:LW,height:28,rx:5,fill:"#ffffff",stroke:IF_COL[id]||"#9aa19d","stroke-width":IF_COL[id]?2:1},g);
     const t=el("text",{x:LX+10,y:ly[id],"dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g);
-    const s1=el("tspan",{},t); s1.textContent=f.en+"  "; const s2=el("tspan",{"font-weight":500},t); s2.textContent=f.kj+" "; const s3=el("tspan",{fill:"#5f6663","font-style":"italic"},t); s3.textContent=f.ro;
+    const s1=el("tspan",{},t); s1.textContent=f.en+"  "; const s2=el("tspan",{"font-weight":500},t); s2.textContent=f.kj+" "; const s3=el("tspan",{fill:"#5f6663","font-style":"italic"},t); s3.textContent=IF_HALVES[id]?"":f.ro;
     const tg=el("text",{x:LX+LW-8,y:ly[id],"text-anchor":"end","dominant-baseline":"central","font-size":11,fill:"#8a908d"},g); tg.textContent=IF_FN[f.fn]+" · "+IF_SZ[IF_PROP[id][0]];
     bind(g,"m",id); }
-  IF_CATS.forEach(([c,,items])=>items.forEach(([id])=>{ const life="ADR".includes(c); const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]});
-    el("rect",{x:RX,y:ry[id]-12,width:RW,height:24,rx:5,fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8","stroke-width":1},g);
-    const t=el("text",{x:RX+RW/2,y:ry[id],"text-anchor":"middle","dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g); t.textContent=label[id]; bind(g,"r",id); }));
+  IF_CATS.forEach(([c,,items])=>items.forEach(([id,,tools,tip])=>{ const life="ADR".includes(c); const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]+(tools?", tools: "+tools:"")});
+    const hh=tools?40:24; el("rect",{x:RX,y:ry[id]-hh/2,width:RW,height:hh,rx:5,fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8","stroke-width":1},g);
+    const t=el("text",{x:RX+RW/2,y:tools?ry[id]-8:ry[id],"text-anchor":"middle","dominant-baseline":"central","font-size":13,fill:"#1b1d1c"},g); t.textContent=label[id];
+    if(tools){ const t2=el("text",{x:RX+RW/2,y:ry[id]+9,"text-anchor":"middle","dominant-baseline":"central","font-size":9.5,fill:"#5f6663"},g); t2.textContent=tools;
+      if(tools.length*5>RW-10) t2.setAttribute("textLength",RW-10), t2.setAttribute("lengthAdjust","spacingAndGlyphs"); }
+    if(tip){ const ti=el("title",{},g); ti.textContent=tip; }
+    bind(g,"r",id); }));
   let fc="all", sel=null;
   const HINT=`<p class="ifp-hint">Select an interface form to see its proportions. Each interface form is tagged with what it does (bears load, interlocks, or locks the joint) and how it is sized: scales, fixed size, partly scales, not restricted (follows the member), or no rule found. Each rule carries its source and evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint.</p>`;
   const render=()=>{ const act=new Set(), showInf=host.querySelector(".ifp-inf").checked;
     lines.forEach(o=>{ let on=(fc==="all"||o.c===fc)&&(showInf||!o.inf); if(sel) on=on&&(sel[0]==="m"?o.m===sel[1]:o.r===sel[1]);
-      o.ln.classList.toggle("ifp-dim",!on); o.ln.style.display=(!showInf&&o.inf)?"none":""; if(on){ act.add(o.m); act.add(o.r); } });
+      o.ln.classList.toggle("ifp-dim",!on); o.ln.style.display=(!showInf&&o.inf)?"none":""; if(on){ act.add(o.m); act.add(o.r); }
+      if(o.badge) o.badge.style.display=on&&(sel||fc!=="all")?"":"none"; });
     for(const id in nodes){ const isR=!!cat[id]; let on=true;
       if(sel||fc!=="all"){ on=act.has(id)||(sel&&sel[1]===id); if(isR&&fc!=="all"&&cat[id]!==fc) on=false; }
       nodes[id].style.opacity=on?1:.22; }
     if(sel){ const n=lines.filter(o=>(sel[0]==="m"?o.m:o.r)===sel[1]&&(fc==="all"||o.c===fc)&&(showInf||!o.inf)).length; const nm=sel[0]==="m"?IF[sel[1]].en:label[sel[1]];
       status.textContent=nm+": "+n+" link"+(n===1?"":"s")+". Select it again to clear."; }
     else status.textContent=fc==="all"?"Showing all links.":"Showing "+IF_CATS.find(c=>c[0]===fc)[1].toLowerCase()+" only."; };
-  const showDetail=()=>{ if(!sel||sel[0]!=="m"){ detail.innerHTML=HINT; return; }
+  const showDetail=()=>{ if(sel&&sel[0]==="r"){ const o=IF_OUT[sel[1]], ls=lines.filter(x=>x.r===sel[1]);
+      detail.innerHTML=`<h3>${o.lab}</h3><p class="ifsrc">${o.name}${o.tools?`. Tools: ${o.tools}`:""}.${o.tip?` ${o.tip}.`:""}</p>`+
+        (ls.length?`<ul>${ls.map(x=>`<li><a href="#form-${x.m}">${IF[x.m].en} ${IF[x.m].kj}</a>${x.at.length?` <span class="ifat">[${ifAttrText(x.at)}]</span>`:""}${x.inf?" <span class='ifinf'>(inferred)</span>":""}</li>`).join("")}</ul>`:`<p class="ifp-hint">No interface form is linked to it yet.</p>`); return; }
+    if(!sel||sel[0]!=="m"){ detail.innerHTML=HINT; return; }
     const id=sel[1], f=IF[id], [tag,rules]=IF_PROP[id];
-    detail.innerHTML=ifImg(id,"ifimg ifimg-s")+`<h3>${ifName(id)}</h3>${IF_DEF[id]?`<p>${IF_DEF[id]}</p>`:""}<p class="ifsrc">Main function: ${IF_FN[f.fn]}. Sizing: ${IF_SZ[tag]}. Proportions depend on the joint the interface form is part of, so each rule names its joint where the source does. <a href="#form-${id}">In the catalogue</a>.</p>`+
-      (rules.length?`<ul>${rules.map(ifRule).join("")}</ul>`:"")+((IF_RNOTE[id]||IF_NORULE[id]||!rules.length)?`<p class="ifp-hint">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:""); };
+    detail.innerHTML=ifImg(id,"ifimg ifimg-s")+`<h3>${ifName(id)}</h3>${IF_DEF[id]?`<p>${IF_DEF[id]}</p>`:""}${ifHalvesHTML(id)}<p class="ifsrc">Main function: ${IF_FN[f.fn]}. Sizing: ${IF_SZ[tag]}. Proportions depend on the joint the interface form is part of, so each rule names its joint where the source does. <a href="#form-${id}">In the catalogue</a>.</p>`+
+      ifRulesHTML(id)+((IF_RNOTE[id]||IF_NORULE[id]||!rules.length)?`<p class="ifp-hint">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:"")+
+      `<p class="ifh2">Links</p><ul>${ifLinks(id).map(({r,inf,at})=>`<li><b>${IF_OUT[r].name}:</b> ${IF_OUT[r].lab}${at.length?` <span class="ifat">[${ifAttrText(at)}]</span>`:""}${inf?" <span class='ifinf'>(inferred)</span>":""}</li>`).join("")}</ul>`; };
   const focus=(k,id)=>{ sel=(sel&&sel[1]===id)?null:[k,id]; render(); showDetail(); };
   host.querySelector(".ifp-inf").addEventListener("change",render);
   host.querySelectorAll("button[data-c]").forEach(b=>b.addEventListener("click",()=>{ fc=b.dataset.c; sel=null;
     host.querySelectorAll("button[data-c]").forEach(x=>x.setAttribute("aria-pressed",x===b)); render(); showDetail(); }));
   render(); showDetail();
 }
+
+/* ---------- the making grammar's rules, written out (Task L) ----------
+   One builder for the landing page's Rules section and for grammar_rules.md
+   (viewer/tools/grammar_rules.py calls window.CC_RULES_MD). Everything comes
+   from the page's data: the vocabulary, IF_COMP and IF_COMB (which forms make
+   which interfaces), IF_PROP and each joint's rule library (sizes), IF_LINKS
+   (processes) and the daimochi model itself (the derivation). Blocks:
+   ["h2",t] ["h3",t] ["p",t] ["ul",[t]] ["table",[head],[[cells]]]; in the
+   text, *x* is italic and **x** bold. */
+// which interface forms make which interfaces; counts as the viewer models them ("×2": at each tip, each toe, two pegs)
+const IF_COMB={
+  daimochi:{comp:"Lower element (shitaki) and upper element (uwaki), the same part turned end for end. By option: two dowels, two draw pegs, two bolts or two wedges; a post below, a post above or a beam below.",
+    ifs:[["Beam–beam interface (lower and upper element)",[["sogi",1],["ryaku",1],["mechi",2]],null],
+         ["Dowel–element interfaces (two dowels, each in both elements)",[["yatoi",1]],"locking: dowels (blind, set in before the upper element)"],
+         ["Peg–element interfaces (two draw pegs, each through both elements)",[["sen",1]],"locking: through draw pegs"],
+         ["Post–element interface (a post below, or a post above)",[["hozo",1],["oire",1]],"support: post below (tenon through both elements, or a stub) or post above (a stub into the upper element)"],
+         ["Beam–element interface (a beam below)",[["ago",1]],"support: beam below"],
+         ["Wedge–tenon interfaces (two wedges beside the post tenon)",[["kusabi",1]],"locking: wedges, with a post below and a through tenon only"]],
+    note:"Bolts (a locking option for logs) are hardware, not an interface form of the vocabulary."},
+  aritsugi:{comp:"Lower element (shitaki) and upper element (uwaki).",
+    ifs:[["Beam–beam interface",[["koshi",1],["ari",1]],null],["Beam–beam interface, 目違い variant",[["mechi",1]],"variant: 目違い付 (size assumed)"]]},
+  kamatsugi:{comp:"Lower element (shitaki) and upper element (uwaki); by variant, one 込栓 peg.",
+    ifs:[["Beam–beam interface",[["koshi",1],["kama",1]],null],["Beam–beam interface, 目違い variant",[["mechi",1]],"variant: Toda's 目違い notch"],
+         ["Peg–element interfaces (one peg through both elements)",[["sen",1]],"variant: Toda's 込栓, driven sideways"]]},
+  kanawa:{comp:"Two identical elements; in the locked variant, one 栓 peg.",
+    ifs:[["Beam–beam interface",[["aikaki",1],["ryaku",1],["mechi",2],["ari",2]],null],
+         ["Peg–element interfaces (one peg through both elements, from the side)",[["sen",1]],"variant: locked"]]},
+  okkake:{comp:"Two identical elements; in the locked variant, two 込栓 pegs.",
+    ifs:[["Beam–beam interface",[["sogi",1],["ryaku",1],["mechi",2]],null],
+         ["Peg–element interfaces (two pegs through both elements, from the top)",[["sen",1]],"variant: locked"]]}};
+// each joint's rule library: which interface form (and half) each dimension sizes
+const IF_LIBFORM={
+  daimochi:{r:["sogi"],t:["sogi"],j:["ryaku"],jr:["ryaku"],ml:["mechi","m"],mw:["mechi","m"],p:["yatoi"],pl:["yatoi"],sd:["oire"],cd:["ago"],cw:["ago"],tw:["hozo","m"],td:["hozo","m"],tl:["hozo","m"]},
+  aritsugi:{A:["ari","m"],e:["ari","m"],n:["ari","m"],sd:["koshi"],s:["koshi"]},
+  kamatsugi:{L:["kama","m"],hl:["kama","m"],b:["kama","m"],e:["kama","m"],d:["kama"],s:["koshi"],k:["kama","f"]},
+  kanawa:{L:["aikaki"],m:["mechi","m"],mw:["mechi","m"]},
+  okkake:{L:["sogi"],slope:["sogi"],c:["ryaku"],m:["mechi","m"],peg:["sen","m"]}};
+function ifLib(j){ if(j==="daimochi") return {order:RULED, params:P}; if(j==="aritsugi") return ARI; if(j==="kamatsugi") return KAMA; return SPEC_P[j]; }
+const ifLibType=r=>({prop:"scales",propOf:"scales",abs:"fixed size",ratio:"fixed size",affine:"partly scales",clamp:"partly scales",clampW:"partly scales"}[r.kind]||r.kind);
+/* evidence for a rule of a joint's rule library, by a fixed rule from its own
+   source note (stated with the tables): placeholder → inferred; rule of thumb →
+   generic; inferred → inferred; snippet → verify; read through a paraphrase or
+   commentary → secondary; a primary source named → documented; else secondary */
+const IF_PRIMARY=/denmoku|DM1|DM2|DM roof|Saitō|NK1904|AIJ|TODA|Toda|HOWTEC|MLIT|Kijima|第廿圖|dimensioned drawing|WA\b|WA Fig|Koshikake-aritsugi\.pdf|富田|Urakubo/;
+function ifLibEv(r){ const t=`${r.label} ${r.doc||""}`, ref=r.ref||"";
+  if(ref==="none"||/placeholder|no evidence/i.test(t)) return "inferred";
+  if(/rule of thumb/i.test(t+ref)) return "generic";
+  if(ref==="inferred"||/\binferred\b|rule unverified/i.test(t)) return "inferred";
+  if(/verify|snippet/i.test(t)) return "verify";
+  if(/paraphrase|commentary/i.test(t)||/Shimoyama/.test(ref)&&!IF_PRIMARY.test(ref)) return "secondary";
+  if(IF_PRIMARY.test(ref)) return "documented";
+  return "secondary"; }
+const ifHalfName=(id,h)=>h&&IF_HALVES[id]?`${IF[id].en}, ${h==="m"?"凸 "+IF_HALVES[id].m[0]:"凹 "+IF_HALVES[id].f[0]}`:IF[id].en;
+function rulesDoc(){
+  const B=[], J=Object.keys(IF_JOINTS), jn=j=>`*${IF_JOINTS[j].ro}* ${IF_JOINTS[j].kj}`, nm=id=>`${IF[id].en} ${IF[id].kj}`;
+  B.push(["p","Rules of the making grammar, written out from the viewer's own data: the interface forms (vocabulary), the rules that combine them into each joint's interfaces, the rules that size them, the rules that link them to assembly, repair and fabrication, and one joint derived by applying them. Nothing here is added to the data the joint pages use. Each sizing rule keeps its source and evidence label (documented, secondary, generic, inferred, verify); where sources disagree, each rule is listed with its own source. Inferred rules are marked."]);
+  // 1. vocabulary
+  B.push(["h3","1. Vocabulary"]);
+  B.push(["p","The 23 interface forms. Where both halves of a mating pair (凸 projecting, 凹 receiving) have names, both are given; the pair is one interface form. Main function after Chaya et al. (1985): bears, interlocks, locks."]);
+  const voc=[]; IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const f=IF[id], H=IF_HALVES[id];
+    voc.push([g,f.en,f.kj,`*${f.ro}*`,IF_FN[f.fn]+(H&&!H.ok?"; 凹 term unverified":"")]); }));
+  B.push(["table",["Group","Interface form","Kanji","Romanisation","Main function"],voc]);
+  // 2. combination
+  B.push(["h3","2. Combination rules"]);
+  B.push(["p","For each joint, its components and its interfaces, and the interface forms each interface is built from. ×2: the form occurs twice (at each tip, on each toe). Options and variants are named after the rule; without one, the rule holds in every configuration the viewer models."]);
+  J.forEach(j=>{ const C=IF_COMB[j]; B.push(["p",`**${jn(j)}**. Components: ${C.comp}`]);
+    B.push(["ul",C.ifs.map(([n,forms,opt])=>`${n} = ${forms.map(([id,c])=>nm(id)+(c>1?` ×${c}`:"")).join(" + ")}${opt?` *(${opt})*`:""}`).concat(C.note?[C.note]:[])]); });
+  // 3. sizing
+  B.push(["h3","3. Sizing rules"]);
+  B.push(["p",`Rule types: ${Object.entries(IF_SZ).map(([k,l])=>`*${l}* (${IF_SZ_DEF[k]})`).join("; ")}. Evidence: ${Object.entries(IF_EVL).map(([k,l])=>`*${k}* (${l})`).join("; ")}.`]);
+  B.push(["p","**3a. Per interface form**, as collected from the sources; a rule names its joint where the source does. Rules of a two-halved form are listed under the half they describe."]);
+  IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const [tag,rules]=IF_PROP[id], H=IF_HALVES[id];
+    const line=r=>`${H?(r[3]==="m"?`凸 ${H.m[0]}: `:r[3]==="f"?`凹 ${H.f[0]}: `:"Both halves: "):""}${r[0]} (${r[1]}) [${(r[2]||[]).join(", ")}]`;
+    const items=rules.map(line); const note=IF_RNOTE[id]||IF_NORULE[id]; if(note) items.push(`*Note:* ${note}`); if(!items.length) items.push("No rule found in the sources checked.");
+    B.push(["p",`**${nm(id)}**: ${IF_SZ[tag]}.`]); B.push(["ul",items]); }));
+  B.push(["p","**3b. Per joint**: each joint's rule library, as its Proportions panel uses it. For each dimension, the interface form it sizes, then every rule offered, with its type, value, source and evidence; the first is the one the page starts from. Evidence is assigned from each rule's own source note by a fixed rule: a placeholder is *inferred*; a rule of thumb is *generic*; a rule the note calls inferred or unverified is *inferred*; one read from a snippet is *verify*; one read through a paraphrase or commentary is *secondary*; one naming a primary source (denmoku-db, Saitō 1904, AIJ, Toda, HOWTEC, MLIT, Kijima, the dimensioned drawings, Wang) is *documented*; any other is *secondary*."]);
+  J.forEach(j=>{ const L=ifLib(j), map=IF_LIBFORM[j]||{}, rows=[];
+    L.order.forEach(k=>{ const prm=L.params[k]; if(!prm||!prm.rules||!map[k]) return; const [id,h]=map[k];
+      prm.rules.forEach((r,i)=>rows.push([i?"":prm.label,i?"":ifHalfName(id,h),r.label,ifLibType(r),`${r.ref||""}${r.doc?` (${r.doc})`:""}`,ifLibEv(r)])); });
+    B.push(["p",`**${jn(j)}**`]); B.push(["table",["Dimension","Interface form","Rule","Type","Source","Evidence"],rows]); });
+  B.push(["p","Section dimensions (height, width) are the member's, not rules; the kanawa and okkake depths and width are Toda's tested sizes."]);
+  // 4. process
+  B.push(["h3","4. Process rules"]);
+  B.push(["p",`For each interface form, the rules linking it to actions: assembly direction, disassembly, repair consequence, hand operations, CNC operations, and what stays manual. Each link is *documented* (stated by a source, or consistent across sources) or *inferred* (reasoned from the form's geometry or general practice). Attributes: ${[...new Set(Object.values(IF_LATTR).map(a=>a[0]))].map(k=>`*${k}*: ${Object.values(IF_LATTR).filter(a=>a[0]===k).map(a=>a[1]).join(" / ")}`).join("; ")}.`]);
+  const CAT={A:"Assembly",D:"Disassembly",R:"Repair",M:"Hand",G:"CNC"};
+  IF_GROUPS.forEach(([g,list])=>list.forEach(([id])=>{ const ls=ifLinks(id), items=[];
+    ["A","D","R","M","G"].forEach(c=>{ const xs=ls.filter(x=>IF_OUT[x.r].c===c); if(!xs.length) return;
+      items.push(`${CAT[c]}: ${xs.map(x=>`${IF_OUT[x.r].lab.replace(/ \(.*\)$/,"").toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""} (${x.inf?"inferred":"documented"})`).join("; ")}`); });
+    const man=ls.filter(x=>x.r==="c6"||x.r==="h8"||x.at.includes("hand"));
+    items.push(`Stays manual: ${man.length?man.map(x=>`${IF_OUT[x.r].lab.toLowerCase()}${x.at.length?` [${ifAttrText(x.at)}]`:""} (${x.inf?"inferred":"documented"})`).join("; "):"nothing recorded"}`);
+    B.push(["p",`**${nm(id)}**`]); B.push(["ul",items]); }));
+  // 5. derivation
+  B.push(["h3","5. Derivation example: daimochi tsugi"]);
+  B.push(...rulesDerivation());
+  return B;
+}
+/* The daimochi derived by applying the rules, from the page's own model: one
+   configuration (post below, tenon through both elements, dowels), one member
+   size (120 × 120 mm), the first rule listed for each dimension. The page's
+   own settings are put back afterwards. */
+function rulesDerivation(){
+  const out=[], keepCFG=Object.assign({},CFG), keepCur=cur, H=120, W=120;
+  try{
+    Object.assign(CFG,{support:"post_below",lock:"blind",tenon:"through",stock:"square",removed:false});
+    const X={H,W,q:0.25}, used={}; RULED.forEach(k=>{ const r=P[k].rules[0]; X[k]=evalR(r,H,W); used[k]=r; });
+    const D=derived(X); cur=D;
+    const f1=v=>(Math.round(v*10)/10).toString();
+    out.push(["p","**Configuration**: post below with its tenon through both elements, locked by dowels, square timber; member 120 × 120 mm (4寸, the section Saitō's fixed sizes assume)."]);
+    out.push(["p","**Step 1, components**: lower element, upper element (the same part turned end for end), two dowels, the post below."]);
+    out.push(["p","**Step 2, interfaces** (combination rules, section 2):"]);
+    out.push(["ul",["Beam–beam interface = Oblique scarf 殺ぎ + Abbreviated gooseneck 略鎌 (the step) + Stub tenon / stub mortise 目違い / 目違ほぞ穴 ×2",
+      "Dowel–element interfaces: each of the two dowels in both elements = Loose tenon 雇い (dowel, 太枘 dabo)",
+      "Post–element interfaces = Tenon / mortise 枘 / 枘穴 (tenon on the post, mortise through both elements) + Housing 大入れ (the post's shoulder, dōzuki, seated in the lower element)"]]);
+    out.push(["p","**Step 3, sizes** (the first rule of each dimension in the daimochi's rule library, section 3b, at H = W = 120 mm):"]);
+    const rows=[]; RULED.forEach(k=>{ const map=IF_LIBFORM.daimochi[k]; if(!map) return;
+      if(["cd","cw","tl"].includes(k)) return;                       // not used in this configuration
+      rows.push([P[k].label,ifHalfName(map[0],map[1]),used[k].label,`${f1(X[k])} mm`,ifLibEv(used[k])]); });
+    rows.push(["Through tenon length","Tenon / mortise, 凸 tenon","H − housing depth (through both elements)",`${f1(D.H-D.sdA)} mm`,"geometry"]);
+    out.push(["table",["Dimension","Interface form","Rule","Value","Evidence"],rows]);
+    const ck=checks(D), bad=ck.filter(c=>c.s==="fail"), warn=ck.filter(c=>c.s==="warn");
+    out.push(["p",`Checked against the page's own checks: ${ck.length-bad.length-warn.length} pass${warn.length?`, ${warn.length} warn (${warn.map(c=>c.t).join("; ")})`:""}${bad.length?`, ${bad.length} fail (${bad.map(c=>c.t).join("; ")})`:""}.`]);
+    // sequences, from the contact between the parts (as on the joint page)
+    const o=derivedOrder(), parts=partsNow(), nmP=k=>partName(k).toLowerCase(), pre=[];
+    o.edges.forEach(([x,k])=>pre.push([k,x])); if(parts.includes("c")) pre.push(["c","a"]);
+    let left=parts.slice(), al=[], g=0;
+    while(left.length&&g++<8){ const ready=left.filter(k=>!pre.some(([a2,b2])=>b2===k&&left.includes(a2))); if(!ready.length) break; al.push(ready); left=left.filter(k=>!ready.includes(k)); }
+    out.push(["p","**Step 4, assembly and disassembly** (derived from the contact between the parts, as on the joint page, not scripted):"]);
+    out.push(["ul",[`Putting together: ${al.map(l=>l.map(nmP).join(" and ")).join(" → ")}`,
+      `Taking apart: ${o.layers.map(l=>l.map(nmP).join(" and ")).join(" → ")}${o.stuck.length?` (stuck: ${o.stuck.map(nmP).join(", ")})`:""}`,
+      ...stepsFor().filter(s=>!/^(Remove|Replace|Assembled)/.test(s.b)).map(s=>`${s.b}: ${s.txt}`),
+      "Form rules that set this order: the tenon / mortise is pushed in along the axis (the lower element is set down over the post tenon); the loose tenons are set first (dowels into the lower element before the upper); the oblique scarf and the step are lowered from above (the upper element last)."]]);
+    out.push(["p","**Step 5, repair set** (what must come out to replace each part, from the same contact limits):"]);
+    out.push(["ul",parts.map(k=>{ const need=repairSet(k), stays=parts.filter(x=>x!==k&&!need.includes(x));
+      return `Replace the ${nmP(k)}: ${need.length?`take out ${need.map(nmP).join(", then ")}`:"nothing else comes out"}${TEMP[k]?`; ${TEMP[k]}`:""}. Stays: ${stays.length?stays.map(nmP).join(", "):"none"}.`; })]);
+    // routes: the page's own fabrication steps, each with its operations
+    const OPS={mark:"marking out",saw_rip:"rip-sawing",saw_cross:"cross-cutting",saw:"sawing",chisel:"chiselling",mortiser:"chiselling",paring:"paring",plane:"planing",
+      em_half:"roughing (½ in end mill)",em_quarter:"finishing (¼ in end mill)",ball:"finishing (ball-nose cutter)",key:"fitting",mallet:"fitting"};
+    const ops=(ts,f,cnc)=>[...new Set((ts||[]).map(t=>cnc&&t==="paring"?"post-processing":OPS[t.replace("?","")]).filter(Boolean))].filter(o=>!f.toLowerCase().includes(o)).join(", ");
+    out.push(["p","**Step 6, hand and CNC routes** (the daimochi's documented sequences, Wang 2024, with the operations of section 4):"]);
+    out.push(["ul",[`Hand (手刻み): ${MAKING_HAND.map(m=>{ const o=ops(DM_TOOLS.hand[m.k],m.f); return `${m.f.toLowerCase()}${o?` (${o})`:""}`; }).join(" → ")}.`,
+      `CNC: ${MAKING_CNC.map(m=>{ const o=ops(DM_TOOLS.cnc[m.k],m.f,true); return `${m.f.toLowerCase()}${o?` (${o})`:""}`; }).join(" → ")}. Stays manual: squaring the corners and filing (post-processing), fitting.`]]);
+  } finally { Object.keys(CFG).forEach(k=>delete CFG[k]); Object.assign(CFG,keepCFG); cur=keepCur; }
+  return out;
+}
+const rulesEsc=t=>String(t).replace(/&(?![a-z#0-9]+;)/gi,"&amp;").replace(/<(?!\/?(i|b|a|span|sub|sup)\b)/g,"&lt;");
+const rulesInl=t=>rulesEsc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>");
+function rulesHTML(){ return rulesDoc().map(([k,a,b])=>k==="h3"?`<h3 class="rules-h">${rulesInl(a)}</h3>`:k==="p"?`<p>${rulesInl(a)}</p>`:k==="ul"?`<ul>${a.map(x=>`<li>${rulesInl(x)}</li>`).join("")}</ul>`:
+  `<div class="ifmx-wrap"><table class="rules-t"><thead><tr>${a.map(h=>`<th>${rulesInl(h)}</th>`).join("")}</tr></thead><tbody>${b.map(r=>`<tr>${r.map(c=>`<td>${rulesInl(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join(""); }
+function rulesMD(){ const cell=c=>String(c).replace(/\|/g,"\\|").replace(/<[^>]+>/g,"");
+  return ["# Making grammar: the rules","","Written out by `viewer/tools/grammar_rules.py` from the viewer's own data (`viewer/index.html`); edit the page's data, not this file. The same text is the Rules section of the landing page.",""].concat(
+    rulesDoc().flatMap(([k,a,b])=>k==="h3"?[`## ${a.replace(/^\d+\.\s*/,m=>m)}`,""]:k==="p"?[cell(a),""]:k==="ul"?a.map(x=>`- ${cell(x)}`).concat([""]):
+      [`| ${a.map(cell).join(" | ")} |`,`|${a.map(()=>"---").join("|")}|`,...b.map(r=>`| ${r.map(cell).join(" | ")} |`),""])).join("\n"); }
+window.CC_RULES_MD=rulesMD;
 function renderHome(){
   const h=document.getElementById("home"); if(!h||h.dataset.done) return;
   h.innerHTML=`
   <section class="home-sec"><p class="home-intro">Japanese timber joints are described here by a making grammar (after Knight and Stiny 2015): a vocabulary of interface forms (基本形), with rules that combine them into interfaces between components, size them from sourced scaling rules, and link each interface form to the actions that make, assemble and repair it.</p>
     <p class="note">A <b>component</b> is a physically bounded piece: each beam end, a post, a pin, a key, a dowel. An <b>interface</b> is everything connecting two components, such as the beam–beam interface of a daimochi or each pin–beam interface. An <b>interface form</b> (基本形) is a shaped part of an interface, a mating 凸凹 pair. A <b>feature</b> is an interface form as a machine cuts it: a pocket, a slot, a drilling.</p></section>
-  <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#home-comp">Composition</a><a href="#home-proc">From interface forms to processes</a><a href="#home-joints">The joints</a><a href="#home-terms">Terms and sources</a></nav>
+  <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#home-comp">Composition</a><a href="#home-rules">Rules</a><a href="#home-proc">From interface forms to processes</a><a href="#home-joints">The joints</a><a href="#home-terms">Terms and sources</a></nav>
   <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (its dimensions follow the member by rule), fixed size (a set size, usually a tool or 寸 standard), partly scales (some dimensions scale, others are fixed or capped), not restricted (no rule of its own; its size is set by the members it joins), or no rule found (none in the sources checked; one may exist). Each rule shows its source and its evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the Interface forms diagram on each joint page.</p>${ifCatalogueHTML()}</section>
   <section class="home-sec" id="home-comp"><h2>Composition</h2><p class="note">Which interface forms make up each joint. Ticks open the catalogue entry; joint names open the joint.</p>${ifMatrixHTML()}</section>
+  <section class="home-sec" id="home-rules"><h2>Rules</h2><details class="rules"><summary>The making grammar's rules, written out: vocabulary, combination, sizing, process, and one derivation</summary>${rulesHTML()}</details></section>
   <section class="home-sec" id="home-proc"><h2>From interface forms to processes</h2><p class="note">Each interface form decides how the joint is assembled, taken apart and repaired, and how it is made by hand and by CNC. Select an interface form or an outcome to see its links.</p><div id="ifp"></div>
-    <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than oblique scarf, halving, seat, abbreviated gooseneck, stub tenon, gooseneck, dovetail and pin are reasoned from their geometry and shown dashed until checked against sources. Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p>
+    <p class="note">Repair links are mostly reasoned from assembly; some CNC links are general machining practice. Dashed lines are inferred: reasoned from the interface form's geometry or from general carpentry and machining practice, not stated by a source for that interface form. All links of the interface forms other than oblique scarf, halving, seat, abbreviated gooseneck, stub tenon / stub mortise, gooseneck / gooseneck socket, dovetail / dovetail socket and peg / peg hole are reasoned from their geometry and shown dashed until checked against sources. Tapered mating faces (suberi kōbai), taper, drawbore offset and assembly direction are parameters of the interface forms, not interface forms; tongue and groove (実 sane) is left out, as it applies to board edges.</p>
     <p class="note"><b>Sizing:</b> no rule found = not found in the sources checked; not restricted = size set by the members joined. <b>Evidence:</b> documented = a primary source (Saitō 1904, denmoku-db, AIJ); secondary = commentary or later sources; generic = a general woodworking convention, not a Japanese timber-frame rule; inferred = a proxy or ratio derived by us; verify = read only from a snippet, to be checked against the original.</p>
     <p class="note">Fixed sizes from Saitō (1904) assume Meiji-era members of about 4寸 (120 mm); larger timbers may differ.</p></section>
   <section class="home-sec" id="home-joints"><h2>The joints</h2>${ifCardsHTML()}</section>
-  <section class="home-sec" id="home-terms"><h2>Terms and sources</h2><p>Terms follow AIJ 『建築学用語辞典』 (2nd ed., 1999) where listed, otherwise JAANUS; romanisation modified Hepburn. Interface forms follow the basic forms (基本形) of Kanasaki (2011), after Minamoto (1985) and Uchida (1981).</p>
+  <section class="home-sec" id="home-terms"><h2>Terms and sources</h2><p>Terms follow AIJ 『建築学用語辞典』 (2nd ed., 1999) where listed, otherwise JAANUS; romanisation modified Hepburn. Interface forms follow the basic forms (基本形) of Kanasaki (2011), after Minamoto (1985) and Uchida (1981). Where both halves of a form have names, the receiving half's term was checked against JAANUS: 枘穴 <i>hozo-ana</i> (hozoana), 蟻ほぞ穴 <i>arihozo-ana</i> (yose-ari) and 目違ほぞ穴 <i>mechigai hozo-ana</i> (koshikake aritsugi) are found there; 鎌穴 <i>kama-ana</i> and 栓穴 <i>sen-ana</i> were not found in the sources checked and are marked unverified (†).</p>
     <p class="note">Functions after Chaya, Yagi, Miyakawa and Yamahata (1985). Making grammar after Knight and Stiny (2015). Rules and links from Saitō (1904), 『日本家屋構造』, read through Shimoyama's commentary; Bauer and Pauli, <i>The Joinery Compendium</i>; Wang (2024), Princeton senior thesis; Toda (2012), Hokkaido Forest Products Research Institute Report 541; MiGumi (Ganeshan et al. 2025); denmoku-db; carpenters' accounts (林建築, 谷口工務店, アラキ工務店); プレカット factory sources.</p></section>`;
   ifDiagram(document.getElementById("ifp"));
   h.dataset.done="1";
@@ -4707,17 +4920,17 @@ function renderHome(){
 
 /* ---------- joint pages: three groups of panels ---------- */
 const IF_PANEL_ORDER=[["Form and documentation",["Interface forms","How it differs","Proportions","Details","Where it is built","Where it occurs","Record","Sources"]],
-  ["Process",["Assembly","Repair","Manual fabrication","Digital fabrication"]],
+  ["Process",["Assembly","Repair","Hand fabrication (手刻み)","Digital fabrication (CNC / プレカット)"]],
   ["Evidence",["Checks","Validation","Tests","Files"]]];
 /* each joint's interface forms, grouped by interface (○ in IF_COMP: an option) */
 const IF_INTERFACES={
   daimochi:[["Beam–beam interface (lower and upper element)",["sogi","ryaku","mechi"]],["Dowel–beam interfaces (dowels option)",["yatoi"]],
-    ["Draw pin–beam interfaces (through draw pins option)",["sen"]],["Post–beam interface (post option)",["hozo","oire"]],
+    ["Draw peg–beam interfaces (through draw pegs option)",["sen"]],["Post–beam interface (post option)",["hozo","oire"]],
     ["Beam–beam interface with a beam below (beam option)",["ago"]],["Wedge–tenon interfaces (wedges option)",["kusabi"]]],
   aritsugi:[["Beam–beam interface (lower and upper element)",["koshi","ari","mechi"]]],
-  kamatsugi:[["Beam–beam interface (lower and upper element)",["koshi","kama","mechi"]],["Draw pin–beam interfaces (込栓 option)",["sen"]]],
-  kanawa:[["Beam–beam interface (two identical elements)",["aikaki","ryaku","mechi","ari"]],["Pin–beam interface (locked option)",["sen"]]],
-  okkake:[["Beam–beam interface (two identical elements)",["sogi","ryaku","mechi"]],["Draw pin–beam interfaces (locked option)",["sen"]]]};
+  kamatsugi:[["Beam–beam interface (lower and upper element)",["koshi","kama","mechi"]],["Draw peg–beam interfaces (込栓 option)",["sen"]]],
+  kanawa:[["Beam–beam interface (two identical elements)",["aikaki","ryaku","mechi","ari"]],["Peg–beam interface (locked option)",["sen"]]],
+  okkake:[["Beam–beam interface (two identical elements)",["sogi","ryaku","mechi"]],["Draw peg–beam interfaces (locked option)",["sen"]]]};
 function ifInterfacesHTML(j){
   return (IF_INTERFACES[j]||[]).map(([name,ids])=>`<h4 class="occh">${name}</h4><ul class="prov">${ids.map(id=>{ const c=(IF_COMP[j]||{})[id];
     return `<li><a href="#form-${id}"><span class="ifsw" style="background:${IF_COL[id]||"#ccc"}"></span>${IF[id].en} ${IF[id].kj}</a>${c&&c[0]==="○"?" (option)":""}: ${c?c[1]:""}. <span class="ifsrc">Sizing: ${IF_SZ[IF_PROP[id][0]]}.</span></li>`; }).join("")}</ul>`).join("")+
@@ -4737,7 +4950,7 @@ const DAIMOCHI_VALIDATION=`
   <h4 class="occh">Finite elements, against her tension tests</h4>
   <p><b>Differed, by an order of magnitude.</b> At her full pull the model's reaction is 372 kN; the tests peaked at 21.7 and 29.0 kN (hand-cut, 4 and 6 springs) and 18.4 and 20.8 kN (CNC-made). The model is linear-elastic with no crushing, slip or failure, so it cannot reach a peak load: it is not validated against the tests, and no stiffness comparison has been made.</p>
   <h4 class="occh">Toolpaths</h4>
-  <p>Regenerated from the documented strategy (thesis 4.3), simulated: the setups, programs and remaining material are listed under Digital fabrication. Not milled, and not compared with her original toolpaths, which are not available.</p>`;
+  <p>Regenerated from the documented strategy (thesis 4.3), simulated: the setups, programs and remaining material are listed under Digital fabrication (CNC / プレカット). Not milled, and not compared with her original toolpaths, which are not available.</p>`;
 function ifPanelTitle(n){
   if(n.classList&&n.classList.contains("readsec")){ const s=n.querySelector(".readhead span"); return s?s.textContent.trim():""; }
   if(n.tagName==="DETAILS"){ const s=n.querySelector(":scope > summary"); return s?(s.firstChild&&s.firstChild.nodeType===3?s.firstChild.textContent:s.textContent).trim():""; }
@@ -4944,7 +5157,7 @@ window.addEventListener("hashchange",ifRoute);
 const IF_TERMS=[["dowels?","yatoi"],["dabo","yatoi"],["draw pins?","sen"],["stub tenons?","mechi"],["tongues?","mechi"],["toes?","mechi"],["目違い","mechi"],
   ["goosenecks?","kama"],["barbs?","kama"],["鎌(?!継)","kama"],["taboso","yatoi"],["hiragara","hozo"],["dovetails?","ari"],["蟻(?!継)","ari"],["scarf","sogi"],["half[- ]laps?","aikaki"],["level runs","aikaki"],["laps?","LAP"],["sockets?","SOCKET"],
   ["seat","koshi"],["腰掛(?!鎌|蟻)","koshi"],["housings?","oire"],["大入れ","oire"],["cog","ago"],["渡り腮","ago"],["(?:the|central) step","ryaku"],["略鎌","ryaku"],["tenons?","hozo"],
-  ["wedges?","kusabi"],["楔","kusabi"],["込栓","sen"],["大栓(?!継)","sen"],["栓(?!継)","sen"],["pins?","sen"]];
+  ["wedges?","kusabi"],["楔","kusabi"],["込栓","sen"],["大栓(?!継)","sen"],["栓(?!継)","sen"],["peg holes?","sen"],["pegs?","sen"],["pins?","sen"],["mortises?","hozo"]];
 const IF_RE=new RegExp(IF_TERMS.map(([p])=>/^[A-Za-z(]/.test(p)?`\\b(${p})\\b`:`(${p})`).join("|"),"gi");
 const IF_LINK_IN="#seqtext, #derived, .asm, #replist, #rreplist, .mk2 > div:last-child";
 function ifLinkTerm(i){ let id=IF_TERMS[i][1];
@@ -5103,9 +5316,12 @@ function jdMortised(P,W,h){
       c.forEach((p,i)=>{ const q=c[(i+1)%c.length]; face([...p,z0],[...q,z0],[...q,z1]); face([...p,z0],[...q,z1],[...p,z1]); }); }); }));
   return out;
 }
-/* the diagram's own names for the two halves of a mortise and tenon */
-const JD_SUB={"hozo~m":{base:"hozo",en:"Mortise",kj:"枘穴",ro:"hozo-ana",col:"#00838F",note:"the mortise the post tenon runs in; with the tenon it makes the Mortise and tenon 枘"},
-  "hozo":{base:"hozo",en:"Tenon",kj:"枘",ro:"hozo",col:IF_COL.hozo,note:"the post tenon (hiragara); with the mortise it makes the Mortise and tenon 枘"}};
+/* the diagram colours the two halves apart where one half is a separate
+   component (the post's tenon, the peg): the receiving half takes a colour of its own */
+const JD_HALFCOL={hozo:"#00838F",sen:"#AD1457"}, JD_SUB={};
+Object.entries(JD_HALFCOL).forEach(([id,col])=>{ const H=IF_HALVES[id], cap=w=>w[0].toUpperCase()+w.slice(1);
+  JD_SUB[id]={base:id,en:cap(H.m[0]),kj:H.m[1],col:IF_COL[id],note:`the projecting half (凸) of ${IF[id].en}: ${H.mOn}`};
+  JD_SUB[id+"~f"]={base:id,en:cap(H.f[0]),kj:H.f[1],col,note:`the receiving half (凹) of ${IF[id].en}: ${H.fOn}`}; });
 const jdForm=id=>{ const S=JD_SUB[id]; return S?{id:S.base,en:S.en,kj:S.kj,col:S.col,note:S.note}:{id,en:IF[id].en,kj:IF[id].kj,col:IF_COL[id],note:((IF_COMP[ifCurrentJoint()]||{})[id]||["",""])[1]}; };
 function jdSchedule(){ if(JD_PENDING) return; JD_PENDING=true; requestAnimationFrame(()=>requestAnimationFrame(()=>{ JD_PENDING=false; jdDraw(); })); }
 function jdData(){
@@ -5130,7 +5346,8 @@ function jdData(){
       if(cut.some(c=>c[1])){ const arr=new Float32Array(cut.length*9); cut.forEach((c,i)=>arr.set(c[0],i*9)); g0=new THREE.BufferGeometry(); g0.setAttribute("position",new THREE.BufferAttribute(arr,3)); mort=cut.map(c=>c[1]); } }
     const g=g0.index?g0.toNonIndexed():g0, tris=ifTri(g), P=g.attributes.position.array, v=new THREE.Vector3();
     const G=groups.get(key)||{key,t:[],col:[],ids:[]}; groups.set(key,G);
-    tris.forEach((t,i)=>{ const id=mort&&mort[i]?"hozo~m":typeof f==="function"?f(t):f, q=[];
+    tris.forEach((t,i)=>{ let id=mort&&mort[i]?"hozo~f":typeof f==="function"?f(t):f, q=[];
+      if(id==="sen"&&(key==="lower"||key==="upper")) id="sen~f";              // on an element: the peg hole
       for(let k=0;k<3;k++){ v.set(P[i*9+k*3],P[i*9+k*3+1],P[i*9+k*3+2]).applyMatrix4(M); q.push(v.x,-v.z,v.y); }   // y up -> z up
       G.t.push(q); G.ids.push(id||null); G.col.push(id&&jdForm(id).col?tint(jdForm(id).col):[1,1,1]); }); });
   const parts=[...groups.values()]; if(!parts.length) return null;
@@ -5152,7 +5369,7 @@ function jdDraw(){
   const seen=[...new Set([].concat(...data.map(G=>G.ids)).filter(Boolean))];
   const fig=host.querySelector("figure.jdfig");
   ifvOpen(fig,{data,label:IF_JOINTS[ifCurrentJoint()].ro+": its components apart, each interface form in colour"});
-  const order=[]; IF_USED.forEach(id=>{ if(id==="hozo"){ ["hozo","hozo~m"].forEach(k=>{ if(seen.includes(k)) order.push(k); }); } else if(seen.includes(id)) order.push(id); });
+  const order=[]; IF_USED.forEach(id=>[id,id+"~f"].forEach(k=>{ if(seen.includes(k)) order.push(k); }));
   host.querySelector(".jdkey").innerHTML=order.map(k=>{ const F=jdForm(k); return `<a class="iftag" href="#form-${F.id}" style="--fc:${F.col}"><span class="ifsw" style="background:${F.col}"></span>${F.en} ${F.kj}</a>`; }).join("");
 }
 function ifLegend(seen){
