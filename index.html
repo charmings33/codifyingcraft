@@ -6,7 +6,7 @@
 <title>Codifying Craft</title>
 <style>
 :root{
-  --fs-title:25px; --fs-large:16px; --fs-body:12px; --fs-small:8px; --fs-head:10px;
+  --fs-title:25px; --fs-large:16px; --fs-body:12px; --fs-small:8px;
   --lh-title:1.2; --lh-large:1.25; --lh-body:1.5; --lh-small:1.4;
   --plaster:#FFFFFF; --paper:#FFFFFF; --ink:#1C2321; --muted:#5C6763;
   --ai:#2B4C7E; --hinoki:#E2C38F; --sugi:#B98D57; --kashi:#5E4630; --warn:#7A5400; --fail:#A33327;
@@ -318,13 +318,13 @@ h3.grp + details{border-top:0}
 /* the joint pages' right column: no dividers, no subtitles, section heads at the left column's label size */
 section.panel > details, section.panel > .readsec, section.panel > h3.grp, section.panel > .readsec + details, section.panel > .namesec + .readsec, section.panel > .readsec + h3.grp{border-top:0}
 section.panel > details > summary small{display:none}
-/* the joint pages' right column: group labels at 16 px, section heads at 10 px */
-section.panel > h3.grp{font-size:var(--fs-large);line-height:var(--lh-large)}
+/* the joint pages' right column: group labels at 8 px, section heads at 12 px */
+section.panel > h3.grp{font-size:var(--fs-small);line-height:var(--lh-small)}
 section.panel > details > summary::after{content:"⌄";margin-left:auto;padding-left:10px;color:var(--muted);line-height:1}
 section.panel > details[open] > summary::after{content:"⌃"}
 /* the right column's buttons at the left column's size (the option buttons, 11.5 px) */
 section.panel button, section.panel label.btn, section.panel .readsec .readhead label.btn{font-size:var(--fs-body);line-height:var(--lh-body);padding:3px 7px;min-height:0}
-section.panel > details > summary, section.panel > .readsec > .readhead{font-size:var(--fs-head);line-height:var(--lh-small);padding-top:8px;padding-bottom:8px}
+section.panel > details > summary, section.panel > .readsec > .readhead{font-size:var(--fs-body);line-height:var(--lh-body);padding-top:8px;padding-bottom:8px}
 .iftags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 a.iftag{font-size:var(--fs-small);line-height:var(--lh-small);padding:0 6px;border:1px solid var(--fc);border-left-width:4px;border-radius:2px;color:var(--ink);text-decoration:none;background:#fff}
 a.flink{color:inherit;text-decoration:underline;text-decoration-color:var(--fc,#8A908D);text-decoration-thickness:2px;text-underline-offset:2px}
@@ -4859,7 +4859,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261009042804";
+const ASSET_V="20261009042955";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
