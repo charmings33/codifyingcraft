@@ -5016,7 +5016,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261011035249";
+const ASSET_V="20261011040221";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -5622,7 +5622,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
 function renderHome(){
   const h=document.getElementById("home"); if(!h||h.dataset.done) return;
   h.innerHTML=`
-  <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#evidence">Evidence: the grammar against the sources</a><a href="#home-comp">Configuration</a><a href="#home-proc">From interface forms to processes</a><a href="#home-terms">Terms and sources</a></nav>
+  <nav class="home-nav" aria-label="On this page"><a href="#home-forms">Interface forms</a><a href="#evidence">Evidence: the grammar against the sources</a><a href="#home-comp">Composition 構成</a><a href="#home-proc">From interface forms to processes</a><a href="#home-terms">Terms and sources</a></nav>
   <div class="home-cols"><div class="home-col">
   <section class="home-sec" id="home-forms"><h2>Interface forms: the vocabulary</h2><p class="note">The 23 interface forms, in six groups. The first tag is the main function, after the put, hook and fix of Chaya, Yagi, Miyakawa and Yamahata (1985): bears, interlocks, locks; the assignment is ours. The second is how the interface form is sized in the sources checked: scales (its dimensions follow the member by rule), fixed size (a set size, usually a tool or 寸 standard), partly scales (some dimensions scale, others are fixed or capped), not restricted (no rule of its own; its size is set by the members it joins), or no rule found (none in the sources checked; one may exist). Each rule shows its source and its evidence: documented, secondary, generic, inferred, verify. Proportions depend on the joint, so the rules name their joint. A coloured square marks the colour the interface form takes in the Interface forms diagram on each joint page.</p>${ifCatalogueHTML()}</section>
   </div><div class="home-col">
@@ -5632,7 +5632,7 @@ function renderHome(){
     <p class="note">Fixed sizes from Saitō (1904) assume Meiji-era members of about 4寸 (120 mm); larger timbers may differ.</p></section>
   <section class="home-sec" id="home-terms"><h2>Terms and sources</h2><p>Terms follow AIJ 『建築学用語辞典』 (2nd ed., 1999) where listed, otherwise JAANUS; romanisation modified Hepburn. Interface forms follow the basic forms (基本形) of Kanasaki (2011), after Minamoto (1985) and Uchida (1981). Where both halves of a form have names, the receiving half's term was checked against JAANUS: 枘穴 <i>hozo-ana</i> (hozoana), 蟻ほぞ穴 <i>arihozo-ana</i> (yose-ari) and 目違ほぞ穴 <i>mechigai hozo-ana</i> (koshikake aritsugi) are found there; 鎌穴 <i>kama-ana</i> and 栓穴 <i>sen-ana</i> were not found in the sources checked and are marked unverified (†).</p>
     <p class="note">Functions after Chaya, Yagi, Miyakawa and Yamahata (1985). Making grammar after Knight and Stiny (2015). Rules and links from Saitō (1904), 『日本家屋構造』, read through Shimoyama's commentary; Wang (2024), Princeton senior thesis; Toda (2012), Hokkaido Forest Products Research Institute Report 541; MiGumi (Ganeshan et al. 2025); denmoku-db; carpenters' accounts (林建築, 谷口工務店, アラキ工務店); プレカット factory sources. Bauer and Pauli, <i>The Joinery Compendium</i>, practitioner documentation, is used only to check the results, never as a source of rules.</p></section></div></div>
-  <section class="home-sec" id="home-comp"><h2>Configuration</h2><p class="note">Which interface forms make up each joint, and where they are in it. Point at or click an interface form: arrows run from it to where it is in each joint that has it. Click a joint: arrows run to it from each interface form it has. Click again to see all. Each joint is drawn from the viewer's model, its components apart: drag it to turn it round.</p>${cfgHTML()}</section>`;
+  <section class="home-sec" id="home-comp"><h2>Composition 構成</h2><p class="note">Which interface forms make up each joint, and where they are in it. Point at or click an interface form: arrows run from it to where it is in each joint that has it. Click a joint: arrows run to it from each interface form it has. Click again to see all. Each joint is drawn from the viewer's model, its components apart: drag it to turn it round.</p>${cfgHTML()}</section>`;
   cfgApply();
   ifDiagram(document.getElementById("ifp"));
   h.dataset.done="1";
