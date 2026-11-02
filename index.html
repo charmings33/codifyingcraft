@@ -247,6 +247,8 @@ header p.subtitle{font-size:var(--fs-body);line-height:var(--lh-body);margin:6px
 /* the landing page in two columns: interface forms and composition; processes and terms */
 #home{max-width:1760px}
 #home .ifev-documented,#home .ifev-secondary,#home .ifev-conflict{display:none}
+.ifp-trace{margin:0 0 12px}.ifp-trace svg{display:block;width:100%;height:auto}.ifp-ln.ifp-on{opacity:1!important;stroke-width:3.4}
+.jng{margin-top:10px}.jng svg{display:block;width:100%;height:auto}.rule-hl{outline:2px solid #C0392B;background:#fbecea}
 .cfg-forms{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0 14px}
 .cfg-f{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;border:1px solid #DDE2DF;background:#fff;cursor:pointer;font:inherit;text-align:center;transition:opacity .2s}
 .cfg-f img{width:100%;height:auto;display:block}.cfg-f[aria-pressed="true"],.cfg-jn[aria-pressed="true"]{border-color:#D0021B;box-shadow:0 0 0 1px #D0021B inset}
@@ -5025,7 +5027,7 @@ function ifName(id,short){ const f=IF[id], H=IF_HALVES[id];
 /* ---------- the landing page: the making grammar ---------- */
 // small line drawings of the five joints, the two components apart (viewer/cards/, drawn from the specs)
 // a version on the image addresses, set by viewer/publish.py, so a browser fetches new drawings after each publish
-const ASSET_V="20261026223245";
+const ASSET_V="20261102233424";
 const IF_RENDER=Object.fromEntries(["daimochi","aritsugi","kamatsugi","kanawa","okkake"].map(j=>[j,`cards/card_${j}.png?v=${ASSET_V}`]));
 const IF_DIFF={
   daimochi:"An oblique scarf with a step, set over a support: the upper piece is lowered onto dowels.",
@@ -5043,7 +5045,7 @@ function ifCatalogueHTML(){
       ${IF_DEF[id]?`<p class="ifdef">${IF_DEF[id]}</p>`:""}${ifHalvesHTML(id)}<p class="iftags">Main function: <b>${IF_FN[f.fn]}</b> · Sizing: <b title="${IF_SZ_DEF[tag]}">${IF_SZ[tag]}</b></p>
       <div class="ifcols"><div><p class="ifh">Rules, per joint</p>${ifRulesHTML(id)}${IF_RNOTE[id]||IF_NORULE[id]||!rules.length?`<p class="ifsrc">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:""}
         <p class="ifh">Joints that use it</p>${used?`<ul>${used}</ul>`:`<p class="ifsrc">None of the five joints modelled here.</p>`}</div>
-        <div>${PR_FORM[id]?`<p class="ifh">How it is made and how it goes together</p>${prFormHTML(id)}`:`<p class="ifh">Processes it implies</p><ul>${outs(id)}</ul><p class="ifsrc"><b>Evidence:</b> ${IF_EVID(id)}</p>`}</div></div></div></article>`; }).join("")).join("");
+        <div>${PR_FORM[id]?`<p class="ifh">How it is made and how it goes together</p>${prFormHTML(id)}`:`<p class="ifh">Processes it implies</p><ul>${outs(id)}</ul>`}</div></div></div></article>`; }).join("")).join("");
 }
 function ifMatrixHTML(){
   const cols=IF_USED;
@@ -5060,6 +5062,111 @@ function ifCardsHTML(){
 /* The diagram of interface forms and processes, as in the attached file: the
    same data, filters, inferred-links checkbox and details panel. */
 const ifpName=en=>en.replace("; term unverified for yatoi","");   // the diagram's label, without the term note
+/* ---------- two graph panels: the provenance trace (landing page) and the joint neighbourhood (joint pages) ----------
+   Inline SVG built as ifDiagram builds it; the line encoding of the diagram: heavy = derived and confirmed,
+   thin = documented, dashed = derived only (a prediction). */
+const GP_NS="http://www.w3.org/2000/svg";
+const gpEl=(t,a,p)=>{ const e=document.createElementNS(GP_NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
+const gpPx=v=>parseFloat(getComputedStyle(document.documentElement).getPropertyValue(v))||12;
+const GP_CTX=document.createElement("canvas").getContext("2d");
+function gpWrap(t,px,maxW,weight){ GP_CTX.font=`${weight||400} ${px}px ${getComputedStyle(document.body).fontFamily}`;
+  const out=[]; String(t).split("\n").forEach(par=>{ let line=""; par.split(" ").forEach(w=>{ const tr=line?line+" "+w:w;
+    if(line&&GP_CTX.measureText(tr).width>maxW){ out.push(line); line=w; } else line=tr; }); out.push(line); }); return out; }
+/* a box with wrapped lines: [{t,px,weight,fill}], at x,y (top-left), width w; returns its height */
+function gpBox(g,x,y,w,parts,box){ const pad=5; let yy=y+pad; const lines=[];
+  parts.forEach(pt=>gpWrap(pt.t,pt.px,w-2*pad,pt.weight).forEach(l=>{ lines.push([l,pt,yy+pt.px*0.95]); yy+=pt.px*1.35; }));
+  const h=Math.max(box.minH||0,yy-y+pad-2);
+  gpEl("rect",Object.assign({x,y,width:w,height:h,rx:4},box.rect),g);
+  lines.forEach(([l,pt,by])=>{ const t=gpEl("text",{x:x+pad,y:by,"font-size":pt.px,fill:pt.fill||"#1b1d1c","font-weight":pt.weight||400},g); t.textContent=l; });
+  return h; }
+
+/* Panel 1: why a form leads to an outcome. form → the geometry fact(s) that fired → rule id(s) → outcome → source / status */
+function ifTrace(box,m,r){
+  if(!box) return; box.innerHTML="";
+  const L=(IF_LINKS_ALL[m]||[]).find(x=>x.r===r); if(!L){ return; }
+  const W=Math.max(320,box.clientWidth||600), fb=gpPx("--fs-body"), fs=gpPx("--fs-small"), A=22, n=5, bw=(W-(n-1)*A)/n;
+  const svg=gpEl("svg",{class:"ifp-tr",viewBox:`0 0 ${W} 10`,width:"100%",role:"img","aria-label":`Why ${IF[m].en} leads to ${IF_OUT[r].lab}`},box);
+  const g=gpEl("g",{},svg), life="ADR".includes(r[0]), lc=life?"#5a4fc4":"#16876a";
+  const rules=(L.rules||[]).map(id=>IF_PROC_RULES.find(x=>x[0]===id)).filter(Boolean);
+  const cond=t=>{ const i=t.lastIndexOf(": "); return i>0?t.slice(0,i):t; };
+  const ev=((CC_EVIDENCE||{}).checks||[]).find(c=>c.kind==="process"&&c.form===m&&c.process===r);
+  const srcs=[...new Set((((ev||{}).documented||{}).sources||[]).filter(x=>x.role==="source").map(x=>x.name))];   // validators (Bauer & Pauli) are not sources
+  const ST={conf:"derived and confirmed",pred:"no source found",doc:"stated in a source, not derived"}[L.cat];
+  const cols=[
+    {parts:[{t:"Interface form",px:fs,fill:"#5f6663"},{t:`${IF[m].en} ${IF[m].kj}`,px:fb,weight:500}],rect:{fill:"#fff",stroke:IF_COL[m]||"#9aa19d","stroke-width":2},link:"#form-"+m},
+    {parts:[{t:"Geometry",px:fs,fill:"#5f6663"},{t:rules.length?rules.map(x=>cond(x[1])).join("; "):"—",px:fb}],rect:{fill:"#f4f5f4",stroke:"#cfd5d2"}},
+    {parts:[{t:"Rule",px:fs,fill:"#5f6663"},{t:rules.length?rules.map(x=>x[0]).join(", "):"",px:fb,weight:600}],rect:{fill:"#fff",stroke:"#1C2321"}},
+    {parts:[{t:IF_OUT[r].name,px:fs,fill:"#5f6663"},{t:`${IF_OUT[r].lab} (${r})`+(L.at.length?` [${ifAttrText(L.at)}]`:""),px:fb}],rect:{fill:life?"#efedfb":"#e4f4ee",stroke:life?"#a9a2e6":"#8fd0b8"}},
+    {parts:[{t:ST,px:fb,weight:600},...(L.cat!=="pred"&&srcs.length?[{t:srcs.join("; "),px:fs,fill:"#3d4441"}]:[])],
+     rect:L.cat==="conf"?{fill:"#dfe6e2",stroke:"#5f6663","stroke-width":1.5}:L.cat==="pred"?{fill:"#fff",stroke:"#5f6663","stroke-dasharray":"5 4"}:{fill:"#fff",stroke:"#5f6663"}}];
+  // heights first, so the chain shares one row height
+  const tmp=gpEl("g",{},svg); let H=0; cols.forEach((c,i)=>{ H=Math.max(H,gpBox(tmp,0,0,bw,c.parts,{rect:{}})); }); tmp.remove();
+  cols.forEach((c,i)=>{ const x=i*(bw+A), cg=gpEl("g",{},g); gpBox(cg,x,2,bw,c.parts,{rect:c.rect,minH:H});
+    if(c.link){ cg.setAttribute("tabindex","0"); cg.setAttribute("role","link"); cg.style.cursor="pointer";
+      const go=()=>{ location.hash=c.link.slice(1); }; cg.addEventListener("click",go); cg.addEventListener("keydown",e=>{ if(e.key==="Enter") go(); }); }
+    if(i<n-1){ const y=2+H/2, x1=x+bw+2, x2=x+bw+A-2;
+      gpEl("line",{x1,y1:y,x2:x2-5,y2:y,stroke:lc,"stroke-width":L.cat==="conf"?2.6:1.2,"stroke-dasharray":L.cat==="pred"?"5 4":""},g);
+      gpEl("path",{d:`M${x2-6},${y-4}L${x2},${y}L${x2-6},${y+4}Z`,fill:lc},g); } });
+  svg.setAttribute("viewBox",`0 0 ${W} ${H+6}`);
+  const note=document.createElement("p"); note.className="ifp-hint"; note.textContent="Click the interface form for its catalogue entry. Select another link, a form then an outcome, or a line in the diagram.";
+  box.appendChild(note);
+}
+
+/* Panel 2: the joint's neighbourhood, layered left to right: joint → components → interfaces → interface forms → the
+   joint-level rules (J, G, X) that apply. Forms link to the catalogue; rules open the Grammar rules page at their row. */
+const IF_LOCK_FORMS=new Set(["sen","kusabi","shachi"]);
+function jointRules(j){ const out=[], comp=IF_COMP[j]||{};
+  const jo=(ccJointOutcomes().find(x=>x.joint===j)||{outcomes:[]}).outcomes;
+  jo.forEach(o=>out.push({id:o.rule,text:(IF_JOINT_RULES.find(r=>r[0]===o.rule)||[])[1],from:"primary"}));
+  IF_GEN_RULES.forEach(([id,text])=>{ if(id==="G1"&&!Object.keys(comp).some(f=>IF_LOCK_FORMS.has(f))) return;
+    if(id==="G4"&&!(SPEC_JOINTS[j]&&SPEC_JOINTS[j].identical)&&j!=="daimochi") return;
+    out.push({id,text,from:id==="G1"?"lock":"joint"}); });
+  IF_CTX_RULES.forEach(([id,text,js])=>{ if(js.includes(j)) out.push({id,text,from:"joint"}); });
+  return out; }
+function jointGraph(box,j){
+  if(!box||!IF_COMPONENTS[j]) return; box.innerHTML="";
+  const W=Math.max(360,box.clientWidth||600), fb=gpPx("--fs-body"), fs=gpPx("--fs-small"), G=18, n=5, cw=(W-(n-1)*G)/n;
+  const svg=gpEl("svg",{class:"jng-g",viewBox:`0 0 ${W} 10`,width:"100%",role:"img","aria-label":`${IF_JOINTS[j].ro}: its components, interfaces, interface forms and joint-level rules`},box);
+  const lg=gpEl("g",{},svg), ng=gpEl("g",{},svg);
+  const C=IF_COMPONENTS[j], comp=IF_COMP[j]||{}, ifs=IF_COMB[j].ifs, rules=jointRules(j);
+  // column heads, wrapped to the column (基本形 written in, so it is measured with the rest)
+  const heads=["Joint","Components","Interfaces","Connection details 基本形","Joint-level rules"].map(h=>gpWrap(h.toUpperCase(),fs,cw,600));
+  heads.forEach((ls,i)=>ls.forEach((l,k)=>{ const t=gpEl("text",{x:i*(cw+G),y:fs+2+k*fs*1.3,"font-size":fs,fill:"#5f6663","font-weight":600,"data-nokihon":""},ng); t.textContent=l; }));
+  const top=fs+10+(Math.max(...heads.map(l=>l.length))-1)*fs*1.3, pos={}, col=[];
+  const layer=(i,items)=>{ let y=top; items.forEach(it=>{ const g=gpEl("g",{},ng), x=i*(cw+G);
+      const h=gpBox(g,x,y,cw,it.parts,{rect:it.rect,minH:fb*1.6});
+      if(it.title){ const ti=gpEl("title",{},g); ti.textContent=it.title; }
+      if(it.go){ g.setAttribute("tabindex","0"); g.setAttribute("role","link"); g.style.cursor="pointer";
+        g.addEventListener("click",it.go); g.addEventListener("keydown",e=>{ if(e.key==="Enter") it.go(); }); }
+      pos[it.key]={x,y,h,cx:x+cw/2,cy:y+h/2}; y+=h+8; }); col[i]=y; };
+  layer(0,[{key:"j",parts:[{t:IF_JOINTS[j].kj,px:fb,weight:500},{t:IF_JOINTS[j].gl,px:fs,fill:"#5f6663"}],rect:{fill:"#fff",stroke:"#1C2321"}}]);
+  layer(1,C.comps.map(([id,name,cond])=>({key:"c:"+id,parts:[{t:name,px:fs}],rect:{fill:"#fff",stroke:"#9aa19d"},title:cond||"every configuration"})));
+  layer(2,ifs.map(([lab,,opt],i)=>({key:"i:"+i,parts:[{t:lab,px:fs}],rect:{fill:"#f4f5f4",stroke:"#cfd5d2"},title:opt||"every configuration"})));
+  const fids=IF_USED.filter(f=>comp[f]);
+  layer(3,fids.map(f=>({key:"f:"+f,parts:[{t:`${comp[f][0]} ${IF[f].en} ${IF[f].kj}`,px:fs}],rect:{fill:"#fff",stroke:IF_COL[f]||"#9aa19d","stroke-width":2},
+    title:comp[f][1],go:()=>{ location.hash="form-"+f; }})));
+  layer(4,rules.map(r=>({key:"r:"+r.id,parts:[{t:r.id,px:fb,weight:600}],rect:{fill:"#fff",stroke:"#1C2321"},title:r.text||"",
+    go:()=>ruleOpen(r.id)})));
+  const line=(a,b)=>{ const A=pos[a], B=pos[b]; if(!A||!B) return;
+    gpEl("line",{x1:A.x+cw,y1:A.cy,x2:B.x,y2:B.cy,stroke:"#5f6663","stroke-width":1.2,opacity:.6},lg); };
+  C.comps.forEach(([id])=>line("j","c:"+id));
+  C.connects.forEach((cs,i)=>cs.forEach(c=>line("c:"+c,"i:"+i)));
+  ifs.forEach(([,forms],i)=>forms.forEach(([f])=>line("i:"+i,"f:"+f)));
+  const primary=ifs[0][1].map(([f])=>f);
+  rules.forEach(r=>{ if(r.from==="primary") primary.forEach(f=>line("f:"+f,"r:"+r.id));
+    else if(r.from==="lock") fids.filter(f=>IF_LOCK_FORMS.has(f)).forEach(f=>line("f:"+f,"r:"+r.id));
+    else line("j","r:"+r.id); });
+  svg.setAttribute("viewBox",`0 0 ${W} ${Math.max(...col)+4}`);
+  const note=document.createElement("p"); note.className="note";
+  note.textContent="○ only in a variant or with a support option; ● in every configuration. Click an interface form for its catalogue entry, a rule for its row on the Grammar rules page. Hover a rule for its text, a component or interface for when it is present.";
+  box.appendChild(note);
+  if(!box.__ro&&window.ResizeObserver){ box.__ro=new ResizeObserver(()=>{ const w=box.clientWidth;
+      if(w&&Math.abs(w-(box.__w||0))>20){ box.__w=w; clearTimeout(box.__rt); box.__rt=setTimeout(()=>jointGraph(box,j),120); } }); box.__ro.observe(box); }
+  box.__w=box.clientWidth; }
+/* a rule's row on the Grammar rules page, highlighted */
+function ruleOpen(id){ location.hash="rules";
+  setTimeout(()=>{ const td=[...document.querySelectorAll("#rulespage table.rules-t tbody tr > td:first-child")].find(c=>c.textContent.trim()===id);
+    if(!td) return; const tr=td.parentNode; tr.scrollIntoView({block:"center"}); tr.classList.add("rule-hl"); setTimeout(()=>tr.classList.remove("rule-hl"),2400); },250); }
 function ifDiagram(host){
   host.innerHTML=`<div class="ifp-bar" role="group" aria-label="Show one category"><button data-c="all" aria-pressed="true">All</button>${IF_CATS.map(([c,n])=>`<button data-c="${c}" aria-pressed="false">${n}</button>`).join("")}</div>
    <div class="ifp-legend"><span><svg width="28" height="8"><line x1="0" y1="4" x2="28" y2="4" stroke="#5a4fc4" stroke-width="2"/></svg>Assembly, disassembly, repair</span>
@@ -5070,6 +5177,7 @@ function ifDiagram(host){
    <label class="ifp-chk"><input type="checkbox" class="ifp-inf" checked> Show predictions (derived only, dashed)</label>
    <p class="ifp-status" aria-live="polite">Showing all links.</p>
    <div class="ifp-detail" aria-live="polite"></div>
+   <p class="ifh">Provenance trace</p><div class="ifp-trace" aria-live="polite"></div>
    <svg class="ifp-g" viewBox="0 0 960 1000" role="img" aria-label="Bipartite diagram linking twenty-three interface forms of Japanese timber joints to twenty-seven outcomes"></svg>`;
   const NS="http://www.w3.org/2000/svg", svg=host.querySelector(".ifp-g"), status=host.querySelector(".ifp-status"), detail=host.querySelector(".ifp-detail");
   const el=(t,a,p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); (p||svg).appendChild(e); return e; };
@@ -5101,14 +5209,16 @@ function ifDiagram(host){
     ry[id]=yr+hh/2+1; cat[id]=c; label[id]=lab; yr+=hh+6; }); yr+=12; });
   svg.setAttribute("viewBox",`0 0 ${VW} `+(Math.max(yl,yr)+6));
   const lg=el("g",{}), lines=[];
-  const bg=el("g",{});
+  const hg=el("g",{}), bg=el("g",{});
   for(const m in IF_LINKS){ ifLinks(m).forEach(({r,inf,at,cat:lc,rules})=>{ const c=cat[r], life="ADR".includes(c);
     const ln=el("line",{x1:LX+LW,y1:ly[m],x2:RX,y2:ry[r],stroke:life?"#5a4fc4":"#16876a","stroke-width":lc==="conf"?2.6:1.2,"stroke-dasharray":inf?"5 4":"",opacity:.5,class:"ifp-ln"},lg);
     // the link's attributes, as a small badge near the operation it leads to
     let badge=null; if(at.length){ const f=0.82, bx=LX+LW+(RX-LX-LW)*f, by=ly[m]+(ry[r]-ly[m])*f; badge=el("g",{class:"ifp-badge"},bg);
       const tx=el("text",{x:bx,y:by,"text-anchor":"middle","dominant-baseline":"central","font-size":8.5,fill:"#0E6650"},badge); tx.textContent=at.map(a=>IF_LATTR[a][1]).join(" · ");
       const w=tx.textContent.length*4.4;   /* estimated: the diagram may be drawn while hidden */ el("rect",{x:bx-w/2-3,y:by-6,width:w+6,height:12,rx:3,fill:"#fff",stroke:"#8fd0b8","stroke-width":.6},badge).parentNode.insertBefore(badge.lastChild,tx); }
-    lines.push({m,r,c,inf,at,ln,badge,cat:lc,rules}); }); }
+    const hit=el("line",{x1:LX+LW,y1:ly[m],x2:RX,y2:ry[r],stroke:"transparent","stroke-width":8,class:"ifp-hit"},hg);
+    hit.style.cursor="pointer"; hit.addEventListener("click",()=>traceOn(m,r));
+    lines.push({m,r,c,inf,at,ln,hit,badge,cat:lc,rules}); }); }
   const nodes={};
   const bind=(g,kind,id)=>{ g.addEventListener("click",()=>focus(kind,id)); g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); focus(kind,id); } }); nodes[id]=g; };
   for(const id in ly){ const f=IF[id]; const g=el("g",{class:"ifp-nd",tabindex:0,role:"button","aria-label":label[id]});
@@ -5145,11 +5255,20 @@ function ifDiagram(host){
       ifRulesHTML(id)+((IF_RNOTE[id]||IF_NORULE[id]||!rules.length)?`<p class="ifp-hint">${IF_RNOTE[id]||IF_NORULE[id]||"No rule found in the sources checked."}</p>`:"")+
       `<p class="ifh2">Links</p><ul>${ifLinks(id).map(x=>`<li><b>${IF_OUT[x.r].name}:</b> ${IF_OUT[x.r].lab} (${x.r})${x.at.length?` <span class="ifat">[${ifAttrText(x.at)}]</span>`:""}${ifCatTag(x)}</li>`).join("")}</ul>`+
       `<p class="ifh2">Geometry</p><p class="ifsrc">${ifGeomText(id)}</p>`; };
-  const focus=(k,id)=>{ sel=(sel&&sel[1]===id)?null:[k,id]; render(); showDetail(); };
+  // the provenance trace: for an edge clicked, or a form then an outcome it links to; the selection itself is unchanged
+  const traceBox=host.querySelector(".ifp-trace");
+  const traceOn=(m,r)=>{ host.__trace=[m,r]; lines.forEach(o=>o.ln.classList.toggle("ifp-on",o.m===m&&o.r===r)); ifTrace(traceBox,m,r); };
+  const focus=(k,id)=>{ const prev=host.__last; host.__last=[k,id];
+    sel=(sel&&sel[1]===id)?null:[k,id]; render(); showDetail();
+    if(k==="r"&&prev&&prev[0]==="m"&&(IF_LINKS_ALL[prev[1]]||[]).some(x=>x.r===id)) traceOn(prev[1],id); };
   host.querySelector(".ifp-inf").addEventListener("change",render);
   host.querySelectorAll("button[data-c]").forEach(b=>b.addEventListener("click",()=>{ fc=b.dataset.c; sel=null;
     host.querySelectorAll("button[data-c]").forEach(x=>x.setAttribute("aria-pressed",x===b)); render(); showDetail(); }));
   render(); showDetail();
+  traceOn(...(host.__trace||["sogi","AS2"]));   // an example until a link is chosen
+  if(!window.__ccGraphReport){ window.__ccGraphReport=1; const cats={};
+    Object.values(IF_LINKS_ALL).forEach(ls=>ls.forEach(x=>{ cats[x.cat]=(cats[x.cat]||0)+1; }));
+    console.info("[graph panels] forms:",Object.keys(IF).length,"| IF_LINKS_ALL edges by cat:",JSON.stringify(cats),"| IF_PROC_RULES ids:",IF_PROC_RULES.map(r=>r[0]).join(", ")); }
 }
 
 /* ---------- the making grammar's rules, written out (Task L) ----------
@@ -5181,6 +5300,23 @@ const IF_COMB={
   okkake:{comp:"Two identical elements; in the locked variant, two 込栓 pegs.",
     ifs:[["Beam–beam interface",[["sogi",1],["ryaku",1],["mechi",2]],null],
          ["Peg–element interfaces (two pegs through both elements, across the width from the side faces)",[["sen",1]],"variant: locked"]]}};
+// each joint's components [id, name, when present (null: every configuration)], and, per interface in IF_COMB's
+// order (C.<joint>.1, .2, ...), the components it connects; read from the interface labels and composition notes
+const IF_COMP_LOWER=["lower_element","Lower element (shitaki)",null], IF_COMP_UPPER=["upper_element","Upper element (uwaki)",null];
+const IF_COMPONENTS={
+  daimochi:{comps:[IF_COMP_LOWER,IF_COMP_UPPER,["dowel","Dowel (太枘 dabo), two","locking: dowels"],
+      ["draw_peg","Draw peg (大栓 daisen), two","locking: through draw pegs"],["post","Post (below or above)","support: post"],
+      ["beam_below","Beam below","support: beam below"],["wedge","Wedge, two","locking: wedges"],["bolt","Bolt, two (hardware)","locking: bolts"]],
+    connects:[["lower_element","upper_element"],["dowel","lower_element","upper_element"],["draw_peg","lower_element","upper_element"],
+      ["post","lower_element","upper_element"],["beam_below","lower_element"],["wedge","post"]]},
+  aritsugi:{comps:[IF_COMP_LOWER,IF_COMP_UPPER,["strap","短ざく金物 strap (hardware)","reinforcement: S-450"]],
+    connects:[["lower_element","upper_element"],["lower_element","upper_element"]]},
+  kamatsugi:{comps:[IF_COMP_LOWER,IF_COMP_UPPER,["peg","込栓 peg, one","variant: Toda's 込栓"]],
+    connects:[["lower_element","upper_element"],["lower_element","upper_element"],["peg","lower_element","upper_element"]]},
+  kanawa:{comps:[IF_COMP_LOWER,IF_COMP_UPPER,["peg","栓 peg, one","variant: locked"]],
+    connects:[["lower_element","upper_element"],["peg","lower_element","upper_element"]]},
+  okkake:{comps:[IF_COMP_LOWER,IF_COMP_UPPER,["peg","込栓 draw peg, two","variant: locked"]],
+    connects:[["lower_element","upper_element"],["peg","lower_element","upper_element"]]}};
 // each joint's rule library: which interface form (and half) each dimension sizes
 const IF_LIBFORM={
   daimochi:{r:["sogi"],t:["sogi"],j:["ryaku"],jr:["ryaku"],ml:["mechi","m"],mw:["mechi","m"],p:["yatoi"],pl:["yatoi"],sd:["oire"],cd:["ago"],cw:["ago"],tw:["hozo","m"],td:["hozo","m"],tl:["hozo","m"]},
@@ -5538,6 +5674,7 @@ window.CC_GRAMMAR_DATA=()=>({
   size_rules:Object.fromEntries(Object.entries(IF_PROP).map(([id,[,rules]])=>[id,rules.map(r=>({text:r[0],source:r[1],evidence:r[2]||[],half:r[3]||null}))])),
   joints:Object.fromEntries(Object.keys(IF_JOINTS).map(j=>[j,{...IF_JOINTS[j],composition:IF_COMB[j].comp,note:IF_COMB[j].note||"",
     interfaces:IF_COMB[j].ifs.map(([n,forms,opt],i)=>({id:`C.${j}.${i+1}`,label:n,forms:forms.map(([f,c])=>({form:f,count:c})),holds:opt||"every configuration"})),
+    components:IF_COMPONENTS[j].comps, connects:IF_COMPONENTS[j].connects,
     library:(()=>{ const L=ifLib(j), map=IF_LIBFORM[j]||{}, out=[], cf=new Map(rulesConflicts().map(c=>[c.id,c])); L.order.forEach(k=>{ const prm=L.params[k]; if(!prm||!prm.rules||!map[k]) return;
       prm.rules.forEach((r,i)=>out.push({id:`S.${j}.${k}`,alt:i+1,dimension:prm.label,form:map[k][0],half:map[k][1]||null,rule:r.label,
         type:ifLibType(r),source:r.ref||"",note:r.doc||"",evidence:ifLibEv(r),
@@ -6343,10 +6480,10 @@ function groupPanel(panel){
   for(let i=kids.length-1;i>=0;i--) if(HIDE.includes(ifPanelTitle(kids[i]))){ hidden.push(kids[i]); kids.splice(i,1); }
   for(let i=kids.length-1;i>=0;i--) if(ifPanelTitle(kids[i])==="Interface forms"||ifPanelTitle(kids[i])==="Names"||(kids[i].classList&&kids[i].classList.contains("namesec"))) kids.splice(i,1);
   { const d=document.createElement("details"); d.className="jdhost";
-    d.addEventListener("toggle",()=>{ if(d.open) jdSchedule(); else if(IFV.fig&&d.contains(IFV.fig)) ifvClose(); });
+    d.addEventListener("toggle",()=>{ if(d.open){ jdSchedule(); jointGraph(d.querySelector(".jng"),ifCurrentJoint()); } else if(IFV.fig&&d.contains(IFV.fig)) ifvClose(); });
     d.innerHTML=`<summary>Interface forms <small>each form in its colour, in 3D</small></summary><div class="body">
       <figure class="ifimg jdfig" data-if="jd"></figure><div class="jdkey iftags-row"></div>
-      <p class="note">The joint's components pulled apart, each interface form in its colour (the same as on the landing page). Drag the background to rotate, scroll to zoom, drag a part to move it; click a face for its name.</p></div>`;
+      <p class="note">The joint's components pulled apart, each interface form in its colour (the same as on the landing page). Drag the background to rotate, scroll to zoom, drag a part to move it; click a face for its name.</p><div class="jng"></div></div>`;
     kids.push(d); }
   if(jkey==="daimochi"&&panel.id!=="otherpanel"&&!kids.some(n=>ifPanelTitle(n)==="Validation"||ifPanelTitle(n)==="Toolpaths")){
     const d=document.createElement("details");
@@ -6675,6 +6812,29 @@ function ifTagSteps(){
     row.innerHTML=ids.map(id=>`<a class="iftag" href="#form-${id}" style="--fc:${IF_COL[id]||"#999"}">${IF[id].en}</a>`).join("");
     el.appendChild(row); });
 }
+/* "interface form(s)", wherever the page shows it, shown as "connection detail(s)" with the Japanese term 基本形
+   after it (once: not where 基本形 already stands just before or after); "interface" alone is kept. The page's text
+   only: the data, the exports and grammar_rules.md keep their wording. */
+const KIHON_RE=/\b(?:(an) )?(interface forms?)\b/gi;   // "an interface form" becomes "a connection detail"
+const kihonWord=m=>{ let t="connection detail"+(/s$/i.test(m)?"s":"");
+  if(m===m.toUpperCase()) return t.toUpperCase();
+  if(/^I/.test(m)) t=t[0].toUpperCase()+t.slice(1);
+  if(/ F/.test(m)) t=t.replace(" d"," D");
+  return t; };
+function ccKihon(root){ const w=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    const p=n.parentElement; if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE)$/.test(p.tagName)||p.closest("[data-nokihon]")) return NodeFilter.FILTER_REJECT;
+    return /interface form/i.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT; }}), hits=[];
+  while(w.nextNode()) hits.push(w.currentNode);
+  hits.forEach(n=>{ const prev=(n.previousSibling&&n.previousSibling.textContent||"").trim();
+    const v=n.nodeValue.replace(KIHON_RE,(m,an,term,off,str)=>{ const before=str.slice(0,off).trimEnd(), after=str.slice(off+m.length);
+      const tagged=/基本形$/.test(before)||(!before&&/基本形$/.test(prev))||/^\s*基本形/.test(after);
+      const art=an?(an==="An"?"A ":an==="AN"?"A ":"a "):"";
+      return art+kihonWord(term)+(tagged?"":" 基本形"); });
+    if(v!==n.nodeValue) n.nodeValue=v; }); }
+let KIHON_PENDING=false;
+new MutationObserver(()=>{ if(KIHON_PENDING) return; KIHON_PENDING=true; requestAnimationFrame(()=>{ KIHON_PENDING=false; ccKihon(); }); })
+  .observe(document.body,{childList:true,subtree:true,characterData:true});
+requestAnimationFrame(()=>ccKihon());
 new MutationObserver(()=>{ if(IF_LINK_PENDING) return; IF_LINK_PENDING=true;
   requestAnimationFrame(()=>{ IF_LINK_PENDING=false; document.querySelectorAll(IF_LINK_IN).forEach(ifLinkText); ifTagSteps(); }); })
   .observe(document.body,{childList:true,subtree:true,characterData:true});
